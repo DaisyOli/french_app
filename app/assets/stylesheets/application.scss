@@ -1,0 +1,216 @@
+// Import Bootstrap and its default variables
+@import "bootstrap";
+
+// Custom styles
+body {
+  padding-top: 20px;
+  font-family: 'Roboto', sans-serif;
+  background-color: #f8f9fa;
+}
+
+.navbar {
+  margin-bottom: 20px;
+}
+
+.app-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+.card {
+  margin-bottom: 20px;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
+.card-header {
+  background-color: #3498db;
+  color: white;
+  font-weight: bold;
+}
+
+.form-section {
+  padding: 15px;
+  border-radius: 5px;
+  margin-top: 10px;
+  margin-bottom: 20px;
+  background-color: #f8f9fa;
+  border: 1px solid #dee2e6;
+  display: none; /* Inicialmente escondido */
+  z-index: 1030; /* Garantir que fique visível acima de outros elementos */
+  position: relative;
+}
+
+.btn-primary {
+  background-color: #3498db;
+  border-color: #3498db;
+}
+
+.btn-warning {
+  background-color: #ffc107;
+  border-color: #ffc107;
+  color: #212529;
+}
+
+.btn-success {
+  background-color: #28a745;
+  border-color: #28a745;
+}
+
+.btn-danger {
+  background-color: #dc3545;
+  border-color: #dc3545;
+}
+
+.section-divider {
+  margin: 30px 0;
+  border-top: 1px solid #dee2e6;
+}
+
+.item-list {
+  list-style-type: none;
+  padding-left: 0;
+}
+
+.item-list li {
+  margin-bottom: 15px;
+  padding: 15px;
+  background-color: #f9f9f9;
+  border-radius: 5px;
+  border: 1px solid #e9ecef;
+}
+
+.alternatives-list {
+  list-style-type: none;
+  padding-left: 20px;
+  margin-top: 10px;
+}
+
+.alternatives-list li {
+  background-color: #f0f0f0;
+}
+
+.item-content {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+}
+
+.item-body {
+  flex-grow: 1;
+}
+
+.item-actions {
+  display: flex;
+  gap: 5px;
+  margin-left: 15px;
+}
+
+.badge-correct {
+  background-color: #28a745;
+  color: white;
+  padding: 3px 8px;
+  border-radius: 3px;
+  display: inline-block;
+  margin-left: 10px;
+  font-size: 0.8em;
+}
+
+// Efeito de folha em branco para a página de atividade
+.paper-effect {
+  background-color: white;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  border-radius: 8px;
+  padding: 40px;
+  margin-bottom: 30px;
+  position: relative;
+  overflow: visible;
+}
+
+.paper-effect::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 6px;
+  background: linear-gradient(to right, #3498db, #2ecc71);
+  border-radius: 8px 8px 0 0;
+}
+
+.paper-effect h1 {
+  margin-top: 0;
+  color: #2c3e50;
+  border-bottom: 2px solid #f0f0f0;
+  padding-bottom: 15px;
+  margin-bottom: 25px;
+}
+
+.paper-effect h3 {
+  color: #3498db;
+  font-size: 1.4rem;
+  margin-top: 30px;
+  margin-bottom: 15px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid #e9ecef;
+}
+
+.paper-section {
+  background-color: #f9f9f9;
+  border-radius: 6px;
+  padding: 20px;
+  margin-bottom: 25px;
+  border-left: 4px solid #3498db;
+}
+
+.paper-section h3 {
+  color: #2c3e50;
+  border-bottom: none;
+  margin-top: 0;
+  margin-bottom: 15px;
+}
+
+.actions-bar {
+  background-color: #f8f9fa;
+  padding: 15px;
+  border-radius: 6px;
+  margin-top: 30px;
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  border-top: 1px solid #e9ecef;
+}
+
+// Responsivo
+@media (max-width: 768px) {
+  .item-content {
+    flex-direction: column;
+  }
+  
+  .item-actions {
+    margin-left: 0;
+    margin-top: 10px;
+  }
+  
+  .paper-effect {
+    padding: 20px;
+  }
+}
+
+// Estilos para modais de formulários
+#formulario-texto, 
+#formulario-video, 
+#formulario-imagem {
+  z-index: 1050 !important; /* Garantir que fique no topo */
+}
+
+// Garantir que formulários dentro de form-section sejam visíveis
+.form-section form {
+  display: block;
+  width: 100%;
+}
+
+// Cursor de pointer para botões de formulário
+.toggle-form {
+  cursor: pointer;
+} 

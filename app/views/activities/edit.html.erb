@@ -1,0 +1,53 @@
+<h1>Editar Atividade</h1>
+
+<%= form_with(model: @activity) do |form| %>
+  <% if @activity.errors.any? %>
+    <div style="color: red">
+      <h2><%= pluralize(@activity.errors.count, "erro") %> impediram que esta atividade fosse salva:</h2>
+
+      <ul>
+        <% @activity.errors.each do |error| %>
+          <li><%= error.full_message %></li>
+        <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <div class="field">
+    <%= form.label :título, style: "display: block" %>
+    <%= form.text_field :título %>
+  </div>
+
+  <div class="field">
+    <%= form.label :nível, style: "display: block" %>
+    <%= form.select :nível, ['A1', 'A2', 'B1', 'B2', 'C1', 'C2'], prompt: 'Selecione o nível' %>
+  </div>
+
+  <div class="field">
+    <%= form.label :texto, 'Descrição', style: "display: block" %>
+    <%= form.text_area :texto %>
+  </div>
+
+  <div class="field">
+    <%= form.label :video_url, 'URL do Vídeo (opcional)', style: "display: block" %>
+    <%= form.text_field :video_url %>
+    <small class="form-text text-muted">Insira o link do YouTube. Ex: https://www.youtube.com/watch?v=XXXX</small>
+  </div>
+
+  <div class="field">
+    <%= form.label :imagem_url, 'URL da Imagem (opcional)', style: "display: block" %>
+    <%= form.text_field :imagem_url %>
+    <small class="form-text text-muted">Insira o link direto para uma imagem. Ex: https://exemplo.com/imagem.jpg</small>
+  </div>
+
+  <div class="actions">
+    <%= form.submit "Atualizar Atividade" %>
+  </div>
+<% end %>
+
+<br>
+
+<div>
+  <%= link_to "Ver Atividade", @activity %> |
+  <%= link_to "Voltar", activities_path %>
+</div>

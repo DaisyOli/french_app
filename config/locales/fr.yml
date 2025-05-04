@@ -1,0 +1,92 @@
+fr:
+  activerecord:
+    models:
+      user: "Professeur"
+      student: "Élève"
+      activity: "Activité"
+      statement: "Énoncé"
+      question: "Question"
+      alternative: "Alternative"
+      suggestion: "Suggestion"
+    attributes:
+      activity:
+        título: "Titre"
+        nível: "Niveau"
+        texto: "Description"
+        video_url: "URL de la vidéo"
+        imagem_url: "URL de l'image"
+      statement:
+        conteúdo: "Contenu"
+      question:
+        conteúdo: "Contenu"
+        tipo: "Type"
+      alternative:
+        conteúdo: "Contenu"
+        correta: "Correcte"
+      suggestion:
+        conteúdo: "Contenu"
+  
+  # Botões e ações
+  helpers:
+    submit:
+      create: "Créer %{model}"
+      update: "Mettre à jour %{model}"
+      submit: "Enregistrer %{model}"
+    actions:
+      new: "Nouveau"
+      edit: "Modifier"
+      destroy: "Supprimer"
+      confirm: "Êtes-vous sûr?"
+      back: "Retour"
+      cancel: "Annuler"
+      
+  # Mensagens e títulos comuns
+  common:
+    app_name: "App de Français"
+    my_activities: "Mes Activités"
+    new_activity: "Nouvelle Activité"
+    edit_activity: "Modifier l'Activité"
+    show_activity: "Voir l'Activité"
+    create_activity: "Créer une Activité"
+    update_activity: "Mettre à jour l'Activité"
+    no_activities: "Vous n'avez pas encore d'activités. Créez-en une maintenant!"
+    statements: "Énoncés"
+    questions: "Questions"
+    alternatives: "Alternatives"
+    suggestions: "Suggestions"
+    description: "Description"
+    video: "Vidéo"
+    image: "Image"
+    no_statements: "Aucun énoncé créé."
+    no_questions: "Aucune question créée."
+    no_alternatives: "Aucune alternative créée."
+    no_suggestions: "Aucune suggestion créée."
+    no_description: "Aucune description ajoutée."
+    no_video: "Aucune vidéo ajoutée."
+    no_image: "Aucune image ajoutée."
+    add_statement: "Ajouter un énoncé"
+    add_question: "Ajouter une question"
+    add_alternative: "Ajouter une alternative"
+    add_suggestion: "Ajouter une suggestion"
+    add_description: "Ajouter une description"
+    add_video: "Ajouter une vidéo"
+    add_image: "Ajouter une image"
+    edit_statement: "Modifier l'énoncé"
+    edit_question: "Modifier la question"
+    edit_alternative: "Modifier l'alternative"
+    edit_suggestion: "Modifier la suggestion"
+    edit_description: "Modifier la description"
+    edit_video: "Modifier la vidéo"
+    edit_image: "Modifier l'image"
+    this_is_correct: "C'est la bonne réponse"
+    
+  # Mensagens flash
+  flash:
+    actions:
+      create:
+        notice: "%{resource_name} a été créé avec succès."
+      update:
+        notice: "%{resource_name} a été mis à jour avec succès."
+      destroy:
+        notice: "%{resource_name} a été supprimé avec succès."
+        alert: "%{resource_name} n'a pas pu être supprimé." 

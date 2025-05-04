@@ -1,0 +1,17 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  título: MyString
+  nível: MyString
+  texto: MyText
+  video_url: MyString
+  imagem_url: MyString
+  user: one
+
+two:
+  título: MyString
+  nível: MyString
+  texto: MyText
+  video_url: MyString
+  imagem_url: MyString
+  user: two

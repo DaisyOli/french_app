@@ -1,0 +1,357 @@
+<div class="container mt-4">
+  <div class="row">
+    <div class="col-lg-10 offset-lg-1">
+      <div class="paper-effect">
+        <h1><%= @activity.título %> <span class="badge bg-secondary"><%= @activity.nível %></span></h1>
+
+        <!-- Seção de Descrição -->
+        <div class="paper-section">
+          <h3><i class="bi bi-info-circle"></i> <%= t('common.description') %></h3>
+          <% if @activity.texto.present? %>
+            <div class="texto">
+              <p><%= @activity.texto %></p>
+              <p>
+                <button type="button" onclick="mostrarFormulario('texto')" class="btn btn-sm btn-outline-primary">
+                  <i class="bi bi-pencil"></i> <%= t('common.edit_description') %>
+                </button>
+              </p>
+            </div>
+          <% else %>
+            <p><%= t('common.no_description') %></p>
+            <p>
+              <button type="button" onclick="mostrarFormulario('texto')" class="btn btn-sm btn-outline-primary">
+                <i class="bi bi-plus"></i> <%= t('common.add_description') %>
+              </button>
+            </p>
+          <% end %>
+        </div>
+
+        <!-- Formulário de texto (implementação simplificada) -->
+        <div id="formulario-texto" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.5); z-index: 1050;">
+          <div style="position: relative; width: 500px; max-width: 90%; margin: 100px auto; background-color: white; padding: 20px; border-radius: 8px; box-shadow: 0 4px 8px rgba(0,0,0,0.1);">
+            <h5><%= @activity.texto.present? ? t('common.edit_description') : t('common.add_description') %></h5>
+            <button type="button" onclick="ocultarFormulario('texto')" style="position: absolute; top: 10px; right: 10px; border: none; background: none; font-size: 20px; cursor: pointer;">&times;</button>
+            
+            <%= form_with(model: @activity, url: activity_path(@activity), method: :patch, data: { turbo: false }) do |form| %>
+              <div style="margin-bottom: 15px;">
+                <%= form.text_area :texto, rows: 5, class: "form-control" %>
+              </div>
+              <div>
+                <%= form.submit t('common.save'), class: "btn btn-primary" %>
+                <button type="button" onclick="ocultarFormulario('texto')" class="btn btn-secondary"><%= t('helpers.actions.cancel') %></button>
+              </div>
+            <% end %>
+          </div>
+        </div>
+
+        <!-- Seção de Vídeo -->
+        <% if @activity.video_url.present? %>
+          <div class="paper-section">
+            <h3><i class="bi bi-film"></i> <%= t('common.video') %></h3>
+            <div class="video">
+              <% 
+                # Converter URL do YouTube para formato embed
+                video_id = nil
+                if @activity.video_url.include?('youtube.com/watch?v=')
+                  video_id = @activity.video_url.split('watch?v=').last.split('&').first
+                elsif @activity.video_url.include?('youtu.be/')
+                  video_id = @activity.video_url.split('youtu.be/').last
+                end
+                
+                embed_url = video_id ? "https://www.youtube.com/embed/#{video_id}" : @activity.video_url
+              %>
+              <div class="ratio ratio-16x9 mb-3">
+                <iframe src="<%= embed_url %>" allowfullscreen></iframe>
+              </div>
+              <p>
+                <button type="button" onclick="mostrarFormulario('video')" class="btn btn-sm btn-outline-primary">
+                  <i class="bi bi-pencil"></i> <%= t('common.edit_video') %>
+                </button>
+              </p>
+            </div>
+          </div>
+        <% else %>
+          <div class="paper-section">
+            <h3><i class="bi bi-film"></i> <%= t('common.video') %></h3>
+            <p><%= t('common.no_video') %></p>
+            <p>
+              <button type="button" onclick="mostrarFormulario('video')" class="btn btn-sm btn-outline-primary">
+                <i class="bi bi-plus"></i> <%= t('common.add_video') %>
+              </button>
+            </p>
+          </div>
+        <% end %>
+
+        <!-- Formulário de vídeo (implementação simplificada) -->
+        <div id="formulario-video" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.5); z-index: 1050;">
+          <div style="position: relative; width: 500px; max-width: 90%; margin: 100px auto; background-color: white; padding: 20px; border-radius: 8px; box-shadow: 0 4px 8px rgba(0,0,0,0.1);">
+            <h5><%= @activity.video_url.present? ? t('common.edit_video') : t('common.add_video') %></h5>
+            <button type="button" onclick="ocultarFormulario('video')" style="position: absolute; top: 10px; right: 10px; border: none; background: none; font-size: 20px; cursor: pointer;">&times;</button>
+            
+            <%= form_with(model: @activity, url: activity_path(@activity), method: :patch, data: { turbo: false }) do |form| %>
+              <div style="margin-bottom: 15px;">
+                <%= form.text_field :video_url, class: "form-control", placeholder: "Cole a URL do YouTube aqui (ex: https://www.youtube.com/watch?v=XXXX)" %>
+                <small class="form-text text-muted">Insira o link do YouTube. Ex: https://www.youtube.com/watch?v=XXXX ou https://youtu.be/XXXX</small>
+              </div>
+              <div>
+                <%= form.submit t('common.save'), class: "btn btn-primary" %>
+                <button type="button" onclick="ocultarFormulario('video')" class="btn btn-secondary"><%= t('helpers.actions.cancel') %></button>
+              </div>
+            <% end %>
+          </div>
+        </div>
+
+        <!-- Seção de Imagem -->
+        <% if @activity.imagem_url.present? %>
+          <div class="paper-section">
+            <h3><i class="bi bi-image"></i> <%= t('common.image') %></h3>
+            <div class="imagem">
+              <img src="<%= @activity.imagem_url %>" alt="Imagem da atividade" class="img-fluid mb-3 rounded">
+              <p>
+                <button type="button" onclick="mostrarFormulario('imagem')" class="btn btn-sm btn-outline-primary">
+                  <i class="bi bi-pencil"></i> <%= t('common.edit_image') %>
+                </button>
+              </p>
+            </div>
+          </div>
+        <% else %>
+          <div class="paper-section">
+            <h3><i class="bi bi-image"></i> <%= t('common.image') %></h3>
+            <p><%= t('common.no_image') %></p>
+            <p>
+              <button type="button" onclick="mostrarFormulario('imagem')" class="btn btn-sm btn-outline-primary">
+                <i class="bi bi-plus"></i> <%= t('common.add_image') %>
+              </button>
+            </p>
+          </div>
+        <% end %>
+
+        <!-- Formulário de imagem (implementação simplificada) -->
+        <div id="formulario-imagem" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.5); z-index: 1050;">
+          <div style="position: relative; width: 500px; max-width: 90%; margin: 100px auto; background-color: white; padding: 20px; border-radius: 8px; box-shadow: 0 4px 8px rgba(0,0,0,0.1);">
+            <h5><%= @activity.imagem_url.present? ? t('common.edit_image') : t('common.add_image') %></h5>
+            <button type="button" onclick="ocultarFormulario('imagem')" style="position: absolute; top: 10px; right: 10px; border: none; background: none; font-size: 20px; cursor: pointer;">&times;</button>
+            
+            <%= form_with(model: @activity, url: activity_path(@activity), method: :patch, data: { turbo: false }) do |form| %>
+              <div style="margin-bottom: 15px;">
+                <%= form.text_field :imagem_url, class: "form-control", placeholder: "Cole a URL da imagem aqui (ex: https://exemplo.com/imagem.jpg)" %>
+                <small class="form-text text-muted">Insira o link direto para uma imagem. Ex: https://exemplo.com/imagem.jpg</small>
+              </div>
+              <div>
+                <%= form.submit t('common.save'), class: "btn btn-primary" %>
+                <button type="button" onclick="ocultarFormulario('imagem')" class="btn btn-secondary"><%= t('helpers.actions.cancel') %></button>
+              </div>
+            <% end %>
+          </div>
+        </div>
+
+        <!-- Seção de Enunciados -->
+        <div class="paper-section">
+          <h3><i class="bi bi-list-ul"></i> <%= t('common.statements') %></h3>
+          <% if @activity.statements.any? %>
+            <ul class="item-list">
+              <% @activity.statements.each do |statement| %>
+                <li>
+                  <div class="item-content">
+                    <%= statement.conteúdo %>
+                    <div class="item-actions">
+                      <button class="btn btn-sm btn-outline-primary toggle-form edit-btn" data-target="form-statement-<%= statement.id %>"><i class="bi bi-pencil"></i> <%= t('common.edit') %></button>
+                      <%= link_to t('common.delete'), activity_statement_path(@activity, statement), data: { turbo_method: :delete, turbo_confirm: 'Tem certeza?' }, class: "btn btn-sm btn-outline-danger" %>
+                    </div>
+                  </div>
+                  
+                  <div id="form-statement-<%= statement.id %>" class="form-section" style="display: none;">
+                    <%= form_with(model: statement, url: activity_statement_path(@activity, statement), method: :patch) do |form| %>
+                      <%= form.text_area :conteúdo, rows: 3, class: "form-control" %>
+                      <div class="form-actions mt-3">
+                        <%= form.submit t('common.save'), class: "btn btn-primary" %>
+                        <button type="button" class="btn btn-secondary" onclick="document.getElementById('form-statement-<%= statement.id %>').style.display='none'"><%= t('helpers.actions.cancel') %></button>
+                      </div>
+                    <% end %>
+                  </div>
+                </li>
+              <% end %>
+            </ul>
+          <% else %>
+            <p><%= t('common.no_statements') %></p>
+          <% end %>
+          
+          <p>
+            <button class="btn btn-sm btn-outline-primary toggle-form add-btn" data-target="form-new-statement"><i class="bi bi-plus"></i> <%= t('common.add_statement') %></button>
+          </p>
+          
+          <div id="form-new-statement" class="form-section" style="display: none;">
+            <%= form_with(model: [@activity, Statement.new], url: activity_statements_path(@activity)) do |form| %>
+              <%= form.text_area :conteúdo, rows: 3, class: "form-control", placeholder: "Digite o enunciado aqui..." %>
+              <div class="form-actions mt-3">
+                <%= form.submit t('common.save'), class: "btn btn-primary" %>
+                <button type="button" class="btn btn-secondary" onclick="document.getElementById('form-new-statement').style.display='none'"><%= t('helpers.actions.cancel') %></button>
+              </div>
+            <% end %>
+          </div>
+        </div>
+
+        <!-- Seção de Questões -->
+        <div class="paper-section">
+          <h3><i class="bi bi-question-circle"></i> <%= t('common.questions') %></h3>
+          <% if @activity.questions.any? %>
+            <ul class="item-list">
+              <% @activity.questions.each do |question| %>
+                <li>
+                  <div class="item-content">
+                    <strong><%= question.conteúdo %></strong>
+                    <div class="item-actions">
+                      <button class="btn btn-sm btn-outline-primary toggle-form edit-btn" data-target="form-question-<%= question.id %>"><i class="bi bi-pencil"></i> <%= t('common.edit') %></button>
+                      <%= link_to t('common.delete'), activity_question_path(@activity, question), data: { turbo_method: :delete, turbo_confirm: 'Tem certeza?' }, class: "btn btn-sm btn-outline-danger" %>
+                    </div>
+                  </div>
+                  
+                  <div id="form-question-<%= question.id %>" class="form-section" style="display: none;">
+                    <%= form_with(model: question, url: activity_question_path(@activity, question), method: :patch) do |form| %>
+                      <%= form.text_area :conteúdo, rows: 3, class: "form-control" %>
+                      <div class="form-actions mt-3">
+                        <%= form.submit t('common.save'), class: "btn btn-primary" %>
+                        <button type="button" class="btn btn-secondary" onclick="document.getElementById('form-question-<%= question.id %>').style.display='none'"><%= t('helpers.actions.cancel') %></button>
+                      </div>
+                    <% end %>
+                  </div>
+                  
+                  <!-- Alternativas da Questão -->
+                  <% if question.alternatives.any? %>
+                    <ul class="alternatives-list">
+                      <% question.alternatives.each do |alternative| %>
+                        <li>
+                          <div class="item-content">
+                            <%= alternative.conteúdo %> <%= " (Correta)" if alternative.correta %>
+                            <div class="item-actions">
+                              <button class="btn btn-sm btn-outline-primary toggle-form edit-btn" data-target="form-alternative-<%= alternative.id %>"><i class="bi bi-pencil"></i> <%= t('common.edit') %></button>
+                              <%= link_to t('common.delete'), activity_question_alternative_path(@activity, question, alternative), data: { turbo_method: :delete, turbo_confirm: 'Tem certeza?' }, class: "btn btn-sm btn-outline-danger" %>
+                            </div>
+                          </div>
+                          
+                          <div id="form-alternative-<%= alternative.id %>" class="form-section" style="display: none;">
+                            <%= form_with(model: alternative, url: activity_question_alternative_path(@activity, question, alternative), method: :patch) do |form| %>
+                              <%= form.text_area :conteúdo, rows: 2, class: "form-control" %>
+                              <div class="checkbox-field">
+                                <%= form.check_box :correta %>
+                                <%= form.label :correta, "Esta é a alternativa correta" %>
+                              </div>
+                              <div class="form-actions mt-3">
+                                <%= form.submit t('common.save'), class: "btn btn-primary" %>
+                                <button type="button" class="btn btn-secondary" onclick="document.getElementById('form-alternative-<%= alternative.id %>').style.display='none'"><%= t('helpers.actions.cancel') %></button>
+                              </div>
+                            <% end %>
+                          </div>
+                        </li>
+                      <% end %>
+                    </ul>
+                  <% else %>
+                    <p><%= t('common.no_alternatives') %></p>
+                  <% end %>
+                  
+                  <p>
+                    <button class="btn btn-sm btn-outline-primary toggle-form add-btn" data-target="form-new-alternative-<%= question.id %>"><i class="bi bi-plus"></i> <%= t('common.add_alternative') %></button>
+                  </p>
+                  
+                  <div id="form-new-alternative-<%= question.id %>" class="form-section" style="display: none;">
+                    <%= form_with(model: [@activity, question, Alternative.new], url: activity_question_alternatives_path(@activity, question)) do |form| %>
+                      <%= form.text_area :conteúdo, rows: 2, class: "form-control", placeholder: "Digite a alternativa aqui..." %>
+                      <div class="checkbox-field">
+                        <%= form.check_box :correta %>
+                        <%= form.label :correta, "Esta é a alternativa correta" %>
+                      </div>
+                      <div class="form-actions mt-3">
+                        <%= form.submit t('common.save'), class: "btn btn-primary" %>
+                        <button type="button" class="btn btn-secondary" onclick="document.getElementById('form-new-alternative-<%= question.id %>').style.display='none'"><%= t('helpers.actions.cancel') %></button>
+                      </div>
+                    <% end %>
+                  </div>
+                </li>
+              <% end %>
+            </ul>
+          <% else %>
+            <p><%= t('common.no_questions') %></p>
+          <% end %>
+          
+          <p>
+            <button class="btn btn-sm btn-outline-primary toggle-form add-btn" data-target="form-new-question"><i class="bi bi-plus"></i> <%= t('common.add_question') %></button>
+          </p>
+          
+          <div id="form-new-question" class="form-section" style="display: none;">
+            <%= form_with(model: [@activity, Question.new], url: activity_questions_path(@activity)) do |form| %>
+              <%= form.text_area :conteúdo, rows: 3, class: "form-control", placeholder: "Digite a questão aqui..." %>
+              <%= form.hidden_field :tipo, value: "multipla_escolha" %>
+              <div class="form-actions mt-3">
+                <%= form.submit t('common.save'), class: "btn btn-primary" %>
+                <button type="button" class="btn btn-secondary" onclick="document.getElementById('form-new-question').style.display='none'"><%= t('helpers.actions.cancel') %></button>
+              </div>
+            <% end %>
+          </div>
+        </div>
+
+        <!-- Seção de Sugestões -->
+        <div class="paper-section">
+          <h3><i class="bi bi-lightbulb"></i> <%= t('common.suggestions') %></h3>
+          <% if @activity.suggestions.any? %>
+            <ul class="item-list">
+              <% @activity.suggestions.each do |suggestion| %>
+                <li>
+                  <div class="item-content">
+                    <%= suggestion.conteúdo %>
+                    <div class="item-actions">
+                      <button class="btn btn-sm btn-outline-primary toggle-form edit-btn" data-target="form-suggestion-<%= suggestion.id %>"><i class="bi bi-pencil"></i> <%= t('common.edit') %></button>
+                      <%= link_to t('common.delete'), activity_suggestion_path(@activity, suggestion), data: { turbo_method: :delete, turbo_confirm: 'Tem certeza?' }, class: "btn btn-sm btn-outline-danger" %>
+                    </div>
+                  </div>
+                  
+                  <div id="form-suggestion-<%= suggestion.id %>" class="form-section" style="display: none;">
+                    <%= form_with(model: suggestion, url: activity_suggestion_path(@activity, suggestion), method: :patch) do |form| %>
+                      <%= form.text_area :conteúdo, rows: 3, class: "form-control" %>
+                      <div class="form-actions mt-3">
+                        <%= form.submit t('common.save'), class: "btn btn-primary" %>
+                        <button type="button" class="btn btn-secondary" onclick="document.getElementById('form-suggestion-<%= suggestion.id %>').style.display='none'"><%= t('helpers.actions.cancel') %></button>
+                      </div>
+                    <% end %>
+                  </div>
+                </li>
+              <% end %>
+            </ul>
+          <% else %>
+            <p><%= t('common.no_suggestions') %></p>
+          <% end %>
+          
+          <p>
+            <button class="btn btn-sm btn-outline-primary toggle-form add-btn" data-target="form-new-suggestion"><i class="bi bi-plus"></i> <%= t('common.add_suggestion') %></button>
+          </p>
+          
+          <div id="form-new-suggestion" class="form-section" style="display: none;">
+            <%= form_with(model: [@activity, Suggestion.new], url: activity_suggestions_path(@activity)) do |form| %>
+              <%= form.text_area :conteúdo, rows: 3, class: "form-control", placeholder: "Digite a sugestão aqui..." %>
+              <div class="form-actions mt-3">
+                <%= form.submit t('common.save'), class: "btn btn-primary" %>
+                <button type="button" class="btn btn-secondary" onclick="document.getElementById('form-new-suggestion').style.display='none'"><%= t('helpers.actions.cancel') %></button>
+              </div>
+            <% end %>
+          </div>
+        </div>
+
+        <div class="actions-bar">
+          <%= link_to t('helpers.actions.edit'), edit_activity_path(@activity), class: "btn btn-warning" %>
+          <%= link_to t('helpers.actions.back'), activities_path, class: "btn btn-secondary" %>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script type="text/javascript">
+  function mostrarFormulario(tipo) {
+    document.getElementById('formulario-' + tipo).style.display = 'block';
+    document.body.style.overflow = 'hidden'; // Impede rolagem do conteúdo de fundo
+  }
+  
+  function ocultarFormulario(tipo) {
+    document.getElementById('formulario-' + tipo).style.display = 'none';
+    document.body.style.overflow = 'auto'; // Restaura rolagem
+  }
+</script>

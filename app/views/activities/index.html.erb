@@ -1,0 +1,40 @@
+<div class="row mb-4">
+  <div class="col">
+    <h1><%= t('common.my_activities') %></h1>
+  </div>
+  <div class="col text-end">
+    <%= link_to t('common.new_activity'), new_activity_path, class: "btn btn-primary" %>
+  </div>
+</div>
+
+<% if @activities.any? %>
+  <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+    <% @activities.each do |activity| %>
+      <div class="col">
+        <div class="card h-100">
+          <div class="card-header">
+            <%= activity.título %>
+          </div>
+          <div class="card-body">
+            <h5 class="card-title">
+              <span class="badge bg-secondary"><%= activity.nível %></span>
+            </h5>
+            <% if activity.texto.present? %>
+              <p class="card-text"><%= truncate(activity.texto, length: 100) %></p>
+            <% end %>
+          </div>
+          <div class="card-footer text-center">
+            <%= link_to t('helpers.actions.show'), activity, class: "btn btn-sm btn-primary" %>
+            <%= link_to t('helpers.actions.edit'), edit_activity_path(activity), class: "btn btn-sm btn-warning" %>
+            <%= link_to t('helpers.actions.destroy'), activity, data: { turbo_method: :delete, turbo_confirm: t('helpers.actions.confirm') }, class: "btn btn-sm btn-danger" %>
+          </div>
+        </div>
+      </div>
+    <% end %>
+  </div>
+<% else %>
+  <div class="alert alert-info">
+    <p><%= t('common.no_activities') %></p>
+    <p><%= link_to t('common.create_activity'), new_activity_path, class: "btn btn-primary" %></p>
+  </div>
+<% end %>

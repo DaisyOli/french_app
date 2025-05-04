@@ -1,0 +1,42 @@
+<%= simple_form_for(activity) do |f| %>
+  <% if activity.errors.any? %>
+    <div class="alert alert-danger">
+      <h5><i class="bi bi-exclamation-triangle"></i> <%= pluralize(activity.errors.count, "erreur") %> :</h5>
+      <ul>
+        <% activity.errors.full_messages.each do |message| %>
+          <li><%= message %></li>
+        <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <div class="card mb-4">
+    <div class="card-header">
+      <%= activity.new_record? ? t('common.new_activity') : t('common.edit_activity') %>
+    </div>
+    <div class="card-body">
+      <div class="row">
+        <div class="col-md-6 mb-3">
+          <%= f.input :título, label: t('activerecord.attributes.activity.título') %>
+        </div>
+        <div class="col-md-6 mb-3">
+          <%= f.input :nível, collection: ['A1', 'A2', 'B1', 'B2', 'C1', 'C2'], 
+                     include_blank: 'Sélectionnez le niveau',
+                     label: t('activerecord.attributes.activity.nível') %>
+        </div>
+      </div>
+      <div class="mb-3">
+        <%= f.input :texto, as: :text, input_html: { rows: 5 }, 
+                   label: t('activerecord.attributes.activity.texto') %>
+      </div>
+      
+      <%= f.hidden_field :video_url %>
+      <%= f.hidden_field :imagem_url %>
+    </div>
+    <div class="card-footer text-end">
+      <%= f.button :submit, activity.new_record? ? t('common.create_activity') : t('common.update_activity'), 
+                  class: 'btn btn-primary' %>
+      <%= link_to t('helpers.actions.back'), activities_path, class: 'btn btn-secondary' %>
+    </div>
+  </div>
+<% end %> 
