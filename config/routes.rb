@@ -3,6 +3,11 @@ Rails.application.routes.draw do
   devise_for :users
   
   resources :activities do
+    member do
+      delete 'remove_video'
+      delete 'remove_image'
+    end
+    
     resources :statements, only: [:new, :create, :edit, :update, :destroy]
     resources :questions, only: [:new, :create, :edit, :update, :destroy] do
       resources :alternatives, only: [:new, :create, :edit, :update, :destroy]

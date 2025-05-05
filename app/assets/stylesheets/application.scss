@@ -1,11 +1,18 @@
 // Import Bootstrap and its default variables
 @import "bootstrap";
 
+// Variáveis de cores personalizadas - tons de violeta lavanda
+$lavanda-principal: #967bb6; // Lavanda principal
+$lavanda-claro: #b9a2d8;     // Lavanda claro
+$lavanda-escuro: #7c639b;    // Lavanda escuro
+$lavanda-muito-escuro: #5d4777; // Lavanda muito escuro para botões
+$lavanda-suave: #f3edfb;     // Lavanda muito claro para fundos
+
 // Custom styles
 body {
   padding-top: 20px;
   font-family: 'Roboto', sans-serif;
-  background-color: #f8f9fa;
+  background-color: $lavanda-suave;
 }
 
 .navbar {
@@ -20,30 +27,39 @@ body {
 
 .card {
   margin-bottom: 20px;
-  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+  box-shadow: 0 2px 5px rgba(150, 123, 182, 0.2);
 }
 
 .card-header {
-  background-color: #3498db;
+  background-color: $lavanda-principal;
   color: white;
   font-weight: bold;
 }
 
 .form-section {
-  padding: 15px;
-  border-radius: 5px;
-  margin-top: 10px;
+  margin-top: 15px;
   margin-bottom: 20px;
-  background-color: #f8f9fa;
-  border: 1px solid #dee2e6;
-  display: none; /* Inicialmente escondido */
-  z-index: 1030; /* Garantir que fique visível acima de outros elementos */
-  position: relative;
+  padding: 15px;
+  background-color: $lavanda-suave;
+  border-radius: 5px;
+  border-left: 3px solid $lavanda-claro;
+}
+
+.form-actions {
+  margin-top: 15px;
+  display: flex;
+  gap: 10px;
 }
 
 .btn-primary {
-  background-color: #3498db;
-  border-color: #3498db;
+  background-color: $lavanda-escuro;
+  border-color: $lavanda-escuro;
+  
+  &:hover, &:focus {
+    background-color: $lavanda-muito-escuro;
+    border-color: $lavanda-muito-escuro;
+    box-shadow: 0 2px 5px rgba(93, 71, 119, 0.3);
+  }
 }
 
 .btn-warning {
@@ -75,9 +91,9 @@ body {
 .item-list li {
   margin-bottom: 15px;
   padding: 15px;
-  background-color: #f9f9f9;
+  background-color: white;
   border-radius: 5px;
-  border: 1px solid #e9ecef;
+  border: 1px solid $lavanda-claro;
 }
 
 .alternatives-list {
@@ -87,7 +103,7 @@ body {
 }
 
 .alternatives-list li {
-  background-color: #f0f0f0;
+  background-color: $lavanda-suave;
 }
 
 .item-content {
@@ -119,7 +135,7 @@ body {
 // Efeito de folha em branco para a página de atividade
 .paper-effect {
   background-color: white;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 4px 12px rgba(150, 123, 182, 0.3);
   border-radius: 8px;
   padding: 40px;
   margin-bottom: 30px;
@@ -134,20 +150,20 @@ body {
   left: 0;
   right: 0;
   height: 6px;
-  background: linear-gradient(to right, #3498db, #2ecc71);
+  background: linear-gradient(to right, $lavanda-claro, $lavanda-muito-escuro);
   border-radius: 8px 8px 0 0;
 }
 
 .paper-effect h1 {
   margin-top: 0;
-  color: #2c3e50;
-  border-bottom: 2px solid #f0f0f0;
+  color: $lavanda-escuro;
+  border-bottom: 2px solid $lavanda-suave;
   padding-bottom: 15px;
   margin-bottom: 25px;
 }
 
 .paper-effect h3 {
-  color: #3498db;
+  color: $lavanda-principal;
   font-size: 1.4rem;
   margin-top: 30px;
   margin-bottom: 15px;
@@ -156,29 +172,29 @@ body {
 }
 
 .paper-section {
-  background-color: #f9f9f9;
+  background-color: $lavanda-suave;
   border-radius: 6px;
   padding: 20px;
   margin-bottom: 25px;
-  border-left: 4px solid #3498db;
+  border-left: 4px solid $lavanda-escuro;
 }
 
 .paper-section h3 {
-  color: #2c3e50;
+  color: $lavanda-escuro;
   border-bottom: none;
   margin-top: 0;
   margin-bottom: 15px;
 }
 
 .actions-bar {
-  background-color: #f8f9fa;
+  background-color: $lavanda-suave;
   padding: 15px;
   border-radius: 6px;
   margin-top: 30px;
   display: flex;
   justify-content: flex-end;
   gap: 10px;
-  border-top: 1px solid #e9ecef;
+  border-top: 1px solid $lavanda-claro;
 }
 
 // Responsivo
@@ -213,4 +229,213 @@ body {
 // Cursor de pointer para botões de formulário
 .toggle-form {
   cursor: pointer;
+}
+
+// Melhorando os botões
+.btn {
+  border-radius: 20px;
+  
+  &.btn-sm {
+    border-radius: 15px;
+  }
+}
+
+// Melhorando os botões
+.btn-outline-primary {
+  color: $lavanda-escuro;
+  border-color: $lavanda-escuro;
+  
+  &:hover, &:focus {
+    color: white;
+    background-color: $lavanda-escuro;
+    border-color: $lavanda-escuro;
+    box-shadow: 0 2px 5px rgba(93, 71, 119, 0.3);
+  }
+}
+
+// Personalização dos botões de adicionar/editar com maior especificidade
+button.btn.add-btn, 
+button.btn.edit-btn,
+a.btn.add-btn, 
+a.btn.edit-btn {
+  color: $lavanda-muito-escuro !important;
+  border-color: $lavanda-muito-escuro !important;
+  
+  &:hover {
+    color: white !important;
+    background-color: $lavanda-muito-escuro !important;
+    border-color: $lavanda-muito-escuro !important;
+    transform: translateY(-2px);
+    transition: all 0.2s;
+    box-shadow: 0 2px 5px rgba(93, 71, 119, 0.3);
+  }
+}
+
+// Sobrescrever botões btn-outline-primary com !important
+.btn-outline-primary {
+  color: $lavanda-escuro !important;
+  border-color: $lavanda-escuro !important;
+  
+  &:hover, &:focus {
+    color: white !important;
+    background-color: $lavanda-escuro !important;
+    border-color: $lavanda-escuro !important;
+    box-shadow: 0 2px 5px rgba(93, 71, 119, 0.3);
+  }
+}
+
+// Sobrescrever botões primários com !important
+.btn-primary {
+  background-color: $lavanda-escuro !important;
+  border-color: $lavanda-escuro !important;
+  
+  &:hover, &:focus {
+    background-color: $lavanda-muito-escuro !important;
+    border-color: $lavanda-muito-escuro !important;
+    box-shadow: 0 2px 5px rgba(93, 71, 119, 0.3);
+  }
+}
+
+// Personalização dos botões de excluir
+.btn-outline-danger, 
+button.btn.btn-outline-danger,
+a.btn.btn-outline-danger {
+  &:hover {
+    transform: translateY(-2px);
+    transition: all 0.2s;
+    box-shadow: 0 2px 5px rgba(220, 53, 69, 0.3);
+  }
+}
+
+// Estilizações específicas femininas e modernas
+.activity-header {
+  position: relative;
+  margin-bottom: 30px;
+}
+
+.decorative-line {
+  position: relative;
+  height: 3px;
+  background: linear-gradient(to right, $lavanda-claro, $lavanda-muito-escuro);
+  margin-top: 15px;
+  border-radius: 3px;
+  
+  &:after {
+    content: '❀';
+    position: absolute;
+    right: 0;
+    top: -10px;
+    font-size: 1.2rem;
+    color: $lavanda-escuro;
+  }
+  
+  &:before {
+    content: '❀';
+    position: absolute;
+    left: 0;
+    top: -10px;
+    font-size: 1.2rem;
+    color: $lavanda-escuro;
+  }
+}
+
+.content-box {
+  background-color: white;
+  border-radius: 8px;
+  padding: 15px;
+  box-shadow: 0 2px 8px rgba(150, 123, 182, 0.1);
+  border: 1px solid $lavanda-suave;
+}
+
+.image-container {
+  border-radius: 10px;
+  overflow: hidden;
+  box-shadow: 0 4px 10px rgba(150, 123, 182, 0.2);
+  
+  img {
+    transition: transform 0.3s ease;
+    
+    &:hover {
+      transform: scale(1.02);
+    }
+  }
+}
+
+.video-container {
+  border-radius: 10px;
+  overflow: hidden;
+  box-shadow: 0 4px 10px rgba(150, 123, 182, 0.2);
+}
+
+.correct-badge {
+  background-color: #28a745;
+  color: white;
+  padding: 3px 10px;
+  border-radius: 15px;
+  font-size: 0.8rem;
+  margin-left: 10px;
+  display: inline-flex;
+  align-items: center;
+  
+  i {
+    margin-right: 5px;
+  }
+}
+
+// Estilo específico para botões de adicionar com ícone de +
+button.btn.toggle-form.add-btn {
+  color: $lavanda-muito-escuro !important;
+  border-color: $lavanda-muito-escuro !important;
+  background-color: white !important;
+  
+  &:hover, &:focus {
+    color: white !important;
+    background-color: $lavanda-muito-escuro !important;
+    border-color: $lavanda-muito-escuro !important;
+  }
+  
+  i.bi-plus {
+    font-weight: bold;
+  }
+}
+
+// Estilo para o botão de exclusão de vídeo e imagem
+.delete-button {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  z-index: 10;
+  
+  form {
+    margin: 0;
+    padding: 0;
+    display: inline-block;
+  }
+}
+
+.btn-delete-icon {
+  background-color: white;
+  border: 2px solid $lavanda-escuro;
+  color: $lavanda-escuro;
+  border-radius: 50%;
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  transition: all 0.2s;
+  box-shadow: 0 2px 4px rgba(150, 123, 182, 0.3);
+  cursor: pointer;
+  
+  &:hover {
+    background-color: $lavanda-escuro;
+    color: white;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(150, 123, 182, 0.5);
+  }
+  
+  i {
+    font-size: 1.1rem;
+  }
 } 

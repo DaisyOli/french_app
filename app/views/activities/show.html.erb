@@ -2,43 +2,34 @@
   <div class="row">
     <div class="col-lg-10 offset-lg-1">
       <div class="paper-effect">
-        <h1><%= @activity.título %> <span class="badge bg-secondary"><%= @activity.nível %></span></h1>
+        <div class="activity-header">
+          <h1><%= @activity.título %> <span class="badge" style="background-color: #7c639b;"><%= @activity.nível %></span></h1>
+          <div class="decorative-line"></div>
+        </div>
 
         <!-- Seção de Descrição -->
         <div class="paper-section">
           <h3><i class="bi bi-info-circle"></i> <%= t('common.description') %></h3>
           <% if @activity.texto.present? %>
-            <div class="texto">
+            <div class="texto content-box">
               <p><%= @activity.texto %></p>
               <p>
-                <button type="button" onclick="mostrarFormulario('texto')" class="btn btn-sm btn-outline-primary">
-                  <i class="bi bi-pencil"></i> <%= t('common.edit_description') %>
-                </button>
+                <button type="button" class="btn btn-sm btn-outline-primary toggle-form edit-btn" data-target="form-texto"><i class="bi bi-pencil"></i> <%= t('common.edit_description') %></button>
               </p>
             </div>
           <% else %>
             <p><%= t('common.no_description') %></p>
             <p>
-              <button type="button" onclick="mostrarFormulario('texto')" class="btn btn-sm btn-outline-primary">
-                <i class="bi bi-plus"></i> <%= t('common.add_description') %>
-              </button>
+              <button type="button" class="btn btn-sm btn-outline-primary toggle-form add-btn" data-target="form-texto"><i class="bi bi-plus"></i> <%= t('common.add_description') %></button>
             </p>
           <% end %>
-        </div>
-
-        <!-- Formulário de texto (implementação simplificada) -->
-        <div id="formulario-texto" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.5); z-index: 1050;">
-          <div style="position: relative; width: 500px; max-width: 90%; margin: 100px auto; background-color: white; padding: 20px; border-radius: 8px; box-shadow: 0 4px 8px rgba(0,0,0,0.1);">
-            <h5><%= @activity.texto.present? ? t('common.edit_description') : t('common.add_description') %></h5>
-            <button type="button" onclick="ocultarFormulario('texto')" style="position: absolute; top: 10px; right: 10px; border: none; background: none; font-size: 20px; cursor: pointer;">&times;</button>
-            
-            <%= form_with(model: @activity, url: activity_path(@activity), method: :patch, data: { turbo: false }) do |form| %>
-              <div style="margin-bottom: 15px;">
-                <%= form.text_area :texto, rows: 5, class: "form-control" %>
-              </div>
-              <div>
+          
+          <div id="form-texto" class="form-section" style="display: none;">
+            <%= form_with(model: @activity, url: activity_path(@activity), method: :patch) do |form| %>
+              <%= form.text_area :texto, rows: 5, class: "form-control" %>
+              <div class="form-actions mt-3">
                 <%= form.submit t('common.save'), class: "btn btn-primary" %>
-                <button type="button" onclick="ocultarFormulario('texto')" class="btn btn-secondary"><%= t('helpers.actions.cancel') %></button>
+                <button type="button" class="btn btn-secondary" onclick="document.getElementById('form-texto').style.display='none'"><%= t('helpers.actions.cancel') %></button>
               </div>
             <% end %>
           </div>
@@ -48,7 +39,17 @@
         <% if @activity.video_url.present? %>
           <div class="paper-section">
             <h3><i class="bi bi-film"></i> <%= t('common.video') %></h3>
-            <div class="video">
+            <div class="video content-box position-relative">
+              <!-- Botão de exclusão no canto superior direito -->
+              <div class="delete-button">
+                <%= button_to remove_video_activity_path(@activity), 
+                              method: :delete,
+                              form: { data: { turbo_confirm: t('common.confirm_delete_video') } },
+                              class: "btn-delete-icon btn btn-outline-danger" do %>
+                  <i class="bi bi-trash"></i>
+                <% end %>
+              </div>
+              
               <% 
                 # Converter URL do YouTube para formato embed
                 video_id = nil
@@ -60,13 +61,11 @@
                 
                 embed_url = video_id ? "https://www.youtube.com/embed/#{video_id}" : @activity.video_url
               %>
-              <div class="ratio ratio-16x9 mb-3">
+              <div class="ratio ratio-16x9 mb-3 video-container">
                 <iframe src="<%= embed_url %>" allowfullscreen></iframe>
               </div>
               <p>
-                <button type="button" onclick="mostrarFormulario('video')" class="btn btn-sm btn-outline-primary">
-                  <i class="bi bi-pencil"></i> <%= t('common.edit_video') %>
-                </button>
+                <button type="button" class="btn btn-sm btn-outline-primary toggle-form edit-btn" data-target="form-video" style="color: #5d4777; border-color: #5d4777;"><i class="bi bi-pencil"></i> <%= t('common.edit_video') %></button>
               </p>
             </div>
           </div>
@@ -75,42 +74,45 @@
             <h3><i class="bi bi-film"></i> <%= t('common.video') %></h3>
             <p><%= t('common.no_video') %></p>
             <p>
-              <button type="button" onclick="mostrarFormulario('video')" class="btn btn-sm btn-outline-primary">
-                <i class="bi bi-plus"></i> <%= t('common.add_video') %>
-              </button>
+              <button type="button" class="btn btn-sm btn-outline-primary toggle-form add-btn" data-target="form-video"><i class="bi bi-plus"></i> <%= t('common.add_video') %></button>
             </p>
           </div>
         <% end %>
 
-        <!-- Formulário de vídeo (implementação simplificada) -->
-        <div id="formulario-video" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.5); z-index: 1050;">
-          <div style="position: relative; width: 500px; max-width: 90%; margin: 100px auto; background-color: white; padding: 20px; border-radius: 8px; box-shadow: 0 4px 8px rgba(0,0,0,0.1);">
-            <h5><%= @activity.video_url.present? ? t('common.edit_video') : t('common.add_video') %></h5>
-            <button type="button" onclick="ocultarFormulario('video')" style="position: absolute; top: 10px; right: 10px; border: none; background: none; font-size: 20px; cursor: pointer;">&times;</button>
-            
-            <%= form_with(model: @activity, url: activity_path(@activity), method: :patch, data: { turbo: false }) do |form| %>
-              <div style="margin-bottom: 15px;">
-                <%= form.text_field :video_url, class: "form-control", placeholder: "Cole a URL do YouTube aqui (ex: https://www.youtube.com/watch?v=XXXX)" %>
-                <small class="form-text text-muted">Insira o link do YouTube. Ex: https://www.youtube.com/watch?v=XXXX ou https://youtu.be/XXXX</small>
-              </div>
-              <div>
-                <%= form.submit t('common.save'), class: "btn btn-primary" %>
-                <button type="button" onclick="ocultarFormulario('video')" class="btn btn-secondary"><%= t('helpers.actions.cancel') %></button>
-              </div>
-            <% end %>
-          </div>
+        <!-- Formulário de vídeo embutido -->
+        <div id="form-video" class="form-section" style="display: none;">
+          <%= form_with(model: @activity, url: activity_path(@activity), method: :patch) do |form| %>
+            <div class="mb-3">
+              <%= form.text_field :video_url, class: "form-control", placeholder: "Cole a URL do YouTube aqui (ex: https://www.youtube.com/watch?v=XXXX)" %>
+              <small class="form-text text-muted">Insira o link do YouTube. Ex: https://www.youtube.com/watch?v=XXXX ou https://youtu.be/XXXX</small>
+            </div>
+            <div class="form-actions">
+              <%= form.submit t('common.save'), class: "btn btn-primary" %>
+              <button type="button" class="btn btn-secondary" onclick="document.getElementById('form-video').style.display='none'"><%= t('helpers.actions.cancel') %></button>
+            </div>
+          <% end %>
         </div>
 
         <!-- Seção de Imagem -->
         <% if @activity.imagem_url.present? %>
           <div class="paper-section">
             <h3><i class="bi bi-image"></i> <%= t('common.image') %></h3>
-            <div class="imagem">
-              <img src="<%= @activity.imagem_url %>" alt="Imagem da atividade" class="img-fluid mb-3 rounded">
+            <div class="imagem content-box position-relative">
+              <!-- Botão de exclusão no canto superior direito -->
+              <div class="delete-button">
+                <%= button_to remove_image_activity_path(@activity), 
+                              method: :delete,
+                              form: { data: { turbo_confirm: t('common.confirm_delete_image') } },
+                              class: "btn-delete-icon btn btn-outline-danger" do %>
+                  <i class="bi bi-trash"></i>
+                <% end %>
+              </div>
+
+              <div class="image-container">
+                <img src="<%= @activity.imagem_url %>" alt="Imagem da atividade" class="img-fluid mb-3 rounded">
+              </div>
               <p>
-                <button type="button" onclick="mostrarFormulario('imagem')" class="btn btn-sm btn-outline-primary">
-                  <i class="bi bi-pencil"></i> <%= t('common.edit_image') %>
-                </button>
+                <button type="button" class="btn btn-sm btn-outline-primary toggle-form edit-btn" data-target="form-imagem" style="color: #5d4777; border-color: #5d4777;"><i class="bi bi-pencil"></i> <%= t('common.edit_image') %></button>
               </p>
             </div>
           </div>
@@ -119,30 +121,23 @@
             <h3><i class="bi bi-image"></i> <%= t('common.image') %></h3>
             <p><%= t('common.no_image') %></p>
             <p>
-              <button type="button" onclick="mostrarFormulario('imagem')" class="btn btn-sm btn-outline-primary">
-                <i class="bi bi-plus"></i> <%= t('common.add_image') %>
-              </button>
+              <button type="button" class="btn btn-sm btn-outline-primary toggle-form add-btn" data-target="form-imagem" style="color: #5d4777; border-color: #5d4777;"><i class="bi bi-plus"></i> <%= t('common.add_image') %></button>
             </p>
           </div>
         <% end %>
 
-        <!-- Formulário de imagem (implementação simplificada) -->
-        <div id="formulario-imagem" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.5); z-index: 1050;">
-          <div style="position: relative; width: 500px; max-width: 90%; margin: 100px auto; background-color: white; padding: 20px; border-radius: 8px; box-shadow: 0 4px 8px rgba(0,0,0,0.1);">
-            <h5><%= @activity.imagem_url.present? ? t('common.edit_image') : t('common.add_image') %></h5>
-            <button type="button" onclick="ocultarFormulario('imagem')" style="position: absolute; top: 10px; right: 10px; border: none; background: none; font-size: 20px; cursor: pointer;">&times;</button>
-            
-            <%= form_with(model: @activity, url: activity_path(@activity), method: :patch, data: { turbo: false }) do |form| %>
-              <div style="margin-bottom: 15px;">
-                <%= form.text_field :imagem_url, class: "form-control", placeholder: "Cole a URL da imagem aqui (ex: https://exemplo.com/imagem.jpg)" %>
-                <small class="form-text text-muted">Insira o link direto para uma imagem. Ex: https://exemplo.com/imagem.jpg</small>
-              </div>
-              <div>
-                <%= form.submit t('common.save'), class: "btn btn-primary" %>
-                <button type="button" onclick="ocultarFormulario('imagem')" class="btn btn-secondary"><%= t('helpers.actions.cancel') %></button>
-              </div>
-            <% end %>
-          </div>
+        <!-- Formulário de imagem embutido -->
+        <div id="form-imagem" class="form-section" style="display: none;">
+          <%= form_with(model: @activity, url: activity_path(@activity), method: :patch) do |form| %>
+            <div class="mb-3">
+              <%= form.text_field :imagem_url, class: "form-control", placeholder: "Cole a URL da imagem aqui (ex: https://exemplo.com/imagem.jpg)" %>
+              <small class="form-text text-muted">Insira o link direto para uma imagem. Ex: https://exemplo.com/imagem.jpg</small>
+            </div>
+            <div class="form-actions">
+              <%= form.submit t('common.save'), class: "btn btn-primary" %>
+              <button type="button" class="btn btn-secondary" onclick="document.getElementById('form-imagem').style.display='none'"><%= t('helpers.actions.cancel') %></button>
+            </div>
+          <% end %>
         </div>
 
         <!-- Seção de Enunciados -->
@@ -177,7 +172,7 @@
           <% end %>
           
           <p>
-            <button class="btn btn-sm btn-outline-primary toggle-form add-btn" data-target="form-new-statement"><i class="bi bi-plus"></i> <%= t('common.add_statement') %></button>
+            <button type="button" class="btn btn-sm btn-outline-primary toggle-form add-btn" data-target="form-new-statement" style="color: #5d4777; border-color: #5d4777;"><i class="bi bi-plus"></i> <%= t('common.add_statement') %></button>
           </p>
           
           <div id="form-new-statement" class="form-section" style="display: none;">
@@ -222,7 +217,10 @@
                       <% question.alternatives.each do |alternative| %>
                         <li>
                           <div class="item-content">
-                            <%= alternative.conteúdo %> <%= " (Correta)" if alternative.correta %>
+                            <%= alternative.conteúdo %> 
+                            <% if alternative.correta %>
+                              <span class="correct-badge"><i class="bi bi-check-circle-fill"></i> Correta</span>
+                            <% end %>
                             <div class="item-actions">
                               <button class="btn btn-sm btn-outline-primary toggle-form edit-btn" data-target="form-alternative-<%= alternative.id %>"><i class="bi bi-pencil"></i> <%= t('common.edit') %></button>
                               <%= link_to t('common.delete'), activity_question_alternative_path(@activity, question, alternative), data: { turbo_method: :delete, turbo_confirm: 'Tem certeza?' }, class: "btn btn-sm btn-outline-danger" %>
@@ -250,7 +248,7 @@
                   <% end %>
                   
                   <p>
-                    <button class="btn btn-sm btn-outline-primary toggle-form add-btn" data-target="form-new-alternative-<%= question.id %>"><i class="bi bi-plus"></i> <%= t('common.add_alternative') %></button>
+                    <button class="btn btn-sm btn-outline-primary toggle-form add-btn" data-target="form-new-alternative-<%= question.id %>" style="color: #5d4777; border-color: #5d4777;"><i class="bi bi-plus"></i> <%= t('common.add_alternative') %></button>
                   </p>
                   
                   <div id="form-new-alternative-<%= question.id %>" class="form-section" style="display: none;">
@@ -274,7 +272,7 @@
           <% end %>
           
           <p>
-            <button class="btn btn-sm btn-outline-primary toggle-form add-btn" data-target="form-new-question"><i class="bi bi-plus"></i> <%= t('common.add_question') %></button>
+            <button type="button" class="btn btn-sm btn-outline-primary toggle-form add-btn" data-target="form-new-question" style="color: #5d4777; border-color: #5d4777;"><i class="bi bi-plus"></i> <%= t('common.add_question') %></button>
           </p>
           
           <div id="form-new-question" class="form-section" style="display: none;">
@@ -321,7 +319,7 @@
           <% end %>
           
           <p>
-            <button class="btn btn-sm btn-outline-primary toggle-form add-btn" data-target="form-new-suggestion"><i class="bi bi-plus"></i> <%= t('common.add_suggestion') %></button>
+            <button type="button" class="btn btn-sm btn-outline-primary toggle-form add-btn" data-target="form-new-suggestion" style="color: #5d4777; border-color: #5d4777;"><i class="bi bi-plus"></i> <%= t('common.add_suggestion') %></button>
           </p>
           
           <div id="form-new-suggestion" class="form-section" style="display: none;">
@@ -330,6 +328,34 @@
               <div class="form-actions mt-3">
                 <%= form.submit t('common.save'), class: "btn btn-primary" %>
                 <button type="button" class="btn btn-secondary" onclick="document.getElementById('form-new-suggestion').style.display='none'"><%= t('helpers.actions.cancel') %></button>
+              </div>
+            <% end %>
+          </div>
+        </div>
+
+        <!-- Seção de Texte -->
+        <div class="paper-section">
+          <h3><i class="bi bi-file-text"></i> <%= t('common.texte') %></h3>
+          <% if @activity.texte.present? %>
+            <div class="texte content-box">
+              <p><%= @activity.texte %></p>
+              <p>
+                <button type="button" class="btn btn-sm btn-outline-primary toggle-form edit-btn" data-target="form-texte"><i class="bi bi-pencil"></i> <%= t('common.edit_texte') %></button>
+              </p>
+            </div>
+          <% else %>
+            <p><%= t('common.no_texte') %></p>
+            <p>
+              <button type="button" class="btn btn-sm btn-outline-primary toggle-form add-btn" data-target="form-texte"><i class="bi bi-plus"></i> <%= t('common.add_texte') %></button>
+            </p>
+          <% end %>
+          
+          <div id="form-texte" class="form-section" style="display: none;">
+            <%= form_with(model: @activity, url: activity_path(@activity), method: :patch) do |form| %>
+              <%= form.text_area :texte, rows: 5, class: "form-control", placeholder: "Digite o texto aqui..." %>
+              <div class="form-actions mt-3">
+                <%= form.submit t('common.save'), class: "btn btn-primary" %>
+                <button type="button" class="btn btn-secondary" onclick="document.getElementById('form-texte').style.display='none'"><%= t('helpers.actions.cancel') %></button>
               </div>
             <% end %>
           </div>
@@ -345,13 +371,62 @@
 </div>
 
 <script type="text/javascript">
-  function mostrarFormulario(tipo) {
-    document.getElementById('formulario-' + tipo).style.display = 'block';
-    document.body.style.overflow = 'hidden'; // Impede rolagem do conteúdo de fundo
-  }
-  
-  function ocultarFormulario(tipo) {
-    document.getElementById('formulario-' + tipo).style.display = 'none';
-    document.body.style.overflow = 'auto'; // Restaura rolagem
-  }
+  // Adicionar manipuladores de evento para botões toggle-form
+  document.addEventListener('DOMContentLoaded', function() {
+    // Seleciona todos os botões com a classe toggle-form
+    const toggleButtons = document.querySelectorAll('.toggle-form');
+    
+    // Adiciona evento de clique para cada botão
+    toggleButtons.forEach(function(button) {
+      button.addEventListener('click', function() {
+        // Obtém o ID do alvo do atributo data-target
+        const targetId = this.getAttribute('data-target');
+        // Busca o elemento alvo
+        const targetElement = document.getElementById(targetId);
+        
+        // Alterna a visibilidade do elemento alvo
+        if (targetElement) {
+          if (targetElement.style.display === 'none' || targetElement.style.display === '') {
+            targetElement.style.display = 'block';
+          } else {
+            targetElement.style.display = 'none';
+          }
+        }
+      });
+    });
+    
+    // Aplicar cores aos botões de adicionar e editar
+    const addButtons = document.querySelectorAll('.add-btn');
+    const editButtons = document.querySelectorAll('.edit-btn');
+    
+    // Aplicar estilo a botões de adicionar
+    addButtons.forEach(function(button) {
+      button.style.color = '#5d4777';
+      button.style.borderColor = '#5d4777';
+    });
+    
+    // Aplicar estilo a botões de editar
+    editButtons.forEach(function(button) {
+      button.style.color = '#5d4777';
+      button.style.borderColor = '#5d4777';
+    });
+    
+    // Aplicar hover via JavaScript
+    function applyHoverEffect(buttons) {
+      buttons.forEach(function(button) {
+        button.addEventListener('mouseover', function() {
+          this.style.backgroundColor = '#5d4777';
+          this.style.color = 'white';
+        });
+        
+        button.addEventListener('mouseout', function() {
+          this.style.backgroundColor = '';
+          this.style.color = '#5d4777';
+        });
+      });
+    }
+    
+    applyHoverEffect(addButtons);
+    applyHoverEffect(editButtons);
+  });
 </script>

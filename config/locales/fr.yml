@@ -13,6 +13,7 @@ fr:
         título: "Titre"
         nível: "Niveau"
         texto: "Description"
+        texte: "Texte"
         video_url: "URL de la vidéo"
         imagem_url: "URL de l'image"
       statement:
@@ -57,6 +58,7 @@ fr:
     description: "Description"
     video: "Vidéo"
     image: "Image"
+    texte: "Texte"
     no_statements: "Aucun énoncé créé."
     no_questions: "Aucune question créée."
     no_alternatives: "Aucune alternative créée."
@@ -64,6 +66,7 @@ fr:
     no_description: "Aucune description ajoutée."
     no_video: "Aucune vidéo ajoutée."
     no_image: "Aucune image ajoutée."
+    no_texte: "Aucun texte ajouté."
     add_statement: "Ajouter un énoncé"
     add_question: "Ajouter une question"
     add_alternative: "Ajouter une alternative"
@@ -71,6 +74,7 @@ fr:
     add_description: "Ajouter une description"
     add_video: "Ajouter une vidéo"
     add_image: "Ajouter une image"
+    add_texte: "Ajouter un texte"
     edit_statement: "Modifier l'énoncé"
     edit_question: "Modifier la question"
     edit_alternative: "Modifier l'alternative"
@@ -78,7 +82,13 @@ fr:
     edit_description: "Modifier la description"
     edit_video: "Modifier la vidéo"
     edit_image: "Modifier l'image"
+    edit_texte: "Modifier le texte"
     this_is_correct: "C'est la bonne réponse"
+    save: "Enregistrer"
+    delete: "Supprimer"
+    edit: "Modifier"
+    confirm_delete_video: "Êtes-vous sûr de vouloir supprimer cette vidéo?"
+    confirm_delete_image: "Êtes-vous sûr de vouloir supprimer cette image?"
     
   # Mensagens flash
   flash:
@@ -89,4 +99,7 @@ fr:
         notice: "%{resource_name} a été mis à jour avec succès."
       destroy:
         notice: "%{resource_name} a été supprimé avec succès."
-        alert: "%{resource_name} n'a pas pu être supprimé." 
+        alert: "%{resource_name} n'a pas pu être supprimé."
+      remove:
+        video: "La vidéo a été supprimée avec succès."
+        image: "L'image a été supprimée avec succès." 

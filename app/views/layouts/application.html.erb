@@ -17,15 +17,16 @@
     
     <!-- Fontes -->
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@400;700&display=swap" rel="stylesheet">
     
     <!-- Turbo para Rails -->
     <script src="https://cdn.jsdelivr.net/npm/@hotwired/turbo@7.3.0/dist/turbo.min.js"></script>
   </head>
 
   <body>
-    <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+    <nav class="navbar navbar-expand-lg navbar-dark" style="background-color: #7c639b;">
       <div class="container">
-        <a class="navbar-brand" href="/"><%= t('common.app_name') %></a>
+        <a class="navbar-brand" href="/" style="font-family: 'Dancing Script', cursive; font-size: 1.8rem;"><%= t('common.app_name') %></a>
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
           <span class="navbar-toggler-icon"></span>
         </button>
