@@ -89,6 +89,14 @@ fr:
     edit: "Modifier"
     confirm_delete_video: "Êtes-vous sûr de vouloir supprimer cette vidéo?"
     confirm_delete_image: "Êtes-vous sûr de vouloir supprimer cette image?"
+    confirm_delete_texte: "Êtes-vous sûr de vouloir supprimer ce texte?"
+    confirm_delete: "Êtes-vous sûr de vouloir supprimer cet élément?"
+    statement_placeholder: "Saisissez l'énoncé ici..."
+    suggestion_placeholder: "Saisissez la suggestion ici..."
+    texte_placeholder: "Saisissez le texte ici..."
+    question_placeholder: "Saisissez la question ici..."
+    alternative_placeholder: "Saisissez l'alternative ici..."
+    alternative_correct: "C'est la bonne réponse"
     
   # Mensagens flash
   flash:
@@ -102,4 +110,5 @@ fr:
         alert: "%{resource_name} n'a pas pu être supprimé."
       remove:
         video: "La vidéo a été supprimée avec succès."
-        image: "L'image a été supprimée avec succès." 
+        image: "L'image a été supprimée avec succès."
+        texte: "Le texte a été supprimé avec succès." 

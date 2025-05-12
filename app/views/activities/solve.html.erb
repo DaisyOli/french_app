@@ -1,0 +1,312 @@
+<div class="container mt-4">
+  <div class="row">
+    <div class="col-lg-10 offset-lg-1">
+      <div class="paper-effect">
+        <div class="activity-header">
+          <h1><%= @activity.título %> <span class="badge" style="background-color: #7c639b;"><%= @activity.nível %></span></h1>
+          <div class="decorative-line"></div>
+        </div>
+
+        <% if @activity.texto.present? %>
+          <div class="paper-section">
+            <h3><i class="bi bi-info-circle"></i> <%= t('common.description') %></h3>
+            <div class="texto content-box">
+              <p><%= @activity.texto %></p>
+            </div>
+          </div>
+        <% end %>
+
+        <% # Ordenar elementos para exibição %>
+        <% activity_elements = [] %>
+        
+        <% # Coletar todos os elementos com timestamps %>
+        <% if @activity.video_url.present? %>
+          <% activity_elements << {type: 'video', timestamp: @activity.updated_at, content: @activity.video_url} %>
+        <% end %>
+        
+        <% if @activity.imagem_url.present? %>
+          <% activity_elements << {type: 'image', timestamp: @activity.updated_at, content: @activity.imagem_url} %>
+        <% end %>
+        
+        <% if @activity.texte.present? %>
+          <% activity_elements << {type: 'texte', timestamp: @activity.updated_at, content: @activity.texte} %>
+        <% end %>
+        
+        <% @activity.statements.each do |statement| %>
+          <% activity_elements << {type: 'statement', timestamp: statement.created_at, content: statement.conteúdo} %>
+        <% end %>
+        
+        <% # Ordenar elementos por timestamp %>
+        <% activity_elements.sort_by! { |element| element[:timestamp] } %>
+        
+        <% # Exibir conteúdo %>
+        <% activity_elements.each do |element| %>
+          <% case element[:type] %>
+          <% when 'video' %>
+            <div class="paper-section" id="video-section">
+              <% 
+                # Converter URL do YouTube para formato embed
+                video_id = nil
+                if @activity.video_url.include?('youtube.com/watch?v=')
+                  video_id = @activity.video_url.split('watch?v=').last.split('&').first
+                elsif @activity.video_url.include?('youtu.be/')
+                  video_id = @activity.video_url.split('youtu.be/').last
+                end
+                
+                embed_url = video_id ? "https://www.youtube.com/embed/#{video_id}" : @activity.video_url
+              %>
+              <div class="ratio ratio-16x9 mb-3 video-container">
+                <iframe src="<%= embed_url %>" allowfullscreen></iframe>
+              </div>
+            </div>
+          <% when 'image' %>
+            <div class="paper-section" id="image-section">
+              <div class="image-container">
+                <img src="<%= @activity.imagem_url %>" alt="Imagem da atividade" class="img-fluid mb-3 rounded">
+              </div>
+            </div>
+          <% when 'texte' %>
+            <div class="paper-section" id="texte-section">
+              <div class="texte content-box">
+                <p><%= @activity.texte %></p>
+              </div>
+            </div>
+          <% when 'statement' %>
+            <div class="paper-section">
+              <div class="card enunciado-card">
+                <div class="card-body">
+                  <%= element[:content] %>
+                </div>
+              </div>
+            </div>
+          <% end %>
+        <% end %>
+
+        <% # Exibir questões para resolução %>
+        <% if @activity.questions.any? %>
+          <form id="activity-quiz-form">
+            <% @activity.questions.each_with_index do |question, index| %>
+              <div class="paper-section">
+                <div class="card question-card">
+                  <div class="card-header">
+                    <h5>Questão <%= index + 1 %></h5>
+                  </div>
+                  <div class="card-body">
+                    <p class="card-text"><%= question.conteúdo %></p>
+                    
+                    <% if question.alternatives.any? %>
+                      <div class="alternatives">
+                        <% question.alternatives.each do |alternative| %>
+                          <div class="form-check">
+                            <input 
+                              class="form-check-input" 
+                              type="radio" 
+                              name="question_<%= question.id %>" 
+                              id="alternative_<%= alternative.id %>" 
+                              value="<%= alternative.id %>" 
+                              data-correct="<%= alternative.correta %>">
+                            <label class="form-check-label" for="alternative_<%= alternative.id %>">
+                              <%= alternative.conteúdo %>
+                            </label>
+                          </div>
+                        <% end %>
+                      </div>
+                    <% end %>
+                  </div>
+                </div>
+              </div>
+            <% end %>
+
+            <div class="text-center mt-4 mb-4">
+              <button type="submit" class="btn btn-primary btn-lg" id="submit-answers">
+                <%= t('common.submit_answers') %>
+              </button>
+            </div>
+          </form>
+
+          <div id="results-container" style="display: none;">
+            <div class="paper-section">
+              <div class="alert alert-success">
+                <h4 class="alert-heading"><%= t('common.results') %></h4>
+                <p id="score-message"></p>
+                <hr>
+                <p id="feedback-message"></p>
+              </div>
+              
+              <div id="question-feedback">
+                <!-- O feedback detalhado de cada questão será inserido aqui -->
+              </div>
+              
+              <div class="text-center mt-4">
+                <button type="button" class="btn btn-outline-primary" id="show-answers">
+                  <%= t('common.show_answers') %>
+                </button>
+                <button type="button" class="btn btn-outline-secondary" id="retry-quiz">
+                  <%= t('common.retry') %>
+                </button>
+              </div>
+            </div>
+          </div>
+        <% end %>
+
+        <div class="actions-bar">
+          <%= link_to t('helpers.actions.back'), activities_path, class: "btn btn-secondary" %>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script type="text/javascript">
+  document.addEventListener('DOMContentLoaded', function() {
+    const quizForm = document.getElementById('activity-quiz-form');
+    const resultsContainer = document.getElementById('results-container');
+    const scoreMessage = document.getElementById('score-message');
+    const feedbackMessage = document.getElementById('feedback-message');
+    const questionFeedback = document.getElementById('question-feedback');
+    const showAnswersButton = document.getElementById('show-answers');
+    const retryQuizButton = document.getElementById('retry-quiz');
+    
+    if (quizForm) {
+      quizForm.addEventListener('submit', function(event) {
+        event.preventDefault();
+        
+        // Calcular pontuação
+        let correctAnswers = 0;
+        let totalQuestions = 0;
+        const feedbackItems = [];
+        
+        // Obter todas as questões
+        const questions = document.querySelectorAll('.question-card');
+        totalQuestions = questions.length;
+        
+        // Verificar cada questão
+        questions.forEach(function(questionElement, index) {
+          const questionId = questionElement.querySelector('input[type="radio"]').name;
+          const selectedAnswer = questionElement.querySelector('input[type="radio"]:checked');
+          const questionText = questionElement.querySelector('.card-text').textContent;
+          
+          let feedback = {
+            questionNumber: index + 1,
+            questionText: questionText,
+            isCorrect: false,
+            selectedText: 'Não respondido',
+            correctText: ''
+          };
+          
+          // Encontrar a alternativa correta para feedback
+          const correctAlternative = questionElement.querySelector('input[data-correct="true"]');
+          if (correctAlternative) {
+            feedback.correctText = correctAlternative.nextElementSibling.textContent.trim();
+          }
+          
+          if (selectedAnswer) {
+            feedback.selectedText = selectedAnswer.nextElementSibling.textContent.trim();
+            feedback.isCorrect = selectedAnswer.getAttribute('data-correct') === 'true';
+            
+            if (feedback.isCorrect) {
+              correctAnswers++;
+            }
+          }
+          
+          feedbackItems.push(feedback);
+        });
+        
+        // Calcular porcentagem
+        const scorePercent = totalQuestions > 0 ? Math.round((correctAnswers / totalQuestions) * 100) : 0;
+        
+        // Mostrar resultados
+        scoreMessage.textContent = `Você acertou ${correctAnswers} de ${totalQuestions} questões (${scorePercent}%).`;
+        
+        // Feedback baseado na pontuação
+        if (scorePercent >= 80) {
+          feedbackMessage.textContent = 'Excelente! Você domina bem este conteúdo.';
+        } else if (scorePercent >= 60) {
+          feedbackMessage.textContent = 'Bom trabalho! Continue praticando para melhorar ainda mais.';
+        } else {
+          feedbackMessage.textContent = 'Continue praticando para melhorar sua compreensão.';
+        }
+        
+        // Esconder o form e mostrar resultados
+        quizForm.style.display = 'none';
+        resultsContainer.style.display = 'block';
+        
+        // Botão para mostrar respostas detalhadas
+        showAnswersButton.addEventListener('click', function() {
+          questionFeedback.innerHTML = '';
+          
+          feedbackItems.forEach(function(item) {
+            const feedbackHtml = `
+              <div class="card mb-3 ${item.isCorrect ? 'border-success' : 'border-danger'}">
+                <div class="card-header ${item.isCorrect ? 'bg-success text-white' : 'bg-danger text-white'}">
+                  Questão ${item.questionNumber}: ${item.isCorrect ? 'Correta' : 'Incorreta'}
+                </div>
+                <div class="card-body">
+                  <p><strong>Pergunta:</strong> ${item.questionText}</p>
+                  <p><strong>Sua resposta:</strong> ${item.selectedText}</p>
+                  ${!item.isCorrect ? `<p><strong>Resposta correta:</strong> ${item.correctText}</p>` : ''}
+                </div>
+              </div>
+            `;
+            
+            questionFeedback.innerHTML += feedbackHtml;
+          });
+        });
+        
+        // Botão para tentar novamente
+        retryQuizButton.addEventListener('click', function() {
+          // Resetar formulário
+          quizForm.reset();
+          
+          // Limpar feedback detalhado
+          questionFeedback.innerHTML = '';
+          
+          // Esconder resultados e mostrar form
+          resultsContainer.style.display = 'none';
+          quizForm.style.display = 'block';
+        });
+      });
+    }
+  });
+</script>
+
+<style>
+  .enunciado-card {
+    background-color: #f8f9fa;
+    border-left: 5px solid #7c639b;
+  }
+  
+  .question-card {
+    margin-bottom: 20px;
+  }
+  
+  .question-card .card-header {
+    background-color: #7c639b;
+    color: white;
+  }
+  
+  .alternatives {
+    margin-top: 15px;
+  }
+  
+  .form-check {
+    margin-bottom: 10px;
+    padding: 10px;
+    border-radius: 5px;
+    transition: background-color 0.2s;
+  }
+  
+  .form-check:hover {
+    background-color: #f8f9fa;
+  }
+  
+  #submit-answers {
+    background-color: #7c639b;
+    border-color: #7c639b;
+  }
+  
+  #submit-answers:hover {
+    background-color: #5d4777;
+    border-color: #5d4777;
+  }
+</style> 

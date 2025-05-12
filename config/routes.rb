@@ -4,15 +4,17 @@ Rails.application.routes.draw do
   
   resources :activities do
     member do
-      delete 'remove_video'
-      delete 'remove_image'
+      delete :remove_video
+      delete :remove_image
+      delete :remove_texte
+      get :solve
     end
     
-    resources :statements, only: [:new, :create, :edit, :update, :destroy]
-    resources :questions, only: [:new, :create, :edit, :update, :destroy] do
-      resources :alternatives, only: [:new, :create, :edit, :update, :destroy]
+    resources :statements, only: [:create, :update, :destroy]
+    resources :questions, only: [:create, :update, :destroy] do
+      resources :alternatives, only: [:create, :update, :destroy]
     end
-    resources :suggestions, only: [:new, :create, :edit, :update, :destroy]
+    resources :suggestions, only: [:create, :update, :destroy]
   end
 
   # Defines the root path route ("/")

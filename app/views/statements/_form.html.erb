@@ -1,0 +1,10 @@
+<%= form_with(model: [statement.activity, statement], local: true) do |form| %>
+  <div class="field">
+    <%= form.text_area :conteúdo, rows: 3, class: "form-control", placeholder: t('common.statement_placeholder') %>
+  </div>
+  <div class="form-actions mt-3">
+    <%= form.submit t('common.save'), class: "btn btn-primary" %>
+    <% form_id = statement.new_record? ? 'form-new-statement' : "form-statement-#{statement.id}" %>
+    <button type="button" class="btn btn-secondary" onclick="document.getElementById('<%= form_id %>').style.display='none'"><%= t('helpers.actions.cancel') %></button>
+  </div>
+<% end %> 

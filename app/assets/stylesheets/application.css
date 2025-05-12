@@ -1,0 +1,224 @@
+/*
+ * This is a manifest file that'll be compiled into application.css, which will include all the files
+ * listed below.
+ *
+ * Any CSS and SCSS file within this directory, lib/assets/stylesheets, or any plugin's
+ * vendor/assets/stylesheets directory can be referenced here using a relative path.
+ *
+ * You're free to add application-wide styles to this file and they'll appear at the bottom
+ * of the compiled file so the styles you add here take precedence over styles defined in any other CSS/SCSS
+ * files in this directory. Styles in this file should be added after the last require_* statement.
+ * It is generally better to create a new file per style scope.
+ *
+ *= require_tree .
+ *= require_self
+ */
+
+/* Estilo para o efeito de papel */
+.paper-effect {
+  background: #ffffff;
+  border-radius: 8px;
+  padding: 25px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+  margin-bottom: 30px;
+}
+
+/* Cabeçalho da atividade */
+.activity-header {
+  text-align: center;
+  margin-bottom: 25px;
+}
+
+.activity-header h1 {
+  font-size: 2.2rem;
+  color: #5d4777;
+  margin-bottom: 10px;
+}
+
+.decorative-line {
+  height: 3px;
+  background: linear-gradient(to right, transparent, #7c639b, transparent);
+  margin: 15px auto;
+  width: 80%;
+}
+
+/* Seções da atividade */
+.paper-section {
+  margin-bottom: 30px;
+  padding: 15px;
+  border-radius: 5px;
+  background-color: #f9f9f9;
+}
+
+.paper-section h3 {
+  color: #5d4777;
+  border-bottom: 2px solid #e0e0e0;
+  padding-bottom: 10px;
+  margin-bottom: 15px;
+  font-size: 1.5rem;
+}
+
+/* Caixas de conteúdo */
+.content-box {
+  background: white;
+  padding: 15px;
+  border-radius: 5px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+  position: relative;
+}
+
+/* Lista de itens (enunciados, questões, etc.) */
+.item-list {
+  list-style-type: none;
+  padding: 0;
+}
+
+.item-list li {
+  margin-bottom: 15px;
+  background: white;
+  padding: 15px;
+  border-radius: 5px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+}
+
+.item-content {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+}
+
+.item-actions {
+  display: flex;
+  gap: 5px;
+  flex-wrap: wrap;
+  margin-left: 15px;
+}
+
+/* Lista de alternativas */
+.alternatives-list {
+  list-style-type: none;
+  padding-left: 20px;
+}
+
+.alternatives-list li {
+  margin-bottom: 10px;
+  background: #f5f5f5;
+  padding: 10px;
+  border-radius: 5px;
+}
+
+/* Badge para alternativa correta */
+.correct-badge {
+  background: #5d4777;
+  color: white;
+  padding: 2px 8px;
+  border-radius: 12px;
+  font-size: 0.8rem;
+  margin-left: 10px;
+}
+
+/* Formulários */
+.form-section {
+  background: #f0f0f0;
+  padding: 15px;
+  border-radius: 5px;
+  margin-top: 10px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.form-actions {
+  display: flex;
+  gap: 10px;
+  margin-top: 10px;
+}
+
+/* Checkbox estilizado */
+.checkbox-field {
+  margin-top: 10px;
+  display: flex;
+  align-items: center;
+}
+
+.checkbox-field input[type="checkbox"] {
+  margin-right: 10px;
+}
+
+/* Botão de delete */
+.delete-button {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  z-index: 10;
+}
+
+.btn-delete-icon {
+  padding: 5px 10px;
+  border-radius: 50%;
+  width: 36px;
+  height: 36px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+/* Botões de ação */
+.actions-bar {
+  margin-top: 30px;
+  display: flex;
+  justify-content: center;
+  gap: 15px;
+}
+
+/* Container de vídeo */
+.video-container {
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+/* Container de imagem */
+.image-container {
+  text-align: center;
+}
+
+.image-container img {
+  max-width: 100%;
+  border-radius: 5px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+}
+
+/* Efeito de destaque para elementos novos */
+.highlight-new-element {
+  animation: highlight-pulse 2s ease-in-out;
+}
+
+@keyframes highlight-pulse {
+  0% { box-shadow: 0 0 0 0 rgba(93, 71, 119, 0.7); }
+  70% { box-shadow: 0 0 0 15px rgba(93, 71, 119, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(93, 71, 119, 0); }
+}
+
+/* Botões de adicionar */
+.add-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 15px;
+}
+
+.add-buttons button {
+  transition: all 0.3s ease;
+}
+
+/* Responsividade */
+@media (max-width: 768px) {
+  .item-content {
+    flex-direction: column;
+  }
+  
+  .item-actions {
+    margin-left: 0;
+    margin-top: 10px;
+    justify-content: flex-start;
+  }
+} 

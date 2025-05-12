@@ -1,2 +1,8 @@
 <h1>Statements#create</h1>
 <p>Find me in app/views/statements/create.html.erb</p>
+
+<%= simple_form_for @statement do |f| %>
+  <%= f.input :content %>
+  
+  <%= f.submit %>
+<% end %>
