@@ -11,19 +11,15 @@ module FrenchApp
     # Initialize configuration defaults for originally generated Rails version.
     config.load_defaults 7.1
 
-    # Set default locale to Portuguese
-    config.i18n.default_locale = :pt
-    config.i18n.available_locales = [:pt, :en]
+    # Set default locale to French
+    config.i18n.default_locale = :fr
+    config.i18n.available_locales = [:fr, :pt, :en]
+    config.i18n.fallbacks = [:fr, :en]
 
     # Please, add to the `ignore` list any other `lib` subdirectories that do
     # not contain `.rb` files, or that should not be reloaded or eager loaded.
     # Common ones are `templates`, `generators`, or `middleware`, for example.
     config.autoload_lib(ignore: %w(assets tasks))
-
-    # Configuração do idioma padrão
-    config.i18n.default_locale = :fr
-    config.i18n.available_locales = [:fr]
-    config.i18n.fallbacks = [:fr]
 
     # Configuration for the application, engines, and railties goes here.
     #
