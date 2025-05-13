@@ -3,16 +3,14 @@
     <div class="col-lg-10 offset-lg-1">
       <div class="paper-effect">
         <div class="activity-header">
-          <h1><%= @activity.título %> <span class="badge" style="background-color: #7c639b;"><%= @activity.nível %></span></h1>
+          <h1><%= @activity.título %></h1>
+          <div class="niveau-badge">Niveau: <span class="badge" style="background-color: #7c639b;"><%= @activity.nível %></span></div>
           <div class="decorative-line"></div>
         </div>
 
         <% if @activity.texto.present? %>
           <div class="paper-section">
-            <h3><i class="bi bi-info-circle"></i> <%= t('common.description') %></h3>
-            <div class="texto content-box">
-              <p><%= @activity.texto %></p>
-            </div>
+            <p class="description-label"><i class="bi bi-info-circle"></i> <%= t('common.description') %>: <span class="description-text"><%= @activity.texto %></span></p>
           </div>
         <% end %>
 
@@ -89,15 +87,15 @@
               <div class="paper-section">
                 <div class="card question-card">
                   <div class="card-header">
-                    <h5>Questão <%= index + 1 %></h5>
+                    <h5>Question <%= index + 1 %></h5>
                   </div>
                   <div class="card-body">
-                    <p class="card-text"><%= question.conteúdo %></p>
+                    <p class="card-text question-content"><%= question.conteúdo %></p>
                     
                     <% if question.alternatives.any? %>
                       <div class="alternatives">
                         <% question.alternatives.each do |alternative| %>
-                          <div class="form-check">
+                          <div class="form-check option-padding">
                             <input 
                               class="form-check-input" 
                               type="radio" 
@@ -119,7 +117,7 @@
 
             <div class="text-center mt-4 mb-4">
               <button type="submit" class="btn btn-primary btn-lg" id="submit-answers">
-                <%= t('common.submit_answers') %>
+                <%= t('common.submit_answers') || "Valider les réponses" %>
               </button>
             </div>
           </form>
@@ -139,10 +137,10 @@
               
               <div class="text-center mt-4">
                 <button type="button" class="btn btn-outline-primary" id="show-answers">
-                  <%= t('common.show_answers') %>
+                  <%= t('common.show_answers') || "Voir les réponses" %>
                 </button>
                 <button type="button" class="btn btn-outline-secondary" id="retry-quiz">
-                  <%= t('common.retry') %>
+                  <%= t('common.retry') || "Réessayer" %>
                 </button>
               </div>
             </div>
@@ -190,7 +188,7 @@
             questionNumber: index + 1,
             questionText: questionText,
             isCorrect: false,
-            selectedText: 'Não respondido',
+            selectedText: 'Pas de réponse',
             correctText: ''
           };
           
@@ -216,15 +214,15 @@
         const scorePercent = totalQuestions > 0 ? Math.round((correctAnswers / totalQuestions) * 100) : 0;
         
         // Mostrar resultados
-        scoreMessage.textContent = `Você acertou ${correctAnswers} de ${totalQuestions} questões (${scorePercent}%).`;
+        scoreMessage.textContent = `Vous avez obtenu ${correctAnswers} sur ${totalQuestions} questions (${scorePercent}%).`;
         
         // Feedback baseado na pontuação
         if (scorePercent >= 80) {
-          feedbackMessage.textContent = 'Excelente! Você domina bem este conteúdo.';
+          feedbackMessage.textContent = 'Excellent! Vous maîtrisez bien ce contenu.';
         } else if (scorePercent >= 60) {
-          feedbackMessage.textContent = 'Bom trabalho! Continue praticando para melhorar ainda mais.';
+          feedbackMessage.textContent = 'Bon travail! Continuez à pratiquer pour vous améliorer.';
         } else {
-          feedbackMessage.textContent = 'Continue praticando para melhorar sua compreensão.';
+          feedbackMessage.textContent = 'Continuez à pratiquer pour améliorer votre compréhension.';
         }
         
         // Esconder o form e mostrar resultados
@@ -239,12 +237,12 @@
             const feedbackHtml = `
               <div class="card mb-3 ${item.isCorrect ? 'border-success' : 'border-danger'}">
                 <div class="card-header ${item.isCorrect ? 'bg-success text-white' : 'bg-danger text-white'}">
-                  Questão ${item.questionNumber}: ${item.isCorrect ? 'Correta' : 'Incorreta'}
+                  Question ${item.questionNumber}: ${item.isCorrect ? 'Correcte' : 'Incorrecte'}
                 </div>
                 <div class="card-body">
-                  <p><strong>Pergunta:</strong> ${item.questionText}</p>
-                  <p><strong>Sua resposta:</strong> ${item.selectedText}</p>
-                  ${!item.isCorrect ? `<p><strong>Resposta correta:</strong> ${item.correctText}</p>` : ''}
+                  <p><strong>Question:</strong> ${item.questionText}</p>
+                  <p><strong>Votre réponse:</strong> ${item.selectedText}</p>
+                  ${!item.isCorrect ? `<p><strong>Réponse correcte:</strong> ${item.correctText}</p>` : ''}
                 </div>
               </div>
             `;
@@ -253,7 +251,7 @@
           });
         });
         
-        // Botão para tentar novamente
+        // Botão pour tenter novamente
         retryQuizButton.addEventListener('click', function() {
           // Resetar formulário
           quizForm.reset();
@@ -296,6 +294,18 @@
     transition: background-color 0.2s;
   }
   
+  /* Novo estilo para ajustar o padding das opções */
+  .option-padding {
+    padding-left: 35px;
+    padding-right: 15px;
+  }
+  
+  /* Estilo para aumentar o tamanho da fonte da pergunta */
+  .question-content {
+    font-size: 1.15rem;
+    margin-bottom: 20px;
+  }
+  
   .form-check:hover {
     background-color: #f8f9fa;
   }
@@ -308,5 +318,24 @@
   #submit-answers:hover {
     background-color: #5d4777;
     border-color: #5d4777;
+  }
+  
+  /* Novos estilos para o layout atualizado */
+  .niveau-badge {
+    margin-top: -5px;
+    margin-bottom: 10px;
+    font-size: 0.9rem;
+    color: #6c757d;
+  }
+  
+  .description-label {
+    font-size: 0.95rem;
+    color: #6c757d;
+    margin-bottom: 15px;
+  }
+  
+  .description-text {
+    font-weight: normal;
+    color: #212529;
   }
 </style> 
