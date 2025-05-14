@@ -1,26 +1,55 @@
-<h2>Log in</h2>
+<div class="container mt-5">
+  <div class="row justify-content-center">
+    <div class="col-md-6 col-lg-5">
+      <div class="card shadow-sm">
+        <div class="card-header text-center" style="background-color: #7c639b; color: white;">
+          <h2 class="my-2"><%= t('devise.sessions.new.sign_in') %></h2>
+        </div>
+        <div class="card-body p-4">
+          <%= form_for(resource, as: resource_name, url: session_path(resource_name)) do |f| %>
+            <div class="mb-3">
+              <%= f.label :email, class: "form-label" %>
+              <%= f.email_field :email, autofocus: true, autocomplete: "email", class: "form-control", placeholder: "exemple@email.com" %>
+            </div>
 
-<%= form_for(resource, as: resource_name, url: session_path(resource_name)) do |f| %>
-  <div class="field">
-    <%= f.label :email %><br />
-    <%= f.email_field :email, autofocus: true, autocomplete: "email" %>
-  </div>
+            <div class="mb-3">
+              <%= f.label :password, t('devise.sessions.new.password'), class: "form-label" %>
+              <%= f.password_field :password, autocomplete: "current-password", class: "form-control" %>
+            </div>
 
-  <div class="field">
-    <%= f.label :password %><br />
-    <%= f.password_field :password, autocomplete: "current-password" %>
-  </div>
+            <% if devise_mapping.rememberable? %>
+              <div class="mb-3 form-check">
+                <%= f.check_box :remember_me, class: "form-check-input" %>
+                <%= f.label :remember_me, t('devise.sessions.new.remember_me'), class: "form-check-label" %>
+              </div>
+            <% end %>
 
-  <% if devise_mapping.rememberable? %>
-    <div class="field">
-      <%= f.check_box :remember_me %>
-      <%= f.label :remember_me %>
+            <div class="d-grid gap-2">
+              <%= f.submit t('devise.sessions.new.sign_in'), class: "btn btn-lg", style: "background-color: #7c639b; color: white;" %>
+            </div>
+          <% end %>
+
+          <div class="mt-4 text-center">
+            <%= render "devise/shared/links" %>
+          </div>
+        </div>
+      </div>
     </div>
-  <% end %>
-
-  <div class="actions">
-    <%= f.submit "Log in" %>
   </div>
-<% end %>
+</div>
 
-<%= render "devise/shared/links" %>
+<style>
+  .btn:hover {
+    background-color: #5d4777 !important;
+  }
+  
+  a {
+    color: #7c639b;
+    text-decoration: none;
+  }
+  
+  a:hover {
+    color: #5d4777;
+    text-decoration: underline;
+  }
+</style>

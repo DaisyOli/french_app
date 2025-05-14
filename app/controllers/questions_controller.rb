@@ -8,6 +8,17 @@ class QuestionsController < ApplicationController
   def create
     @question = @activity.questions.new(question_params)
     
+    # Encontrar a maior ordem entre todos os elementos
+    max_orders = []
+    max_orders << @activity.video_order if @activity.video_url.present?
+    max_orders << @activity.imagem_order if @activity.imagem_url.present?
+    max_orders << @activity.texte_order if @activity.texte.present?
+    max_orders << @activity.statements.maximum(:display_order) || 0
+    max_orders << @activity.questions.maximum(:display_order) || 0
+    max_orders << @activity.suggestions.maximum(:display_order) || 0
+    
+    @question.display_order = (max_orders.compact.max || 0) + 1
+    
     respond_to do |format|
       if @question.save
         format.html { redirect_to activity_path(@activity, scroll_to: "question-#{@question.id}"), notice: 'Questão foi adicionada com sucesso.' }
@@ -34,6 +45,17 @@ class QuestionsController < ApplicationController
     @question.destroy
     respond_to do |format|
       format.html { redirect_to activity_path(@activity), notice: 'Questão foi removida com sucesso.' }
+    end
+  end
+
+  def update_order
+    @activity = Activity.find(params[:activity_id])
+    @question = Question.find(params[:id])
+    
+    if @question.update(display_order: params[:display_order])
+      redirect_to activity_path(@activity), notice: 'Ordem atualizada com sucesso.'
+    else
+      redirect_to activity_path(@activity), alert: 'Erro ao atualizar ordem.'
     end
   end
 

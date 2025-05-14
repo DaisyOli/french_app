@@ -46,8 +46,15 @@ pt:
     confirm_delete_video: "Tem certeza de que deseja excluir este vídeo?"
     confirm_delete_image: "Tem certeza de que deseja excluir esta imagem?"
     confirm_delete_texte: "Tem certeza de que deseja excluir este texto?"
+    confirm_delete_activity: "Tem certeza que deseja excluir esta atividade? Esta ação não pode ser desfeita."
+    my_activities: "Minhas Atividades"
+    new_activity: "Nova Atividade"
+    no_activities: "Você ainda não tem nenhuma atividade."
+    create_activity: "Criar uma Atividade"
   helpers:
     actions:
       edit: "Modificar"
       back: "Voltar"
-      cancel: "Cancelar" 
+      cancel: "Cancelar"
+      delete: "Excluir"
+      show: "Visualizar" 

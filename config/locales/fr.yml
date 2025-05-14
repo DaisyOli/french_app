@@ -90,7 +90,7 @@ fr:
     confirm_delete_video: "Êtes-vous sûr de vouloir supprimer cette vidéo?"
     confirm_delete_image: "Êtes-vous sûr de vouloir supprimer cette image?"
     confirm_delete_texte: "Êtes-vous sûr de vouloir supprimer ce texte?"
-    confirm_delete: "Êtes-vous sûr de vouloir supprimer cet élément?"
+    confirm_delete_activity: "Êtes-vous sûr de vouloir supprimer cette activité ? Cette action ne peut pas être annulée."
     statement_placeholder: "Saisissez l'énoncé ici..."
     suggestion_placeholder: "Saisissez la suggestion ici..."
     texte_placeholder: "Saisissez le texte ici..."

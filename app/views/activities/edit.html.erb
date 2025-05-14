@@ -1,53 +1,75 @@
-<h1>Editar Atividade</h1>
+<div class="container mt-5">
+  <div class="row justify-content-center">
+    <div class="col-lg-8">
+      <div class="card shadow-sm">
+        <div class="card-header text-center" style="background-color: #7c639b; color: white;">
+          <h2 class="my-2"><%= t('common.edit_activity') %></h2>
+        </div>
+        <div class="card-body p-4">
+          <%= form_with(model: @activity) do |form| %>
+            <% if @activity.errors.any? %>
+              <div class="alert alert-danger">
+                <h5><i class="bi bi-exclamation-triangle"></i> <%= pluralize(@activity.errors.count, "erreur") %> :</h5>
+                <ul>
+                  <% @activity.errors.full_messages.each do |message| %>
+                    <li><%= message %></li>
+                  <% end %>
+                </ul>
+              </div>
+            <% end %>
 
-<%= form_with(model: @activity) do |form| %>
-  <% if @activity.errors.any? %>
-    <div style="color: red">
-      <h2><%= pluralize(@activity.errors.count, "erro") %> impediram que esta atividade fosse salva:</h2>
+            <div class="mb-3">
+              <%= form.label :título, class: "form-label" %>
+              <%= form.text_field :título, class: "form-control" %>
+            </div>
 
-      <ul>
-        <% @activity.errors.each do |error| %>
-          <li><%= error.full_message %></li>
-        <% end %>
-      </ul>
+            <div class="mb-3">
+              <%= form.label :nível, class: "form-label" %>
+              <%= form.select :nível, ['A1', 'A2', 'B1', 'B2', 'C1', 'C2'], { prompt: 'Sélectionnez le niveau' }, { class: "form-select" } %>
+            </div>
+
+            <div class="mb-3">
+              <%= form.label :texto, 'Description', class: "form-label" %>
+              <%= form.text_area :texto, rows: 5, class: "form-control" %>
+            </div>
+
+            <div class="d-grid gap-2 mt-4">
+              <%= form.submit t('common.update_activity'), class: "btn btn-lg", style: "background-color: #7c639b; color: white;" %>
+            </div>
+          <% end %>
+
+          <div class="mt-4 text-center">
+            <%= link_to t('helpers.actions.show'), @activity, class: "btn btn-outline-primary me-2" %>
+            <%= link_to t('helpers.actions.back'), activities_path, class: "btn btn-outline-secondary" %>
+          </div>
+        </div>
+      </div>
     </div>
-  <% end %>
-
-  <div class="field">
-    <%= form.label :título, style: "display: block" %>
-    <%= form.text_field :título %>
   </div>
-
-  <div class="field">
-    <%= form.label :nível, style: "display: block" %>
-    <%= form.select :nível, ['A1', 'A2', 'B1', 'B2', 'C1', 'C2'], prompt: 'Selecione o nível' %>
-  </div>
-
-  <div class="field">
-    <%= form.label :texto, 'Descrição', style: "display: block" %>
-    <%= form.text_area :texto %>
-  </div>
-
-  <div class="field">
-    <%= form.label :video_url, 'URL do Vídeo (opcional)', style: "display: block" %>
-    <%= form.text_field :video_url %>
-    <small class="form-text text-muted">Insira o link do YouTube. Ex: https://www.youtube.com/watch?v=XXXX</small>
-  </div>
-
-  <div class="field">
-    <%= form.label :imagem_url, 'URL da Imagem (opcional)', style: "display: block" %>
-    <%= form.text_field :imagem_url %>
-    <small class="form-text text-muted">Insira o link direto para uma imagem. Ex: https://exemplo.com/imagem.jpg</small>
-  </div>
-
-  <div class="actions">
-    <%= form.submit "Atualizar Atividade" %>
-  </div>
-<% end %>
-
-<br>
-
-<div>
-  <%= link_to "Ver Atividade", @activity %> |
-  <%= link_to "Voltar", activities_path %>
 </div>
+
+<style>
+  .btn:hover {
+    background-color: #5d4777 !important;
+  }
+  
+  a {
+    color: #7c639b;
+    text-decoration: none;
+  }
+  
+  a:hover {
+    color: #5d4777;
+    text-decoration: underline;
+  }
+  
+  .btn-outline-primary {
+    color: #7c639b;
+    border-color: #7c639b;
+  }
+  
+  .btn-outline-primary:hover {
+    background-color: #7c639b !important;
+    color: white !important;
+  }
+</style>

@@ -1,42 +1,71 @@
-<%= simple_form_for(activity) do |f| %>
-  <% if activity.errors.any? %>
-    <div class="alert alert-danger">
-      <h5><i class="bi bi-exclamation-triangle"></i> <%= pluralize(activity.errors.count, "erreur") %> :</h5>
-      <ul>
-        <% activity.errors.full_messages.each do |message| %>
-          <li><%= message %></li>
-        <% end %>
-      </ul>
-    </div>
-  <% end %>
+<div class="card shadow-sm">
+  <div class="card-header text-center" style="background-color: #7c639b; color: white;">
+    <h2 class="my-2"><%= activity.new_record? ? t('common.new_activity') : t('common.edit_activity') %></h2>
+  </div>
+  <div class="card-body p-4">
+    <%= form_with(model: activity) do |form| %>
+      <% if activity.errors.any? %>
+        <div class="alert alert-danger">
+          <h5><i class="bi bi-exclamation-triangle"></i> <%= pluralize(activity.errors.count, "erreur") %> :</h5>
+          <ul>
+            <% activity.errors.full_messages.each do |message| %>
+              <li><%= message %></li>
+            <% end %>
+          </ul>
+        </div>
+      <% end %>
 
-  <div class="card mb-4">
-    <div class="card-header">
-      <%= activity.new_record? ? t('common.new_activity') : t('common.edit_activity') %>
-    </div>
-    <div class="card-body">
-      <div class="row">
-        <div class="col-md-6 mb-3">
-          <%= f.input :título, label: t('activerecord.attributes.activity.título') %>
-        </div>
-        <div class="col-md-6 mb-3">
-          <%= f.input :nível, collection: ['A1', 'A2', 'B1', 'B2', 'C1', 'C2'], 
-                     include_blank: 'Sélectionnez le niveau',
-                     label: t('activerecord.attributes.activity.nível') %>
-        </div>
-      </div>
       <div class="mb-3">
-        <%= f.input :texto, as: :text, input_html: { rows: 5 }, 
-                   label: t('activerecord.attributes.activity.texto') %>
+        <%= form.label :título, t('activerecord.attributes.activity.título'), class: "form-label" %>
+        <%= form.text_field :título, class: "form-control" %>
+      </div>
+
+      <div class="mb-3">
+        <%= form.label :nível, t('activerecord.attributes.activity.nível'), class: "form-label" %>
+        <%= form.select :nível, ['A1', 'A2', 'B1', 'B2', 'C1', 'C2'], 
+                      { prompt: 'Sélectionnez le niveau' }, 
+                      { class: "form-select" } %>
+      </div>
+
+      <div class="mb-3">
+        <%= form.label :texto, t('activerecord.attributes.activity.texto'), class: "form-label" %>
+        <%= form.text_area :texto, rows: 5, class: "form-control" %>
       </div>
       
-      <%= f.hidden_field :video_url %>
-      <%= f.hidden_field :imagem_url %>
-    </div>
-    <div class="card-footer text-end">
-      <%= f.button :submit, activity.new_record? ? t('common.create_activity') : t('common.update_activity'), 
-                  class: 'btn btn-primary' %>
-      <%= link_to t('helpers.actions.back'), activities_path, class: 'btn btn-secondary' %>
+      <div class="d-grid gap-2 mt-4">
+        <%= form.submit activity.new_record? ? t('common.create_activity') : t('common.update_activity'), 
+                  class: "btn btn-lg", style: "background-color: #7c639b; color: white;" %>
+      </div>
+    <% end %>
+
+    <div class="mt-4 text-center">
+      <%= link_to t('helpers.actions.back'), activities_path, class: "btn btn-outline-secondary" %>
     </div>
   </div>
-<% end %> 
+</div>
+
+<style>
+  .btn:hover {
+    background-color: #5d4777 !important;
+  }
+  
+  a {
+    color: #7c639b;
+    text-decoration: none;
+  }
+  
+  a:hover {
+    color: #5d4777;
+    text-decoration: underline;
+  }
+  
+  .btn-outline-primary {
+    color: #7c639b;
+    border-color: #7c639b;
+  }
+  
+  .btn-outline-primary:hover {
+    background-color: #7c639b !important;
+    color: white !important;
+  }
+</style> 

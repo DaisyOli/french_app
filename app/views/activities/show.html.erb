@@ -3,7 +3,7 @@
     <div class="col-lg-10 offset-lg-1">
       <div class="paper-effect">
         <div class="activity-header">
-          <h1><%= @activity.título %> <span class="badge" style="background-color: #7c639b;"><%= @activity.nível %></span></h1>
+          <h1><%= @activity.título %> <span class="badge nivel-badge" data-nivel="<%= @activity.nível %>"><%= @activity.nível %></span></h1>
           <div class="decorative-line"></div>
         </div>
 
@@ -12,7 +12,7 @@
           <h3><i class="bi bi-info-circle"></i> <%= t('common.description') %></h3>
           <% if @activity.texto.present? %>
             <div class="texto content-box">
-              <p><%= @activity.texto %></p>
+              <p class="preserve-format"><%= @activity.texto %></p>
               <p>
                 <button type="button" class="btn btn-sm btn-outline-primary toggle-form edit-btn" data-target="form-texto"><i class="bi bi-pencil"></i> <%= t('common.edit_description') %></button>
               </p>
@@ -39,40 +39,48 @@
         <div id="sequential-elements">
           <% activity_elements = [] %>
           
-          <% # Coletar todos os elementos com timestamps %>
+          <% # Coletar todos os elementos com suas ordens %>
           <% if @activity.video_url.present? %>
-            <% activity_elements << {type: 'video', timestamp: @activity.updated_at, content: @activity.video_url} %>
+            <% activity_elements << {type: 'video', order: @activity.video_order || 1, content: @activity.video_url} %>
           <% end %>
           
           <% if @activity.imagem_url.present? %>
-            <% activity_elements << {type: 'image', timestamp: @activity.updated_at, content: @activity.imagem_url} %>
+            <% activity_elements << {type: 'image', order: @activity.imagem_order || 2, content: @activity.imagem_url} %>
           <% end %>
           
           <% if @activity.texte.present? %>
-            <% activity_elements << {type: 'texte', timestamp: @activity.updated_at, content: @activity.texte} %>
+            <% activity_elements << {type: 'texte', order: @activity.texte_order || 3, content: @activity.texte} %>
           <% end %>
           
           <% @activity.statements.each do |statement| %>
-            <% activity_elements << {type: 'statement', timestamp: statement.created_at, content: statement, object: statement} %>
+            <% activity_elements << {type: 'statement', order: statement.display_order || statement.id, content: statement, object: statement} %>
           <% end %>
           
           <% @activity.questions.each do |question| %>
-            <% activity_elements << {type: 'question', timestamp: question.created_at, content: question, object: question} %>
+            <% activity_elements << {type: 'question', order: question.display_order || question.id, content: question, object: question} %>
           <% end %>
           
           <% @activity.suggestions.each do |suggestion| %>
-            <% activity_elements << {type: 'suggestion', timestamp: suggestion.created_at, content: suggestion, object: suggestion} %>
+            <% activity_elements << {type: 'suggestion', order: suggestion.display_order || suggestion.id, content: suggestion, object: suggestion} %>
           <% end %>
           
-          <% # Ordenar elementos por timestamp %>
-          <% activity_elements.sort_by! { |element| element[:timestamp] } %>
+          <% # Ordenar elementos por ordem explícita %>
+          <% activity_elements.sort_by! { |element| element[:order] } %>
           
           <% # Exibir elementos em ordem cronológica %>
           <% activity_elements.each do |element| %>
             <% case element[:type] %>
             <% when 'video' %>
               <div class="paper-section">
-                <h3><i class="bi bi-film"></i> <%= t('common.video') %></h3>
+                <h3>
+                  <div class="order-badge">
+                    <%= form_with(model: @activity, url: activity_path(@activity), method: :patch, class: "order-form") do |form| %>
+                      <%= form.number_field :video_order, min: 1, class: "order-input", title: "Ordem de exibição" %>
+                      <%= form.submit "✓", class: "order-submit" %>
+                    <% end %>
+                  </div>
+                  <i class="bi bi-film"></i> <%= t('common.video') %>
+                </h3>
                 <div class="video content-box position-relative">
                   <div class="delete-button">
                     <%= button_to remove_video_activity_path(@activity), 
@@ -104,7 +112,15 @@
               </div>
             <% when 'image' %>
               <div class="paper-section">
-                <h3><i class="bi bi-image"></i> <%= t('common.image') %></h3>
+                <h3>
+                  <div class="order-badge">
+                    <%= form_with(model: @activity, url: activity_path(@activity), method: :patch, class: "order-form") do |form| %>
+                      <%= form.number_field :imagem_order, min: 1, class: "order-input", title: "Ordem de exibição" %>
+                      <%= form.submit "✓", class: "order-submit" %>
+                    <% end %>
+                  </div>
+                  <i class="bi bi-image"></i> <%= t('common.image') %>
+                </h3>
                 <div class="imagem content-box position-relative">
                   <div class="delete-button">
                     <%= button_to remove_image_activity_path(@activity), 
@@ -125,9 +141,17 @@
               </div>
             <% when 'texte' %>
               <div class="paper-section">
-                <h3><i class="bi bi-file-text"></i> <%= t('common.texte') %></h3>
+                <h3>
+                  <div class="order-badge">
+                    <%= form_with(model: @activity, url: activity_path(@activity), method: :patch, class: "order-form") do |form| %>
+                      <%= form.number_field :texte_order, min: 1, class: "order-input", title: "Ordem de exibição" %>
+                      <%= form.submit "✓", class: "order-submit" %>
+                    <% end %>
+                  </div>
+                  <i class="bi bi-file-text"></i> <%= t('common.texte') %>
+                </h3>
                 <div class="texte content-box">
-                  <p><%= @activity.texte %></p>
+                  <p class="preserve-format"><%= @activity.texte %></p>
                   <div class="item-actions">
                     <button type="button" class="btn btn-sm btn-outline-primary toggle-form edit-btn" data-target="form-texte"><i class="bi bi-pencil"></i> <%= t('common.edit_texte') %></button>
                     <%= button_to t('common.delete'), remove_texte_activity_path(@activity), method: :delete, form: { data: { turbo_confirm: t('common.confirm_delete_texte') } }, class: "btn btn-sm btn-outline-danger" %>
@@ -136,10 +160,18 @@
               </div>
             <% when 'statement' %>
               <div class="paper-section">
-                <h3><i class="bi bi-list-ul"></i> <%= t('common.statement') %></h3>
+                <h3>
+                  <div class="order-badge">
+                    <%= form_with(url: update_order_activity_statement_path(@activity, element[:object]), method: :patch, class: "order-form") do |form| %>
+                      <%= form.number_field :display_order, min: 1, value: element[:object].display_order, class: "order-input", title: "Ordem de exibição" %>
+                      <%= form.submit "✓", class: "order-submit" %>
+                    <% end %>
+                  </div>
+                  <i class="bi bi-list-ul"></i> <%= t('common.statement') %>
+                </h3>
                 <div class="content-box">
                   <div class="item-content">
-                    <%= element[:object].conteúdo %>
+                    <div class="preserve-format"><%= element[:object].conteúdo %></div>
                     <div class="item-actions">
                       <button class="btn btn-sm btn-outline-primary toggle-form edit-btn" data-target="form-statement-<%= element[:object].id %>"><i class="bi bi-pencil"></i> <%= t('common.edit') %></button>
                       <%= button_to t('common.delete'), activity_statement_path(@activity, element[:object]), method: :delete, form: { data: { turbo_confirm: t('common.confirm_delete') } }, class: "btn btn-sm btn-outline-danger" %>
@@ -159,10 +191,18 @@
               </div>
             <% when 'question' %>
               <div class="paper-section">
-                <h3><i class="bi bi-question-circle"></i> <%= t('common.question') %></h3>
+                <h3>
+                  <div class="order-badge">
+                    <%= form_with(url: update_order_activity_question_path(@activity, element[:object]), method: :patch, class: "order-form") do |form| %>
+                      <%= form.number_field :display_order, min: 1, value: element[:object].display_order, class: "order-input", title: "Ordem de exibição" %>
+                      <%= form.submit "✓", class: "order-submit" %>
+                    <% end %>
+                  </div>
+                  <i class="bi bi-question-circle"></i> <%= t('common.question') %>
+                </h3>
                 <div class="content-box">
                   <div class="item-content">
-                    <strong><%= element[:object].conteúdo %></strong>
+                    <strong class="preserve-format"><%= element[:object].conteúdo %></strong>
                     <div class="item-actions">
                       <button class="btn btn-sm btn-outline-primary toggle-form edit-btn" data-target="form-question-<%= element[:object].id %>"><i class="bi bi-pencil"></i> <%= t('common.edit') %></button>
                       <%= button_to t('common.delete'), activity_question_path(@activity, element[:object]), method: :delete, form: { data: { turbo_confirm: t('common.confirm_delete') } }, class: "btn btn-sm btn-outline-danger" %>
@@ -236,10 +276,18 @@
               </div>
             <% when 'suggestion' %>
               <div class="paper-section">
-                <h3><i class="bi bi-lightbulb"></i> <%= t('common.suggestion') %></h3>
+                <h3>
+                  <div class="order-badge">
+                    <%= form_with(url: update_order_activity_suggestion_path(@activity, element[:object]), method: :patch, class: "order-form") do |form| %>
+                      <%= form.number_field :display_order, min: 1, value: element[:object].display_order, class: "order-input", title: "Ordem de exibição" %>
+                      <%= form.submit "✓", class: "order-submit" %>
+                    <% end %>
+                  </div>
+                  <i class="bi bi-lightbulb"></i> <%= t('common.suggestion') %>
+                </h3>
                 <div class="content-box">
                   <div class="item-content">
-                    <%= element[:object].conteúdo %>
+                    <div class="preserve-format"><%= element[:object].conteúdo %></div>
                     <div class="item-actions">
                       <button class="btn btn-sm btn-outline-primary toggle-form edit-btn" data-target="form-suggestion-<%= element[:object].id %>"><i class="bi bi-pencil"></i> <%= t('common.edit') %></button>
                       <%= button_to t('common.delete'), activity_suggestion_path(@activity, element[:object]), method: :delete, form: { data: { turbo_confirm: t('common.confirm_delete') } }, class: "btn btn-sm btn-outline-danger" %>
@@ -360,9 +408,14 @@
         </div>
 
         <div class="actions-bar">
-          <%= link_to t('common.solve'), solve_activity_path(@activity), class: "btn btn-success" %>
-          <%= link_to t('helpers.actions.edit'), edit_activity_path(@activity), class: "btn btn-warning" %>
-          <%= link_to t('helpers.actions.back'), activities_path, class: "btn btn-secondary" %>
+          <%= link_to "Résoudre", solve_activity_path(@activity), class: "btn btn-resoudre" %>
+          <%= link_to "Modifier", edit_activity_path(@activity), class: "btn btn-modifier" %>
+          <%= link_to "Retour", activities_path, class: "btn btn-retour" %>
+          <%= button_to "Supprimer", activity_path(@activity), 
+                method: :delete, 
+                data: { confirm: I18n.t('common.confirm_delete_activity', locale: :fr) },
+                form: { class: "d-inline-block" },
+                class: "btn btn-supprimer ml-auto" %>
         </div>
       </div>
     </div>
@@ -427,6 +480,38 @@
     
     applyHoverEffect(addButtons);
     applyHoverEffect(editButtons);
+    
+    // Aplicar cores aos badges de nível
+    const nivelBadges = document.querySelectorAll('.nivel-badge');
+    
+    // Mapear níveis para cores
+    const nivelColors = {
+      'A1': '#9d81cc', // Lavanda claro
+      'A2': '#7c63b8', // Lavanda médio
+      'B1': '#5d4777', // Lavanda escuro (original)
+      'B2': '#4a3a60', // Roxo escuro
+      'C1': '#2a1b46', // Roxo profundo
+      'C2': '#1c1036'  // Roxo muito escuro
+    };
+    
+    nivelBadges.forEach(function(badge) {
+      const nivel = badge.getAttribute('data-nivel');
+      if (nivelColors[nivel]) {
+        badge.style.backgroundColor = nivelColors[nivel];
+        // Adicionar cor de texto branco para níveis B1 ou mais altos para melhor legibilidade
+        if (nivel === 'B1' || nivel === 'B2' || nivel === 'C1' || nivel === 'C2') {
+          badge.style.color = 'white';
+        } else {
+          badge.style.color = '#ffffff'; // Texto branco para todos os badges
+        }
+      } else {
+        badge.style.backgroundColor = '#7c639b'; // Cor padrão
+        badge.style.color = 'white';
+      }
+      // Adicionar um pouco de padding e border-radius para melhor aparência
+      badge.style.padding = '0.35em 0.65em';
+      badge.style.fontWeight = '600';
+    });
   });
   
   // Função para fechar qualquer formulário modal
@@ -480,6 +565,20 @@
     margin-top: 15px;
   }
   
+  /* Estilo para a barra de ações */
+  .actions-bar {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    justify-content: flex-start;
+    align-items: center;
+    margin-top: 20px;
+  }
+  
+  .actions-bar .btn-supprimer {
+    margin-left: auto;
+  }
+  
   /* Estilo para destacar elementos recém-adicionados */
   .highlight-new-element {
     animation: highlight-fade 3s ease-in-out;
@@ -488,5 +587,128 @@
   @keyframes highlight-fade {
     0%, 100% { background-color: transparent; }
     20% { background-color: rgba(93, 71, 119, 0.2); }
+  }
+  
+  /* Preservar formatação de texto (quebras de linha e espaços) */
+  .preserve-format {
+    white-space: pre-wrap;
+    word-wrap: break-word;
+  }
+  
+  /* Estilos para os botões de ação */
+  .btn-resoudre {
+    background-color: #4CAF50; /* Verde */
+    border-color: #4CAF50;
+    color: white;
+    padding: 0.4rem 1rem;
+    transition: all 0.2s ease;
+  }
+  
+  .btn-resoudre:hover {
+    background-color: #3d8b40; /* Verde mais escuro */
+    border-color: #3d8b40;
+    color: white;
+  }
+  
+  .btn-modifier {
+    background-color: #f4bd6a; /* Laranja pastel */
+    border-color: #f4bd6a;
+    color: #4a3a60; /* Roxo escuro para contraste */
+    padding: 0.4rem 1rem;
+    transition: all 0.2s ease;
+  }
+  
+  .btn-modifier:hover {
+    background-color: #e8a64c; /* Laranja pastel mais escuro */
+    border-color: #e8a64c;
+    color: #4a3a60;
+  }
+  
+  .btn-retour {
+    background-color: #6c757d; /* Cinza */
+    border-color: #6c757d;
+    color: white;
+    padding: 0.4rem 1rem;
+    transition: all 0.2s ease;
+  }
+  
+  .btn-retour:hover {
+    background-color: #5a6268; /* Cinza mais escuro */
+    border-color: #5a6268;
+    color: white;
+  }
+  
+  .btn-supprimer {
+    background-color: #e27d8b; /* Rosa suave */
+    border-color: #e27d8b;
+    color: white;
+    padding: 0.4rem 1rem;
+    transition: all 0.2s ease;
+  }
+  
+  .btn-supprimer:hover {
+    background-color: #c5636f; /* Rosa suave mais escuro */
+    border-color: #c5636f;
+    color: white;
+  }
+  
+  .btn-voir {
+    background-color: #5fa8d3; /* Azul turquesa claro */
+    border-color: #5fa8d3;
+    color: white;
+    transition: all 0.2s ease;
+  }
+  
+  .btn-voir:hover {
+    background-color: #4d8cb3; /* Azul turquesa mais escuro */
+    border-color: #4d8cb3;
+    color: white;
+  }
+  
+  /* Estilos para o badge de ordem */
+  .order-badge {
+    display: inline-block;
+    margin-right: 15px;
+    vertical-align: middle;
+    position: relative;
+  }
+  
+  .order-form {
+    display: inline-flex;
+    align-items: center;
+  }
+  
+  .order-input {
+    width: 50px;
+    height: 38px;
+    border: 2px solid #7c639b;
+    border-radius: 20px;
+    text-align: center;
+    font-weight: bold;
+    color: #5d4777;
+    background-color: white;
+    padding: 0 5px;
+  }
+  
+  .order-submit {
+    background-color: #7c639b;
+    color: white;
+    border: none;
+    border-radius: 50%;
+    width: 25px;
+    height: 25px;
+    font-size: 12px;
+    padding: 0;
+    margin-left: -15px;
+    position: relative;
+    top: 0;
+    cursor: pointer;
+    display: none;
+  }
+  
+  .order-input:focus + .order-submit,
+  .order-input:hover + .order-submit,
+  .order-submit:hover {
+    display: inline-block;
   }
 </style>

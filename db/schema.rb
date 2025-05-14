@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2025_05_12_143833) do
+ActiveRecord::Schema[7.1].define(version: 2025_05_13_164519) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -25,6 +25,9 @@ ActiveRecord::Schema[7.1].define(version: 2025_05_12_143833) do
     t.datetime "updated_at", null: false
     t.text "texte"
     t.text "elements_order"
+    t.integer "video_order", default: 1
+    t.integer "imagem_order", default: 2
+    t.integer "texte_order", default: 3
     t.index ["user_id"], name: "index_activities_on_user_id"
   end
 
@@ -43,6 +46,7 @@ ActiveRecord::Schema[7.1].define(version: 2025_05_12_143833) do
     t.bigint "activity_id", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.integer "display_order"
     t.index ["activity_id"], name: "index_questions_on_activity_id"
   end
 
@@ -52,6 +56,7 @@ ActiveRecord::Schema[7.1].define(version: 2025_05_12_143833) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.integer "position", default: 0
+    t.integer "display_order"
     t.index ["activity_id"], name: "index_statements_on_activity_id"
   end
 
@@ -72,6 +77,7 @@ ActiveRecord::Schema[7.1].define(version: 2025_05_12_143833) do
     t.bigint "activity_id", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.integer "display_order"
     t.index ["activity_id"], name: "index_suggestions_on_activity_id"
   end
 

@@ -10,11 +10,24 @@ Rails.application.routes.draw do
       get :solve
     end
     
-    resources :statements, only: [:create, :update, :destroy]
+    resources :statements, only: [:create, :update, :destroy] do
+      member do
+        patch :update_order
+      end
+    end
+    
     resources :questions, only: [:create, :update, :destroy] do
+      member do
+        patch :update_order
+      end
       resources :alternatives, only: [:create, :update, :destroy]
     end
-    resources :suggestions, only: [:create, :update, :destroy]
+    
+    resources :suggestions, only: [:create, :update, :destroy] do
+      member do
+        patch :update_order
+      end
+    end
   end
 
   # Defines the root path route ("/")

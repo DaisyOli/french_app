@@ -48,6 +48,9 @@ class ActivitiesController < ApplicationController
         scroll_target = "texte-section"
       end
       
+      # Processar atualizações de ordem para elementos relacionados
+      update_related_orders if params[:statements] || params[:questions] || params[:suggestions]
+      
       if @activity.update(activity_params)
         redirect_params = { notice: 'Atividade foi atualizada com sucesso.' }
         redirect_params[:scroll_to] = scroll_target if scroll_target
@@ -96,6 +99,32 @@ class ActivitiesController < ApplicationController
     end
 
     def activity_params
-      params.require(:activity).permit(:título, :nível, :texto, :video_url, :imagem_url, :texte)
+      params.require(:activity).permit(:título, :nível, :texto, :video_url, :imagem_url, :texte, :video_order, :imagem_order, :texte_order)
+    end
+
+    def update_related_orders
+      # Atualizar ordem dos statements
+      if params[:statements]
+        params[:statements].each do |statement_id, statement_params|
+          statement = @activity.statements.find_by(id: statement_id)
+          statement.update(display_order: statement_params[:display_order]) if statement
+        end
+      end
+      
+      # Atualizar ordem das questions
+      if params[:questions]
+        params[:questions].each do |question_id, question_params|
+          question = @activity.questions.find_by(id: question_id)
+          question.update(display_order: question_params[:display_order]) if question
+        end
+      end
+      
+      # Atualizar ordem das suggestions
+      if params[:suggestions]
+        params[:suggestions].each do |suggestion_id, suggestion_params|
+          suggestion = @activity.suggestions.find_by(id: suggestion_id)
+          suggestion.update(display_order: suggestion_params[:display_order]) if suggestion
+        end
+      end
     end
 end

@@ -4,38 +4,48 @@
       <div class="paper-effect">
         <div class="activity-header">
           <h1><%= @activity.título %></h1>
-          <div class="niveau-badge">Niveau: <span class="badge" style="background-color: #7c639b;"><%= @activity.nível %></span></div>
+          <div class="niveau-badge">Niveau: <span class="badge nivel-badge" data-nivel="<%= @activity.nível %>"><%= @activity.nível %></span></div>
           <div class="decorative-line"></div>
         </div>
 
         <% if @activity.texto.present? %>
           <div class="paper-section">
-            <p class="description-label"><i class="bi bi-info-circle"></i> <%= t('common.description') %>: <span class="description-text"><%= @activity.texto %></span></p>
+            <p class="description-label"><i class="bi bi-info-circle"></i> <%= t('common.description') %>: <span class="description-text preserve-format"><%= @activity.texto %></span></p>
           </div>
         <% end %>
 
         <% # Ordenar elementos para exibição %>
         <% activity_elements = [] %>
         
-        <% # Coletar todos os elementos com timestamps %>
+        <% # Coletar todos os elementos com suas ordens %>
         <% if @activity.video_url.present? %>
-          <% activity_elements << {type: 'video', timestamp: @activity.updated_at, content: @activity.video_url} %>
+          <% activity_elements << {type: 'video', order: @activity.video_order || 1, content: @activity.video_url} %>
         <% end %>
         
         <% if @activity.imagem_url.present? %>
-          <% activity_elements << {type: 'image', timestamp: @activity.updated_at, content: @activity.imagem_url} %>
+          <% activity_elements << {type: 'image', order: @activity.imagem_order || 2, content: @activity.imagem_url} %>
         <% end %>
         
         <% if @activity.texte.present? %>
-          <% activity_elements << {type: 'texte', timestamp: @activity.updated_at, content: @activity.texte} %>
+          <% activity_elements << {type: 'texte', order: @activity.texte_order || 3, content: @activity.texte} %>
         <% end %>
         
         <% @activity.statements.each do |statement| %>
-          <% activity_elements << {type: 'statement', timestamp: statement.created_at, content: statement.conteúdo} %>
+          <% activity_elements << {type: 'statement', order: statement.display_order || statement.id, content: statement.conteúdo} %>
         <% end %>
         
-        <% # Ordenar elementos por timestamp %>
-        <% activity_elements.sort_by! { |element| element[:timestamp] } %>
+        <% # Incluir as questões na ordenação dos elementos %>
+        <% @activity.questions.each do |question| %>
+          <% activity_elements << {type: 'question', order: question.display_order || question.id, content: question} %>
+        <% end %>
+        
+        <% # Incluir sugestões na ordenação dos elementos %>
+        <% @activity.suggestions.each do |suggestion| %>
+          <% activity_elements << {type: 'suggestion', order: suggestion.display_order || suggestion.id, content: suggestion.conteúdo} %>
+        <% end %>
+        
+        <% # Ordenar elementos por ordem explícita %>
+        <% activity_elements.sort_by! { |element| element[:order] } %>
         
         <% # Exibir conteúdo %>
         <% activity_elements.each do |element| %>
@@ -66,55 +76,66 @@
           <% when 'texte' %>
             <div class="paper-section" id="texte-section">
               <div class="texte content-box">
-                <p><%= @activity.texte %></p>
+                <p class="preserve-format"><%= @activity.texte %></p>
               </div>
             </div>
           <% when 'statement' %>
             <div class="paper-section">
               <div class="card enunciado-card">
                 <div class="card-body">
-                  <%= element[:content] %>
+                  <div class="preserve-format"><%= element[:content] %></div>
+                </div>
+              </div>
+            </div>
+          <% when 'suggestion' %>
+            <div class="paper-section">
+              <div class="card suggestion-card">
+                <div class="card-header">
+                  <h5><i class="bi bi-lightbulb"></i> <%= t('common.suggestion') || "Suggestion" %></h5>
+                </div>
+                <div class="card-body">
+                  <div class="suggestion-content preserve-format"><%= element[:content] %></div>
+                </div>
+              </div>
+            </div>
+          <% when 'question' %>
+            <% question = element[:content] %>
+            <div class="paper-section">
+              <div class="card question-card">
+                <div class="card-header">
+                  <h5>Question <%= activity_elements.select { |e| e[:type] == 'question' }.index { |e| e[:content] == question } + 1 %></h5>
+                </div>
+                <div class="card-body">
+                  <p class="card-text question-content preserve-format"><%= question.conteúdo %></p>
+                  
+                  <% if question.alternatives.any? %>
+                    <div class="alternatives">
+                      <% question.alternatives.each_with_index do |alternative, index| %>
+                        <div class="form-check">
+                          <input 
+                            class="form-check-input" 
+                            type="radio" 
+                            name="question_<%= question.id %>" 
+                            id="alternative_<%= alternative.id %>" 
+                            value="<%= alternative.id %>" 
+                            data-correct="<%= alternative.correta %>">
+                          <label class="form-check-label preserve-format" for="alternative_<%= alternative.id %>">
+                            <span class="alternative-letter"><%= ('a'.ord + index).chr %>) </span>
+                            <%= alternative.conteúdo %>
+                          </label>
+                        </div>
+                      <% end %>
+                    </div>
+                  <% end %>
                 </div>
               </div>
             </div>
           <% end %>
         <% end %>
 
-        <% # Exibir questões para resolução %>
+        <% # O formulário agora envolve apenas o botão de envio %>
         <% if @activity.questions.any? %>
           <form id="activity-quiz-form">
-            <% @activity.questions.each_with_index do |question, index| %>
-              <div class="paper-section">
-                <div class="card question-card">
-                  <div class="card-header">
-                    <h5>Question <%= index + 1 %></h5>
-                  </div>
-                  <div class="card-body">
-                    <p class="card-text question-content"><%= question.conteúdo %></p>
-                    
-                    <% if question.alternatives.any? %>
-                      <div class="alternatives">
-                        <% question.alternatives.each do |alternative| %>
-                          <div class="form-check option-padding">
-                            <input 
-                              class="form-check-input" 
-                              type="radio" 
-                              name="question_<%= question.id %>" 
-                              id="alternative_<%= alternative.id %>" 
-                              value="<%= alternative.id %>" 
-                              data-correct="<%= alternative.correta %>">
-                            <label class="form-check-label" for="alternative_<%= alternative.id %>">
-                              <%= alternative.conteúdo %>
-                            </label>
-                          </div>
-                        <% end %>
-                      </div>
-                    <% end %>
-                  </div>
-                </div>
-              </div>
-            <% end %>
-
             <div class="text-center mt-4 mb-4">
               <button type="submit" class="btn btn-primary btn-lg" id="submit-answers">
                 <%= t('common.submit_answers') || "Valider les réponses" %>
@@ -148,7 +169,7 @@
         <% end %>
 
         <div class="actions-bar">
-          <%= link_to t('helpers.actions.back'), activities_path, class: "btn btn-secondary" %>
+          <%= link_to "Retour", activities_path, class: "btn btn-retour" %>
         </div>
       </div>
     </div>
@@ -164,6 +185,38 @@
     const questionFeedback = document.getElementById('question-feedback');
     const showAnswersButton = document.getElementById('show-answers');
     const retryQuizButton = document.getElementById('retry-quiz');
+    
+    // Aplicar cores aos badges de nível
+    const nivelBadges = document.querySelectorAll('.nivel-badge');
+    
+    // Mapear níveis para cores
+    const nivelColors = {
+      'A1': '#9d81cc', // Lavanda claro
+      'A2': '#7c63b8', // Lavanda médio
+      'B1': '#5d4777', // Lavanda escuro (original)
+      'B2': '#4a3a60', // Roxo escuro
+      'C1': '#2a1b46', // Roxo profundo
+      'C2': '#1c1036'  // Roxo muito escuro
+    };
+    
+    nivelBadges.forEach(function(badge) {
+      const nivel = badge.getAttribute('data-nivel');
+      if (nivelColors[nivel]) {
+        badge.style.backgroundColor = nivelColors[nivel];
+        // Adicionar cor de texto branco para níveis B1 ou mais altos para melhor legibilidade
+        if (nivel === 'B1' || nivel === 'B2' || nivel === 'C1' || nivel === 'C2') {
+          badge.style.color = 'white';
+        } else {
+          badge.style.color = '#ffffff'; // Texto branco para todos os badges
+        }
+      } else {
+        badge.style.backgroundColor = '#7c639b'; // Cor padrão
+        badge.style.color = 'white';
+      }
+      // Adicionar um pouco de padding e border-radius para melhor aparência
+      badge.style.padding = '0.35em 0.65em';
+      badge.style.fontWeight = '600';
+    });
     
     if (quizForm) {
       quizForm.addEventListener('submit', function(event) {
@@ -183,23 +236,37 @@
           const questionId = questionElement.querySelector('input[type="radio"]').name;
           const selectedAnswer = questionElement.querySelector('input[type="radio"]:checked');
           const questionText = questionElement.querySelector('.card-text').textContent;
+          const questionNumber = parseInt(questionElement.querySelector('.card-header h5').textContent.replace('Question ', ''));
           
           let feedback = {
-            questionNumber: index + 1,
+            questionNumber: questionNumber,
             questionText: questionText,
             isCorrect: false,
             selectedText: 'Pas de réponse',
-            correctText: ''
+            selectedLetter: '',
+            correctText: '',
+            correctLetter: ''
           };
           
           // Encontrar a alternativa correta para feedback
-          const correctAlternative = questionElement.querySelector('input[data-correct="true"]');
-          if (correctAlternative) {
-            feedback.correctText = correctAlternative.nextElementSibling.textContent.trim();
-          }
+          const alternatives = questionElement.querySelectorAll('.form-check');
+          let correctIndex = -1;
+          
+          alternatives.forEach((alt, idx) => {
+            const input = alt.querySelector('input[data-correct="true"]');
+            if (input) {
+              correctIndex = idx;
+              feedback.correctText = alt.querySelector('label').textContent.trim();
+              feedback.correctLetter = String.fromCharCode('a'.charCodeAt(0) + idx);
+            }
+          });
           
           if (selectedAnswer) {
-            feedback.selectedText = selectedAnswer.nextElementSibling.textContent.trim();
+            const selectedAlternative = selectedAnswer.closest('.form-check');
+            const selectedIndex = Array.from(alternatives).indexOf(selectedAlternative);
+            
+            feedback.selectedText = selectedAlternative.querySelector('label').textContent.trim();
+            feedback.selectedLetter = String.fromCharCode('a'.charCodeAt(0) + selectedIndex);
             feedback.isCorrect = selectedAnswer.getAttribute('data-correct') === 'true';
             
             if (feedback.isCorrect) {
@@ -225,43 +292,63 @@
           feedbackMessage.textContent = 'Continuez à pratiquer pour améliorer votre compréhension.';
         }
         
-        // Esconder o form e mostrar resultados
-        quizForm.style.display = 'none';
+        // Esconder as questões e mostrar resultados
+        document.querySelectorAll('.question-card').forEach(function(card) {
+          // Desabilitar inputs para evitar alterações
+          const inputs = card.querySelectorAll('input');
+          inputs.forEach(input => input.disabled = true);
+        });
+        
+        // Mostrar resultados
         resultsContainer.style.display = 'block';
+        
+        // Fazer scroll para os resultados
+        resultsContainer.scrollIntoView({ behavior: 'smooth' });
         
         // Botão para mostrar respostas detalhadas
         showAnswersButton.addEventListener('click', function() {
+          // Limpar feedback anterior
           questionFeedback.innerHTML = '';
           
+          // Gerar HTML para feedback detalhado de cada questão
           feedbackItems.forEach(function(item) {
             const feedbackHtml = `
               <div class="card mb-3 ${item.isCorrect ? 'border-success' : 'border-danger'}">
                 <div class="card-header ${item.isCorrect ? 'bg-success text-white' : 'bg-danger text-white'}">
-                  Question ${item.questionNumber}: ${item.isCorrect ? 'Correcte' : 'Incorrecte'}
+                  Question ${item.questionNumber}
                 </div>
                 <div class="card-body">
-                  <p><strong>Question:</strong> ${item.questionText}</p>
-                  <p><strong>Votre réponse:</strong> ${item.selectedText}</p>
-                  ${!item.isCorrect ? `<p><strong>Réponse correcte:</strong> ${item.correctText}</p>` : ''}
+                  <p class="card-text"><strong>Question:</strong> ${item.questionText}</p>
+                  <p class="card-text"><strong>Votre réponse:</strong> 
+                    ${item.selectedLetter ? `<span class="alternative-letter">${item.selectedLetter})</span> ` : ''}
+                    ${item.selectedText}
+                    ${item.isCorrect ? 
+                      '<span class="badge bg-success">Correct</span>' : 
+                      `<span class="badge bg-danger">Incorrect</span><br><strong>Réponse correcte:</strong> <span class="alternative-letter">${item.correctLetter})</span> ${item.correctText}`}
+                  </p>
                 </div>
               </div>
             `;
-            
             questionFeedback.innerHTML += feedbackHtml;
           });
+          
+          // Mostrar feedback detalhado
+          questionFeedback.style.display = 'block';
         });
         
-        // Botão pour tenter novamente
+        // Botão para tentar novamente
         retryQuizButton.addEventListener('click', function() {
           // Resetar formulário
-          quizForm.reset();
+          document.querySelectorAll('.form-check-input').forEach(function(input) {
+            input.checked = false;
+            input.disabled = false;
+          });
           
           // Limpar feedback detalhado
           questionFeedback.innerHTML = '';
           
-          // Esconder resultados e mostrar form
+          // Esconder resultados
           resultsContainer.style.display = 'none';
-          quizForm.style.display = 'block';
         });
       });
     }
@@ -283,6 +370,23 @@
     color: white;
   }
   
+  /* Estilo para o cartão de sugestões */
+  .suggestion-card {
+    margin-bottom: 20px;
+    border-left: 5px solid #f4bd6a;
+  }
+  
+  .suggestion-card .card-header {
+    background-color: #f4bd6a;
+    color: #4a3a60;
+  }
+  
+  .suggestion-content {
+    font-size: 1.05rem;
+    font-style: italic;
+  }
+  
+  /* Novo estilo para ajustar o espaçamento das opções */
   .alternatives {
     margin-top: 15px;
   }
@@ -292,12 +396,39 @@
     padding: 10px;
     border-radius: 5px;
     transition: background-color 0.2s;
+    position: relative;
+  }
+  
+  .form-check .form-check-input {
+    position: absolute;
+    left: 15px;
+    top: 50%;
+    transform: translateY(-50%);
+    margin: 0;
+  }
+  
+  .form-check .form-check-label {
+    display: block;
+    padding-left: 35px;
+    cursor: pointer;
+  }
+  
+  .alternative-letter {
+    font-weight: bold;
+    color: #5d4777;
+    margin-right: 0.2em;
+  }
+  
+  .form-check:hover {
+    background-color: #f8f9fa;
   }
   
   /* Novo estilo para ajustar o padding das opções */
   .option-padding {
-    padding-left: 35px;
+    padding-left: 15px;
     padding-right: 15px;
+    text-align: left;
+    margin-left: 0;
   }
   
   /* Estilo para aumentar o tamanho da fonte da pergunta */
@@ -306,18 +437,16 @@
     margin-bottom: 20px;
   }
   
-  .form-check:hover {
-    background-color: #f8f9fa;
-  }
-  
   #submit-answers {
     background-color: #7c639b;
     border-color: #7c639b;
+    color: white;
   }
   
   #submit-answers:hover {
     background-color: #5d4777;
     border-color: #5d4777;
+    color: white;
   }
   
   /* Novos estilos para o layout atualizado */
@@ -337,5 +466,36 @@
   .description-text {
     font-weight: normal;
     color: #212529;
+  }
+  
+  /* Preservar formatação de texto (quebras de linha e espaços) */
+  .preserve-format {
+    white-space: pre-wrap;
+    word-wrap: break-word;
+  }
+  
+  /* Estilo para o botão de retorno */
+  .btn-retour {
+    background-color: #6c757d; /* Cinza */
+    border-color: #6c757d;
+    color: white;
+    padding: 0.4rem 1rem;
+    transition: all 0.2s ease;
+  }
+  
+  .btn-retour:hover {
+    background-color: #5a6268; /* Cinza mais escuro */
+    border-color: #5a6268;
+    color: white;
+  }
+  
+  /* Barra de ações */
+  .actions-bar {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    justify-content: flex-start;
+    align-items: center;
+    margin-top: 20px;
   }
 </style> 

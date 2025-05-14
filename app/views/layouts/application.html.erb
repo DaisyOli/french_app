@@ -40,7 +40,7 @@
                 <%= link_to t('common.new_activity'), new_activity_path, class: "nav-link" %>
               </li>
               <li class="nav-item">
-                <%= link_to "Déconnexion", destroy_user_session_path, data: { turbo_method: :delete }, class: "nav-link" %>
+                <%= button_to "Déconnexion", destroy_user_session_path, method: :delete, class: "btn nav-link btn-logout", form: { class: "d-inline-block m-0" } %>
               </li>
             <% elsif student_signed_in? %>
               <li class="nav-item">
@@ -50,7 +50,7 @@
                 <%= link_to "Mon progrès", "#", class: "nav-link" %>
               </li>
               <li class="nav-item">
-                <%= link_to "Déconnexion", destroy_student_session_path, data: { turbo_method: :delete }, class: "nav-link" %>
+                <%= button_to "Déconnexion", destroy_student_session_path, method: :delete, class: "btn nav-link btn-logout", form: { class: "d-inline-block m-0" } %>
               </li>
             <% else %>
               <li class="nav-item">
@@ -81,5 +81,27 @@
 
       <%= yield %>
     </div>
+    
+    <style>
+      /* Estilo para botão de logout na navbar */
+      .btn-logout {
+        background: none;
+        border: none;
+        color: rgba(255, 255, 255, 0.85);
+        padding: 8px 12px;
+        cursor: pointer;
+      }
+      
+      .btn-logout:hover {
+        color: #fff;
+        background-color: rgba(255, 255, 255, 0.1);
+      }
+      
+      /* Remove padding e margin desnecessários para o formulário na navbar */
+      .navbar-nav form {
+        padding: 0;
+        margin: 0;
+      }
+    </style>
   </body>
 </html>
