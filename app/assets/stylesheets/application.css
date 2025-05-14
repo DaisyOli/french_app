@@ -189,13 +189,48 @@
 
 /* Efeito de destaque para elementos novos */
 .highlight-new-element {
-  animation: highlight-pulse 2s ease-in-out;
+  animation: highlight-pulse 3s ease-in-out;
+  position: relative;
+  z-index: 10;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.highlight-new-element::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(147, 112, 219, 0);
+  z-index: -1;
+  border-radius: 8px;
+  animation: highlight-bg 3s ease-in-out;
+}
+
+@keyframes highlight-bg {
+  0%, 100% { background-color: rgba(147, 112, 219, 0); }
+  20%, 40% { background-color: rgba(147, 112, 219, 0.2); }
+  60%, 80% { background-color: rgba(147, 112, 219, 0.1); }
 }
 
 @keyframes highlight-pulse {
-  0% { box-shadow: 0 0 0 0 rgba(93, 71, 119, 0.7); }
-  70% { box-shadow: 0 0 0 15px rgba(93, 71, 119, 0); }
-  100% { box-shadow: 0 0 0 0 rgba(93, 71, 119, 0); }
+  0% { 
+    box-shadow: 0 0 0 0 rgba(147, 112, 219, 0.9);
+  }
+  20% { 
+    box-shadow: 0 0 0 15px rgba(147, 112, 219, 0.6);
+  }
+  40% { 
+    box-shadow: 0 0 0 5px rgba(147, 112, 219, 0.4);
+  }
+  60% { 
+    box-shadow: 0 0 0 10px rgba(147, 112, 219, 0.2);
+  }
+  100% { 
+    box-shadow: 0 0 0 0 rgba(147, 112, 219, 0);
+  }
 }
 
 /* Botões de adicionar */

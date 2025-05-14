@@ -52,10 +52,11 @@ class ActivitiesController < ApplicationController
       update_related_orders if params[:statements] || params[:questions] || params[:suggestions]
       
       if @activity.update(activity_params)
-        redirect_params = { notice: 'Atividade foi atualizada com sucesso.' }
-        redirect_params[:scroll_to] = scroll_target if scroll_target
-        
-        format.html { redirect_to activity_path(@activity, redirect_params) }
+        if scroll_target
+          format.html { redirect_to activity_path(@activity, scroll_to: scroll_target), notice: 'Atividade foi atualizada com sucesso.' }
+        else
+          format.html { redirect_to activity_path(@activity), notice: 'Atividade foi atualizada com sucesso.' }
+        end
       else
         format.html { render :edit }
       end
@@ -71,25 +72,130 @@ class ActivitiesController < ApplicationController
 
   # Método para remover o vídeo da atividade
   def remove_video
+    # Salvar ordem do elemento que será removido
+    ordem_removido = @activity.video_order
+    
+    # Procurar elemento anterior ao removido
+    elementos_anteriores = []
+    
+    # Verificar outros elementos principais
+    elementos_anteriores << {type: 'image', id: 'image-section', order: @activity.imagem_order} if @activity.imagem_url.present? && @activity.imagem_order < ordem_removido
+    elementos_anteriores << {type: 'texte', id: 'texte-section', order: @activity.texte_order} if @activity.texte.present? && @activity.texte_order < ordem_removido
+    
+    # Verificar statements
+    @activity.statements.where('display_order < ?', ordem_removido).each do |stmt|
+      elementos_anteriores << {type: 'statement', id: "statement-#{stmt.id}", order: stmt.display_order}
+    end
+    
+    # Verificar questions
+    @activity.questions.where('display_order < ?', ordem_removido).each do |quest|
+      elementos_anteriores << {type: 'question', id: "question-#{quest.id}", order: quest.display_order}
+    end
+    
+    # Verificar suggestions
+    @activity.suggestions.where('display_order < ?', ordem_removido).each do |sugg|
+      elementos_anteriores << {type: 'suggestion', id: "suggestion-#{sugg.id}", order: sugg.display_order}
+    end
+    
+    # Remover o vídeo
     @activity.update(video_url: nil)
+    
     respond_to do |format|
-      format.html { redirect_to activity_path(@activity), notice: 'Vídeo foi removido com sucesso.' }
+      # Se houver elementos anteriores, redirecionar para o mais próximo
+      if elementos_anteriores.any?
+        # Ordenar elementos por ordem decrescente para encontrar o mais próximo
+        elemento_anterior = elementos_anteriores.sort_by { |e| -e[:order] }.first
+        format.html { redirect_to activity_path(@activity, scroll_to: elemento_anterior[:id]), 
+                               notice: 'Vídeo foi removido com sucesso.' }
+      else
+        format.html { redirect_to activity_path(@activity), notice: 'Vídeo foi removido com sucesso.' }
+      end
     end
   end
 
   # Método para remover a imagem da atividade
   def remove_image
+    # Salvar ordem do elemento que será removido
+    ordem_removido = @activity.imagem_order
+    
+    # Procurar elemento anterior ao removido
+    elementos_anteriores = []
+    
+    # Verificar outros elementos principais
+    elementos_anteriores << {type: 'video', id: 'video-section', order: @activity.video_order} if @activity.video_url.present? && @activity.video_order < ordem_removido
+    elementos_anteriores << {type: 'texte', id: 'texte-section', order: @activity.texte_order} if @activity.texte.present? && @activity.texte_order < ordem_removido
+    
+    # Verificar statements
+    @activity.statements.where('display_order < ?', ordem_removido).each do |stmt|
+      elementos_anteriores << {type: 'statement', id: "statement-#{stmt.id}", order: stmt.display_order}
+    end
+    
+    # Verificar questions
+    @activity.questions.where('display_order < ?', ordem_removido).each do |quest|
+      elementos_anteriores << {type: 'question', id: "question-#{quest.id}", order: quest.display_order}
+    end
+    
+    # Verificar suggestions
+    @activity.suggestions.where('display_order < ?', ordem_removido).each do |sugg|
+      elementos_anteriores << {type: 'suggestion', id: "suggestion-#{sugg.id}", order: sugg.display_order}
+    end
+    
+    # Remover a imagem
     @activity.update(imagem_url: nil)
+    
     respond_to do |format|
-      format.html { redirect_to activity_path(@activity), notice: 'Imagem foi removida com sucesso.' }
+      # Se houver elementos anteriores, redirecionar para o mais próximo
+      if elementos_anteriores.any?
+        # Ordenar elementos por ordem decrescente para encontrar o mais próximo
+        elemento_anterior = elementos_anteriores.sort_by { |e| -e[:order] }.first
+        format.html { redirect_to activity_path(@activity, scroll_to: elemento_anterior[:id]), 
+                               notice: 'Imagem foi removida com sucesso.' }
+      else
+        format.html { redirect_to activity_path(@activity), notice: 'Imagem foi removida com sucesso.' }
+      end
     end
   end
 
   # Método para remover o texto da atividade
   def remove_texte
+    # Salvar ordem do elemento que será removido
+    ordem_removido = @activity.texte_order
+    
+    # Procurar elemento anterior ao removido
+    elementos_anteriores = []
+    
+    # Verificar outros elementos principais
+    elementos_anteriores << {type: 'video', id: 'video-section', order: @activity.video_order} if @activity.video_url.present? && @activity.video_order < ordem_removido
+    elementos_anteriores << {type: 'image', id: 'image-section', order: @activity.imagem_order} if @activity.imagem_url.present? && @activity.imagem_order < ordem_removido
+    
+    # Verificar statements
+    @activity.statements.where('display_order < ?', ordem_removido).each do |stmt|
+      elementos_anteriores << {type: 'statement', id: "statement-#{stmt.id}", order: stmt.display_order}
+    end
+    
+    # Verificar questions
+    @activity.questions.where('display_order < ?', ordem_removido).each do |quest|
+      elementos_anteriores << {type: 'question', id: "question-#{quest.id}", order: quest.display_order}
+    end
+    
+    # Verificar suggestions
+    @activity.suggestions.where('display_order < ?', ordem_removido).each do |sugg|
+      elementos_anteriores << {type: 'suggestion', id: "suggestion-#{sugg.id}", order: sugg.display_order}
+    end
+    
+    # Remover o texto
     @activity.update(texte: nil)
+    
     respond_to do |format|
-      format.html { redirect_to activity_path(@activity), notice: 'Texto foi removido com sucesso.' }
+      # Se houver elementos anteriores, redirecionar para o mais próximo
+      if elementos_anteriores.any?
+        # Ordenar elementos por ordem decrescente para encontrar o mais próximo
+        elemento_anterior = elementos_anteriores.sort_by { |e| -e[:order] }.first
+        format.html { redirect_to activity_path(@activity, scroll_to: elemento_anterior[:id]), 
+                               notice: 'Texto foi removido com sucesso.' }
+      else
+        format.html { redirect_to activity_path(@activity), notice: 'Texto foi removido com sucesso.' }
+      end
     end
   end
 

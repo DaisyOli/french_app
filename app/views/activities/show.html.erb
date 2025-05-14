@@ -71,7 +71,7 @@
           <% activity_elements.each do |element| %>
             <% case element[:type] %>
             <% when 'video' %>
-              <div class="paper-section">
+              <div id="video-section" class="paper-section">
                 <h3>
                   <div class="order-badge">
                     <%= form_with(model: @activity, url: activity_path(@activity), method: :patch, class: "order-form") do |form| %>
@@ -111,7 +111,7 @@
                 </div>
               </div>
             <% when 'image' %>
-              <div class="paper-section">
+              <div id="image-section" class="paper-section">
                 <h3>
                   <div class="order-badge">
                     <%= form_with(model: @activity, url: activity_path(@activity), method: :patch, class: "order-form") do |form| %>
@@ -140,7 +140,7 @@
                 </div>
               </div>
             <% when 'texte' %>
-              <div class="paper-section">
+              <div id="texte-section" class="paper-section">
                 <h3>
                   <div class="order-badge">
                     <%= form_with(model: @activity, url: activity_path(@activity), method: :patch, class: "order-form") do |form| %>
@@ -159,7 +159,7 @@
                 </div>
               </div>
             <% when 'statement' %>
-              <div class="paper-section">
+              <div id="statement-<%= element[:object].id %>" class="paper-section">
                 <h3>
                   <div class="order-badge">
                     <%= form_with(url: update_order_activity_statement_path(@activity, element[:object]), method: :patch, class: "order-form") do |form| %>
@@ -190,7 +190,7 @@
                 </div>
               </div>
             <% when 'question' %>
-              <div class="paper-section">
+              <div id="question-<%= element[:object].id %>" class="paper-section">
                 <h3>
                   <div class="order-badge">
                     <%= form_with(url: update_order_activity_question_path(@activity, element[:object]), method: :patch, class: "order-form") do |form| %>
@@ -275,7 +275,7 @@
                 </div>
               </div>
             <% when 'suggestion' %>
-              <div class="paper-section">
+              <div id="suggestion-<%= element[:object].id %>" class="paper-section">
                 <h3>
                   <div class="order-badge">
                     <%= form_with(url: update_order_activity_suggestion_path(@activity, element[:object]), method: :patch, class: "order-form") do |form| %>
@@ -523,24 +523,68 @@
   }
 
   // Função para rolar até o elemento recém-adicionado
-  document.addEventListener('turbo:load', function() {
+  function scrollToHighlightElement() {
+    console.log("Verificando se há elemento para destacar...");
     // Verifica se há um elemento marcado para rolagem na URL
     const params = new URLSearchParams(window.location.search);
     const scrollToElement = params.get('scroll_to');
     
     if (scrollToElement) {
+      console.log("Elemento para destacar:", scrollToElement);
       const element = document.getElementById(scrollToElement);
       if (element) {
-        element.scrollIntoView({ behavior: 'smooth' });
-        
-        // Adicionar um destaque temporário
-        element.classList.add('highlight-new-element');
-        setTimeout(function() {
-          element.classList.remove('highlight-new-element');
-        }, 3000);
+        console.log("Elemento encontrado, rolando para ele...");
+        // Usar setTimeout para garantir que a rolagem ocorre após a renderização completa
+        setTimeout(() => {
+          element.scrollIntoView({ behavior: 'smooth', block: 'center' });
+          
+          // Adicionar um destaque temporário
+          element.classList.add('highlight-new-element');
+          console.log("Classe highlight adicionada");
+          
+          setTimeout(function() {
+            element.classList.remove('highlight-new-element');
+            console.log("Classe highlight removida");
+          }, 3000);
+        }, 300);
+      } else {
+        console.log("Elemento não encontrado:", scrollToElement);
       }
     }
+  }
+
+  // Executar quando o DOM estiver pronto (para carregamentos normais)
+  document.addEventListener('DOMContentLoaded', function() {
+    console.log("DOMContentLoaded disparado");
+    scrollToHighlightElement();
   });
+  
+  // Para aplicações Rails com Turbolinks
+  if (typeof Turbolinks !== 'undefined') {
+    document.addEventListener('turbolinks:load', function() {
+      console.log("turbolinks:load disparado");
+      scrollToHighlightElement();
+    });
+  }
+  
+  // Para aplicações Rails com Turbo
+  if (typeof Turbo !== 'undefined') {
+    document.addEventListener('turbo:load', function() {
+      console.log("turbo:load disparado");
+      scrollToHighlightElement();
+    });
+    
+    document.addEventListener('turbo:render', function() {
+      console.log("turbo:render disparado");
+      scrollToHighlightElement();
+    });
+  }
+  
+  // Executar imediatamente caso a página já esteja carregada
+  if (document.readyState === 'complete' || document.readyState === 'interactive') {
+    console.log("Documento já carregado, executando imediatamente");
+    setTimeout(scrollToHighlightElement, 100);
+  }
 </script>
 
 <style>
@@ -577,16 +621,6 @@
   
   .actions-bar .btn-supprimer {
     margin-left: auto;
-  }
-  
-  /* Estilo para destacar elementos recém-adicionados */
-  .highlight-new-element {
-    animation: highlight-fade 3s ease-in-out;
-  }
-  
-  @keyframes highlight-fade {
-    0%, 100% { background-color: transparent; }
-    20% { background-color: rgba(93, 71, 119, 0.2); }
   }
   
   /* Preservar formatação de texto (quebras de linha e espaços) */
