@@ -5,10 +5,21 @@
     <%= link_to t('common.new_activity'), new_activity_path, class: "btn nouvelle-activite-btn" %>
   </div>
 
+  <!-- Filtros por nível -->
+  <div class="niveau-filters">
+    <button class="filter-btn active" data-niveau="tous">Tous les niveaux</button>
+    <button class="filter-btn" data-niveau="A1">A1</button>
+    <button class="filter-btn" data-niveau="A2">A2</button>
+    <button class="filter-btn" data-niveau="B1">B1</button>
+    <button class="filter-btn" data-niveau="B2">B2</button>
+    <button class="filter-btn" data-niveau="C1">C1</button>
+    <button class="filter-btn" data-niveau="C2">C2</button>
+  </div>
+
   <% if @activities.any? %>
-    <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+    <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4 activities-grid">
       <% @activities.each do |activity| %>
-        <div class="col">
+        <div class="col activity-card" data-niveau="<%= activity.nível %>">
           <div class="card h-100">
             <div class="card-header">
               <h2 class="card-title">
@@ -55,7 +66,7 @@
     display: grid !important;
     grid-template-columns: 1fr auto 1fr !important;
     align-items: center !important;
-    margin-bottom: 3rem !important;
+    margin-bottom: 2rem !important;
     padding: 0 1rem !important;
   }
 
@@ -67,6 +78,94 @@
     line-height: 1.2 !important;
     margin: 0 !important;
     text-align: center !important;
+  }
+
+  /* Filtros por nível */
+  .niveau-filters {
+    display: flex !important;
+    justify-content: center !important;
+    flex-wrap: wrap !important;
+    gap: 1rem !important;
+    margin-bottom: 3rem !important;
+    padding: 0 1rem !important;
+  }
+
+  .filter-btn {
+    font-family: 'Inter', sans-serif !important;
+    font-size: 0.95rem !important;
+    font-weight: 600 !important;
+    padding: 0.6rem 1.2rem !important;
+    border: 2px solid transparent !important;
+    border-radius: 25px !important;
+    background-color: #f8f9fa !important;
+    color: #6c757d !important;
+    cursor: pointer !important;
+    transition: all 0.3s ease !important;
+    letter-spacing: 0.5px !important;
+  }
+
+  .filter-btn:hover {
+    transform: translateY(-2px) !important;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1) !important;
+  }
+
+  .filter-btn.active {
+    color: white !important;
+    transform: translateY(-2px) !important;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15) !important;
+  }
+
+  /* Cores específicas dos filtros */
+  .filter-btn[data-niveau="tous"].active {
+    background-color: #1E3D59 !important;
+    border-color: #1E3D59 !important;
+  }
+
+  .filter-btn[data-niveau="A1"].active {
+    background-color: #4CAF50 !important;
+    border-color: #4CAF50 !important;
+  }
+
+  .filter-btn[data-niveau="A2"].active {
+    background-color: #2196F3 !important;
+    border-color: #2196F3 !important;
+  }
+
+  .filter-btn[data-niveau="B1"].active {
+    background-color: #FF9800 !important;
+    border-color: #FF9800 !important;
+  }
+
+  .filter-btn[data-niveau="B2"].active {
+    background-color: #9C27B0 !important;
+    border-color: #9C27B0 !important;
+  }
+
+  .filter-btn[data-niveau="C1"].active {
+    background-color: #F44336 !important;
+    border-color: #F44336 !important;
+  }
+
+  .filter-btn[data-niveau="C2"].active {
+    background-color: #607D8B !important;
+    border-color: #607D8B !important;
+  }
+
+  /* Animações para os cards */
+  .activity-card {
+    transition: all 0.4s ease !important;
+    opacity: 1 !important;
+    transform: scale(1) !important;
+  }
+
+  .activity-card.hidden {
+    opacity: 0 !important;
+    transform: scale(0.8) !important;
+    pointer-events: none !important;
+  }
+
+  .activities-grid {
+    transition: all 0.3s ease !important;
   }
 
   /* Botão Nova Atividade */
@@ -386,12 +485,12 @@
     transform: translateY(-4px);
   }
 
-  .nivel-badge[data-nivel='A1'] { background-color: #4A90E2; }
-  .nivel-badge[data-nivel='A2'] { background-color: #357ABD; }
-  .nivel-badge[data-nivel='B1'] { background-color: #1E3D59; }
-  .nivel-badge[data-nivel='B2'] { background-color: #15304D; }
-  .nivel-badge[data-nivel='C1'] { background-color: #0C2340; }
-  .nivel-badge[data-nivel='C2'] { background-color: #041628; }
+  .nivel-badge[data-nivel='A1'] { background-color: #4CAF50; }
+  .nivel-badge[data-nivel='A2'] { background-color: #2196F3; }
+  .nivel-badge[data-nivel='B1'] { background-color: #FF9800; }
+  .nivel-badge[data-nivel='B2'] { background-color: #9C27B0; }
+  .nivel-badge[data-nivel='C1'] { background-color: #F44336; }
+  .nivel-badge[data-nivel='C2'] { background-color: #607D8B; }
 
   /* Botões maiores e mais espaçados */
   .card-footer {
@@ -448,6 +547,10 @@
     .header-section {
       padding: 0 2rem !important;
     }
+
+    .niveau-filters {
+      gap: 1.5rem !important;
+    }
   }
 
   @media (min-width: 1200px) {
@@ -459,6 +562,18 @@
     
     .header-section {
       padding: 0 !important;
+    }
+  }
+
+  /* Responsividade dos filtros */
+  @media (max-width: 767px) {
+    .niveau-filters {
+      gap: 0.5rem !important;
+    }
+    
+    .filter-btn {
+      font-size: 0.8rem !important;
+      padding: 0.5rem 0.8rem !important;
     }
   }
 
@@ -477,6 +592,43 @@
 
 <script>
   document.addEventListener('DOMContentLoaded', function() {
+    // Manipulador dos filtros de nível
+    const filterButtons = document.querySelectorAll('.filter-btn');
+    const activityCards = document.querySelectorAll('.activity-card');
+
+    filterButtons.forEach(button => {
+      button.addEventListener('click', function() {
+        const targetNiveau = this.getAttribute('data-niveau');
+        
+        // Remove active de todos os botões
+        filterButtons.forEach(btn => btn.classList.remove('active'));
+        
+        // Adiciona active ao botão clicado
+        this.classList.add('active');
+        
+        // Filtra as atividades com animação
+        activityCards.forEach(card => {
+          const cardNiveau = card.getAttribute('data-niveau');
+          
+          if (targetNiveau === 'tous' || cardNiveau === targetNiveau) {
+            // Mostra o card
+            card.classList.remove('hidden');
+            setTimeout(() => {
+              card.style.display = 'block';
+            }, 50);
+          } else {
+            // Esconde o card
+            card.classList.add('hidden');
+            setTimeout(() => {
+              if (card.classList.contains('hidden')) {
+                card.style.display = 'none';
+              }
+            }, 400);
+          }
+        });
+      });
+    });
+
     // Adiciona manipuladores para botões de exclusão
     const deleteButtons = document.querySelectorAll('button[data-confirm]');
     
