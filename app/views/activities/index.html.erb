@@ -1,9 +1,8 @@
 <div class="activities-container">
-  <div class="row mb-4">
-    <div class="col text-center">
-      <h1 class="main-title mb-4"><%= t('common.my_activities') %></h1>
-      <%= link_to t('common.new_activity'), new_activity_path, class: "btn nouvelle-activite-btn" %>
-    </div>
+  <div class="header-section">
+    <div></div>
+    <h1 class="main-title"><%= t('common.my_activities') %></h1>
+    <%= link_to t('common.new_activity'), new_activity_path, class: "btn nouvelle-activite-btn" %>
   </div>
 
   <% if @activities.any? %>
@@ -46,13 +45,46 @@
 
 <style>
   /* Reset e especificidade aumentada para títulos */
+  .activities-container {
+    padding: 2rem 0.5rem !important;
+    max-width: 100% !important;
+    margin: 0 auto !important;
+  }
+
+  .header-section {
+    display: grid !important;
+    grid-template-columns: 1fr auto 1fr !important;
+    align-items: center !important;
+    margin-bottom: 3rem !important;
+    padding: 0 1rem !important;
+  }
+
   .activities-container .main-title {
     font-family: 'Lora', serif !important;
-    font-size: 3.2rem !important;
+    font-size: 2.2rem !important;
     font-weight: 600 !important;
     color: #1E3D59 !important;
-    margin-bottom: 2rem !important;
     line-height: 1.2 !important;
+    margin: 0 !important;
+    text-align: center !important;
+  }
+
+  /* Botão Nova Atividade */
+  .activities-container .nouvelle-activite-btn {
+    font-size: 1rem !important;
+    padding: 0.6rem 1.5rem !important;
+    background-color: #1E3D59 !important;
+    border: none !important;
+    color: white !important;
+    border-radius: 6px !important;
+    text-decoration: none !important;
+    justify-self: end !important;
+    margin-right: 8rem !important;
+  }
+
+  .activities-container .nouvelle-activite-btn:hover {
+    background-color: #15304D !important;
+    text-decoration: none !important;
   }
 
   .activities-container .card .card-header {
@@ -117,48 +149,37 @@
     background-color: #4A90E2 !important;
     border: none !important;
     color: white !important;
+    text-decoration: none !important;
   }
 
   .activities-container .btn-modifier {
-    background-color: white !important;
-    border: 1px solid #1E3D59 !important;
-    color: #1E3D59 !important;
+    background-color: #1E3D59 !important;
+    border: none !important;
+    color: white !important;
+    text-decoration: none !important;
   }
 
   .activities-container .btn-supprimer {
-    background-color: white !important;
-    border: 1px solid #CF4F5C !important;
-    color: #CF4F5C !important;
+    background-color: #CF4F5C !important;
+    border: none !important;
+    color: white !important;
+    text-decoration: none !important;
   }
 
   /* Hover states */
   .activities-container .btn-voir:hover {
     background-color: #357ABD !important;
+    text-decoration: none !important;
   }
 
   .activities-container .btn-modifier:hover {
-    background-color: #1E3D59 !important;
-    color: white !important;
+    background-color: #15304D !important;
+    text-decoration: none !important;
   }
 
   .activities-container .btn-supprimer:hover {
-    background-color: #CF4F5C !important;
-    color: white !important;
-  }
-
-  /* Botão Nova Atividade */
-  .activities-container .nouvelle-activite-btn {
-    font-size: 1rem !important;
-    padding: 0.6rem 1.5rem !important;
-    background-color: #1E3D59 !important;
-    border: none !important;
-    color: white !important;
-    border-radius: 6px !important;
-    margin-bottom: 2rem !important;
-  }
-
-  .activities-container .nouvelle-activite-btn:hover {
-    background-color: #15304D !important;
+    background-color: #B94450 !important;
+    text-decoration: none !important;
   }
 
   /* Card styles */
@@ -409,9 +430,36 @@
     box-shadow: 0 4px 12px rgba(30, 61, 89, 0.15);
   }
 
-  /* Container principal com mais padding */
-  .activities-container {
-    padding: 3rem 0;
+  /* Ajustar o grid dos cards */
+  .row.row-cols-1.row-cols-md-2.row-cols-lg-3 {
+    margin: 0 !important;
+  }
+
+  .row.row-cols-1.row-cols-md-2.row-cols-lg-3 .col {
+    padding: 0.75rem !important;
+  }
+
+  /* Media queries para responsividade */
+  @media (min-width: 768px) {
+    .activities-container {
+      padding: 2rem 1rem !important;
+    }
+    
+    .header-section {
+      padding: 0 2rem !important;
+    }
+  }
+
+  @media (min-width: 1200px) {
+    .activities-container {
+      padding: 2rem 2rem !important;
+      max-width: 1400px !important;
+      margin: 0 auto !important;
+    }
+    
+    .header-section {
+      padding: 0 !important;
+    }
   }
 
   /* Mensagem sem atividades */
@@ -424,15 +472,6 @@
     text-align: center;
     font-family: 'Inter', sans-serif;
     font-size: 1.2rem;
-  }
-
-  /* Grid com mais espaçamento */
-  .row {
-    margin: -1.5rem;
-  }
-
-  .col {
-    padding: 1.5rem;
   }
 </style>
 

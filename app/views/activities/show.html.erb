@@ -792,10 +792,16 @@
   .activity-header h1 {
     color: #1E3D59;
     margin-bottom: 1rem;
+    font-size: 1.2rem !important;
   }
 
-  /* Estilo para o título da página */
-  h1, h2, h3 {
-    color: #1E3D59;
+  /* Garantindo que o título principal não seja afetado por outros estilos */
+  .activity-header {
+    font-size: 1.2rem !important;
+  }
+
+  /* Forçando tamanho menor para todos os h1 dentro do container */
+  .container h1 {
+    font-size: 1.2rem !important;
   }
 </style>
