@@ -16,19 +16,19 @@
       <% end %>
 
       <div class="mb-4">
-        <%= form.label :título, t('activerecord.attributes.activity.título'), class: "form-label" %>
+        <%= form.label :título, t('activerecord.attributes.activity.titre'), class: "form-label" %>
         <%= form.text_field :título, class: "form-control form-control-lg" %>
       </div>
 
       <div class="mb-4">
-        <%= form.label :nível, t('activerecord.attributes.activity.nível'), class: "form-label" %>
+        <%= form.label :nível, t('activerecord.attributes.activity.niveau'), class: "form-label" %>
         <%= form.select :nível, ['A1', 'A2', 'B1', 'B2', 'C1', 'C2'], 
                       { prompt: 'Sélectionnez le niveau' }, 
                       { class: "form-select form-select-lg" } %>
       </div>
 
       <div class="mb-4">
-        <%= form.label :texto, t('activerecord.attributes.activity.texto'), class: "form-label" %>
+        <%= form.label :texto, t('activerecord.attributes.activity.texte'), class: "form-label" %>
         <%= form.text_area :texto, rows: 5, class: "form-control" %>
       </div>
       

@@ -23,7 +23,7 @@ class SuggestionsController < ApplicationController
     
     respond_to do |format|
       if @suggestion.save
-        format.html { redirect_to activity_path(@activity, scroll_to: "suggestion-#{@suggestion.id}"), notice: 'Sugestão foi adicionada com sucesso.' }
+        format.html { redirect_to activity_path(@activity, scroll_to: "suggestion-#{@suggestion.id}"), notice: t('flash.actions.create.notice', resource_name: Suggestion.model_name.human) }
       else
         format.html { redirect_to activity_path(@activity), alert: 'Não foi possível adicionar a sugestão.' }
       end
@@ -37,7 +37,7 @@ class SuggestionsController < ApplicationController
   def update
     respond_to do |format|
       if @suggestion.update(suggestion_params)
-        format.html { redirect_to activity_path(@activity, scroll_to: "suggestion-#{@suggestion.id}"), notice: 'Sugestão foi atualizada com sucesso.' }
+        format.html { redirect_to activity_path(@activity, scroll_to: "suggestion-#{@suggestion.id}"), notice: t('flash.actions.update.notice', resource_name: Suggestion.model_name.human) }
       else
         format.html { redirect_to activity_path(@activity), alert: 'Não foi possível atualizar a sugestão.' }
       end
@@ -80,9 +80,9 @@ class SuggestionsController < ApplicationController
         # Ordenar elementos por ordem decrescente para encontrar o mais próximo
         elemento_anterior = elementos_anteriores.sort_by { |e| -e[:order] }.first
         format.html { redirect_to activity_path(@activity, scroll_to: elemento_anterior[:id]), 
-                                  notice: 'Sugestão foi removida com sucesso.' }
+                                  notice: t('flash.actions.destroy.notice', resource_name: Suggestion.model_name.human) }
       else
-        format.html { redirect_to activity_path(@activity), notice: 'Sugestão foi removida com sucesso.' }
+        format.html { redirect_to activity_path(@activity), notice: t('flash.actions.destroy.notice', resource_name: Suggestion.model_name.human) }
       end
     end
   end
@@ -92,7 +92,7 @@ class SuggestionsController < ApplicationController
     @suggestion = Suggestion.find(params[:id])
     
     if @suggestion.update(display_order: params[:display_order])
-      redirect_to activity_path(@activity, scroll_to: "suggestion-#{@suggestion.id}"), notice: 'Ordem atualizada com sucesso.'
+      redirect_to activity_path(@activity, scroll_to: "suggestion-#{@suggestion.id}"), notice: t('flash.actions.update.notice', resource_name: Suggestion.model_name.human)
     else
       redirect_to activity_path(@activity), alert: 'Erro ao atualizar ordem.'
     end

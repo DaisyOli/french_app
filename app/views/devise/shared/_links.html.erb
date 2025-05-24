@@ -1,30 +1,106 @@
 <div class="links-container">
   <%- if controller_name != 'sessions' %>
-    <%= link_to t('devise.shared.links.sign_in'), new_session_path(resource_name), class: "d-block mb-2" %>
+    <%= link_to new_session_path(resource_name), class: "auth-link" do %>
+      <i class="bi bi-box-arrow-in-right"></i>
+      <%= t('devise.shared.links.sign_in') %>
+    <% end %>
   <% end %>
 
   <%- if devise_mapping.registerable? && controller_name != 'registrations' %>
-    <%= link_to t('devise.shared.links.sign_up'), new_registration_path(resource_name), class: "d-block mb-2" %>
+    <%= link_to new_registration_path(resource_name), class: "auth-link" do %>
+      <i class="bi bi-person-plus"></i>
+      <%= t('devise.shared.links.sign_up') %>
+    <% end %>
   <% end %>
 
   <%- if devise_mapping.recoverable? && controller_name != 'passwords' && controller_name != 'registrations' %>
-    <%= link_to t('devise.shared.links.forgot_password'), new_password_path(resource_name), class: "d-block mb-2" %>
+    <%= link_to new_password_path(resource_name), class: "auth-link" do %>
+      <i class="bi bi-key"></i>
+      <%= t('devise.shared.links.forgot_password') %>
+    <% end %>
   <% end %>
 
   <%- if devise_mapping.confirmable? && controller_name != 'confirmations' %>
-    <%= link_to t('devise.shared.links.confirmation_instructions'), new_confirmation_path(resource_name), class: "d-block mb-2" %>
+    <%= link_to new_confirmation_path(resource_name), class: "auth-link" do %>
+      <i class="bi bi-envelope-check"></i>
+      <%= t('devise.shared.links.confirmation_instructions') %>
+    <% end %>
   <% end %>
 
   <%- if devise_mapping.lockable? && resource_class.unlock_strategy_enabled?(:email) && controller_name != 'unlocks' %>
-    <%= link_to t('devise.shared.links.unlock_instructions'), new_unlock_path(resource_name), class: "d-block mb-2" %>
+    <%= link_to new_unlock_path(resource_name), class: "auth-link" do %>
+      <i class="bi bi-unlock"></i>
+      <%= t('devise.shared.links.unlock_instructions') %>
+    <% end %>
   <% end %>
 
   <%- if devise_mapping.omniauthable? %>
     <%- resource_class.omniauth_providers.each do |provider| %>
-      <%= button_to t('devise.shared.links.sign_in_with', provider: OmniAuth::Utils.camelize(provider)), 
-                    omniauth_authorize_path(resource_name, provider), 
+      <%= button_to omniauth_authorize_path(resource_name, provider), 
                     data: { turbo: false }, 
-                    class: "btn btn-outline-secondary mb-2 w-100" %>
+                    class: "btn btn-outline-secondary mb-2 w-100 social-login-btn" do %>
+        <i class="bi bi-<%= provider %>"></i>
+        <%= t('devise.shared.links.sign_in_with', provider: OmniAuth::Utils.camelize(provider)) %>
+      <% end %>
     <% end %>
   <% end %>
 </div>
+
+<style>
+  .links-container {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    font-family: 'Inter', sans-serif;
+  }
+
+  .auth-link {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem 0;
+    color: #4A90E2 !important;
+    text-decoration: none !important;
+    font-size: 0.9rem;
+    font-weight: 500;
+    transition: all 0.2s ease;
+    border-radius: 6px;
+    justify-content: center;
+  }
+
+  .auth-link:hover {
+    color: #1E3D59 !important;
+    background-color: rgba(74, 144, 226, 0.05);
+    text-decoration: none !important;
+    transform: translateX(2px);
+  }
+
+  .auth-link i {
+    font-size: 1rem;
+    opacity: 0.8;
+  }
+
+  .social-login-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    padding: 0.75rem 1rem;
+    border: 2px solid #E2E8F0;
+    border-radius: 8px;
+    background: white;
+    color: #4A5568;
+    font-weight: 500;
+    transition: all 0.2s ease;
+  }
+
+  .social-login-btn:hover {
+    border-color: #4A90E2;
+    background-color: rgba(74, 144, 226, 0.05);
+    color: #1E3D59;
+  }
+
+  .social-login-btn i {
+    font-size: 1.1rem;
+  }
+</style>

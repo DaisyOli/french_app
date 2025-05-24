@@ -1,45 +1,291 @@
-<div class="container mt-5">
-  <div class="row justify-content-center">
-    <div class="col-md-6 col-lg-5">
-      <div class="card shadow-sm">
-        <div class="card-header text-center" style="background-color: #7c639b; color: white;">
-          <h2 class="my-2"><%= t('devise.passwords.new.forgot_password') %></h2>
-        </div>
-        <div class="card-body p-4">
-          <%= form_for(resource, as: resource_name, url: password_path(resource_name), html: { method: :post }) do |f| %>
-            <%= render "devise/shared/error_messages", resource: resource %>
+<div class="login-container">
+  <div class="login-card">
+    <div class="login-header">
+      <div class="login-icon">
+        <i class="bi bi-key-fill"></i>
+      </div>
+      <h2 class="login-title"><%= t('devise.passwords.new.forgot_password') %></h2>
+      <p class="login-subtitle">
+        <% if resource_name == :student %>
+          Récupérez votre mot de passe - Espace Élève
+        <% else %>
+          Récupérez votre mot de passe - Espace Professeur
+        <% end %>
+      </p>
+    </div>
+    
+    <div class="login-form">
+      <%= form_for(resource, as: resource_name, url: password_path(resource_name), html: { method: :post, class: "modern-form" }) do |f| %>
+        <%= render "devise/shared/error_messages", resource: resource %>
 
-            <div class="mb-3">
-              <%= f.label :email, class: "form-label" %>
-              <%= f.email_field :email, autofocus: true, autocomplete: "email", class: "form-control", placeholder: "exemple@email.com" %>
+        <div class="form-group">
+          <%= f.label :email, class: "form-label" %>
+          <div class="input-group">
+            <div class="input-icon">
+              <i class="bi bi-envelope"></i>
             </div>
-
-            <div class="d-grid gap-2">
-              <%= f.submit t('devise.passwords.new.send_instructions'), class: "btn btn-lg", style: "background-color: #7c639b; color: white;" %>
-            </div>
-          <% end %>
-
-          <div class="mt-4 text-center">
-            <%= render "devise/shared/links" %>
+            <%= f.email_field :email, autofocus: true, autocomplete: "email", 
+                  class: "form-control modern-input", 
+                  placeholder: "votre@email.com" %>
           </div>
+          <small class="form-text">Nous vous enverrons un lien pour réinitialiser votre mot de passe.</small>
         </div>
+
+        <div class="form-submit">
+          <%= f.submit t('devise.passwords.new.send_instructions'), class: "btn-modern btn-primary" %>
+        </div>
+      <% end %>
+
+      <div class="login-links">
+        <%= render "devise/shared/links" %>
       </div>
     </div>
   </div>
 </div>
 
 <style>
-  .btn:hover {
-    background-color: #5d4777 !important;
+  /* === LOGIN CONTAINER === */
+  .login-container {
+    min-height: 100vh;
+    background: linear-gradient(135deg, #E8F4FD 0%, #F7FAFC 50%, #FFFFFF 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem 1rem;
+    font-family: 'Inter', sans-serif;
   }
-  
-  a {
-    color: #7c639b;
+
+  .login-card {
+    background: white;
+    border-radius: 20px;
+    box-shadow: 0 20px 60px rgba(30, 61, 89, 0.1);
+    overflow: hidden;
+    width: 100%;
+    max-width: 420px;
+    border: 1px solid rgba(30, 61, 89, 0.05);
+  }
+
+  /* === LOGIN HEADER === */
+  .login-header {
+    background: linear-gradient(135deg, #1E3D59 0%, #2B4F76 100%);
+    padding: 2.5rem 2rem 2rem;
+    text-align: center;
+    color: white;
+    position: relative;
+  }
+
+  .login-header::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+  }
+
+  .login-icon {
+    background: rgba(255, 255, 255, 0.15);
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 1.5rem;
+    backdrop-filter: blur(10px);
+  }
+
+  .login-icon i {
+    font-size: 1.8rem;
+    color: #4A90E2;
+  }
+
+  .login-title {
+    font-family: 'Lora', serif;
+    font-size: 1.75rem;
+    font-weight: 600;
+    margin: 0 0 0.5rem;
+    color: white;
+  }
+
+  .login-subtitle {
+    font-size: 1rem;
+    margin: 0;
+    color: rgba(255, 255, 255, 0.8);
+    font-weight: 400;
+  }
+
+  /* === LOGIN FORM === */
+  .login-form {
+    padding: 2.5rem 2rem 2rem;
+  }
+
+  .form-group {
+    margin-bottom: 1.5rem;
+  }
+
+  .form-label {
+    display: block;
+    margin-bottom: 0.5rem;
+    font-weight: 500;
+    color: #2D3748;
+    font-size: 0.95rem;
+  }
+
+  .form-text {
+    display: block;
+    font-size: 0.85rem;
+    color: #718096;
+    margin-top: 0.5rem;
+    line-height: 1.4;
+  }
+
+  .input-group {
+    position: relative;
+  }
+
+  .input-icon {
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: 45px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #A0AEC0;
+    z-index: 1;
+  }
+
+  .modern-input {
+    width: 100%;
+    padding: 0.875rem 1rem 0.875rem 45px;
+    border: 2px solid #E2E8F0;
+    border-radius: 12px;
+    font-size: 1rem;
+    transition: all 0.3s ease;
+    background: #F7FAFC;
+  }
+
+  .modern-input:focus {
+    outline: none;
+    border-color: #4A90E2;
+    background: white;
+    box-shadow: 0 0 0 3px rgba(74, 144, 226, 0.1);
+  }
+
+  .modern-input:focus + .input-icon {
+    color: #4A90E2;
+  }
+
+  .modern-input::placeholder {
+    color: #A0AEC0;
+  }
+
+  /* === BOTÃO MODERNO === */
+  .form-submit {
+    margin: 2rem 0 1.5rem;
+  }
+
+  .btn-modern {
+    width: 100%;
+    padding: 0.875rem 1.5rem;
+    border: none;
+    border-radius: 12px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .btn-primary {
+    background: linear-gradient(135deg, #1E3D59 0%, #4A90E2 100%);
+    color: white;
+  }
+
+  .btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(30, 61, 89, 0.3);
+  }
+
+  .btn-primary:active {
+    transform: translateY(0);
+  }
+
+  /* === LINKS === */
+  .login-links {
+    text-align: center;
+    padding-top: 1.5rem;
+    border-top: 1px solid #E2E8F0;
+  }
+
+  .login-links .links-container {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+
+  .login-links a {
+    color: #4A90E2;
+    text-decoration: none;
+    font-size: 0.9rem;
+    font-weight: 500;
+    transition: all 0.2s ease;
+  }
+
+  .login-links a:hover {
+    color: #1E3D59;
     text-decoration: none;
   }
-  
-  a:hover {
-    color: #5d4777;
-    text-decoration: underline;
+
+  /* === ERROR MESSAGES === */
+  #error_explanation {
+    background: #FEF2F2;
+    border: 1px solid #FECACA;
+    border-radius: 8px;
+    padding: 1rem;
+    margin-bottom: 1.5rem;
+  }
+
+  #error_explanation h2 {
+    color: #991B1B;
+    font-size: 1rem;
+    margin: 0 0 0.5rem;
+  }
+
+  #error_explanation ul {
+    margin: 0;
+    padding-left: 1.25rem;
+  }
+
+  #error_explanation li {
+    color: #991B1B;
+    font-size: 0.9rem;
+  }
+
+  /* === RESPONSIVIDADE === */
+  @media (max-width: 480px) {
+    .login-container {
+      padding: 1rem 0.5rem;
+    }
+    
+    .login-card {
+      border-radius: 16px;
+    }
+    
+    .login-header {
+      padding: 2rem 1.5rem 1.5rem;
+    }
+    
+    .login-form {
+      padding: 2rem 1.5rem 1.5rem;
+    }
+    
+    .login-title {
+      font-size: 1.5rem;
+    }
   }
 </style>

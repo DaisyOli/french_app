@@ -21,7 +21,7 @@ class QuestionsController < ApplicationController
     
     respond_to do |format|
       if @question.save
-        format.html { redirect_to activity_path(@activity, scroll_to: "question-#{@question.id}"), notice: 'Questão foi adicionada com sucesso.' }
+        format.html { redirect_to activity_path(@activity, scroll_to: "question-#{@question.id}"), notice: t('flash.actions.create.notice', resource_name: Question.model_name.human) }
       else
         format.html { redirect_to activity_path(@activity), alert: 'Não foi possível adicionar a questão.' }
       end
@@ -34,7 +34,7 @@ class QuestionsController < ApplicationController
   def update
     respond_to do |format|
       if @question.update(question_params)
-        format.html { redirect_to activity_path(@activity, scroll_to: "question-#{@question.id}"), notice: 'Questão foi atualizada com sucesso.' }
+        format.html { redirect_to activity_path(@activity, scroll_to: "question-#{@question.id}"), notice: t('flash.actions.update.notice', resource_name: Question.model_name.human) }
       else
         format.html { redirect_to activity_path(@activity), alert: 'Não foi possível atualizar a questão.' }
       end
@@ -77,9 +77,9 @@ class QuestionsController < ApplicationController
         # Ordenar elementos por ordem decrescente para encontrar o mais próximo
         elemento_anterior = elementos_anteriores.sort_by { |e| -e[:order] }.first
         format.html { redirect_to activity_path(@activity, scroll_to: elemento_anterior[:id]), 
-                                  notice: 'Questão foi removida com sucesso.' }
+                                  notice: t('flash.actions.destroy.notice', resource_name: Question.model_name.human) }
       else
-        format.html { redirect_to activity_path(@activity), notice: 'Questão foi removida com sucesso.' }
+        format.html { redirect_to activity_path(@activity), notice: t('flash.actions.destroy.notice', resource_name: Question.model_name.human) }
       end
     end
   end
@@ -89,7 +89,7 @@ class QuestionsController < ApplicationController
     @question = Question.find(params[:id])
     
     if @question.update(display_order: params[:display_order])
-      redirect_to activity_path(@activity, scroll_to: "question-#{@question.id}"), notice: 'Ordem atualizada com sucesso.'
+      redirect_to activity_path(@activity, scroll_to: "question-#{@question.id}"), notice: t('flash.actions.update.notice', resource_name: Question.model_name.human)
     else
       redirect_to activity_path(@activity), alert: 'Erro ao atualizar ordem.'
     end

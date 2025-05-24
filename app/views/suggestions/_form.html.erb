@@ -1,6 +1,6 @@
 <%= form_with(model: [suggestion.activity, suggestion], local: true) do |form| %>
   <div class="field">
-    <%= form.text_area :conteúdo, rows: 3, class: "form-control", placeholder: t('common.suggestion_placeholder') %>
+    <%= form.text_area :contenu, rows: 3, class: "form-control", placeholder: t('common.suggestion_placeholder') %>
   </div>
   <div class="form-actions mt-3">
     <%= form.submit t('common.save'), class: "btn btn-primary" %>

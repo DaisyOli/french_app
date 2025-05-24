@@ -28,7 +28,7 @@ class ActivitiesController < ApplicationController
 
     respond_to do |format|
       if @activity.save
-        format.html { redirect_to activity_path(@activity), notice: 'Atividade foi criada com sucesso.' }
+        format.html { redirect_to activity_path(@activity), notice: t('flash.actions.create.notice', resource_name: Activity.model_name.human) }
       else
         format.html { render :new }
       end
@@ -53,9 +53,9 @@ class ActivitiesController < ApplicationController
       
       if @activity.update(activity_params)
         if scroll_target
-          format.html { redirect_to activity_path(@activity, scroll_to: scroll_target), notice: 'Atividade foi atualizada com sucesso.' }
+          format.html { redirect_to activity_path(@activity, scroll_to: scroll_target), notice: t('flash.actions.update.notice', resource_name: Activity.model_name.human) }
         else
-          format.html { redirect_to activity_path(@activity), notice: 'Atividade foi atualizada com sucesso.' }
+          format.html { redirect_to activity_path(@activity), notice: t('flash.actions.update.notice', resource_name: Activity.model_name.human) }
         end
       else
         format.html { render :edit }
@@ -66,7 +66,7 @@ class ActivitiesController < ApplicationController
   def destroy
     @activity.destroy
     respond_to do |format|
-      format.html { redirect_to activities_path, notice: 'Atividade foi apagada com sucesso.' }
+      format.html { redirect_to activities_path, notice: t('flash.actions.destroy.notice', resource_name: Activity.model_name.human) }
     end
   end
 
@@ -106,9 +106,9 @@ class ActivitiesController < ApplicationController
         # Ordenar elementos por ordem decrescente para encontrar o mais próximo
         elemento_anterior = elementos_anteriores.sort_by { |e| -e[:order] }.first
         format.html { redirect_to activity_path(@activity, scroll_to: elemento_anterior[:id]), 
-                               notice: 'Vídeo foi removido com sucesso.' }
+                               notice: t('flash.actions.remove.video') }
       else
-        format.html { redirect_to activity_path(@activity), notice: 'Vídeo foi removido com sucesso.' }
+        format.html { redirect_to activity_path(@activity), notice: t('flash.actions.remove.video') }
       end
     end
   end
@@ -149,9 +149,9 @@ class ActivitiesController < ApplicationController
         # Ordenar elementos por ordem decrescente para encontrar o mais próximo
         elemento_anterior = elementos_anteriores.sort_by { |e| -e[:order] }.first
         format.html { redirect_to activity_path(@activity, scroll_to: elemento_anterior[:id]), 
-                               notice: 'Imagem foi removida com sucesso.' }
+                               notice: t('flash.actions.remove.image') }
       else
-        format.html { redirect_to activity_path(@activity), notice: 'Imagem foi removida com sucesso.' }
+        format.html { redirect_to activity_path(@activity), notice: t('flash.actions.remove.image') }
       end
     end
   end
@@ -192,9 +192,9 @@ class ActivitiesController < ApplicationController
         # Ordenar elementos por ordem decrescente para encontrar o mais próximo
         elemento_anterior = elementos_anteriores.sort_by { |e| -e[:order] }.first
         format.html { redirect_to activity_path(@activity, scroll_to: elemento_anterior[:id]), 
-                               notice: 'Texto foi removido com sucesso.' }
+                               notice: t('flash.actions.remove.texte') }
       else
-        format.html { redirect_to activity_path(@activity), notice: 'Texto foi removido com sucesso.' }
+        format.html { redirect_to activity_path(@activity), notice: t('flash.actions.remove.texte') }
       end
     end
   end

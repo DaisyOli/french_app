@@ -11,7 +11,7 @@ class AlternativesController < ApplicationController
     
     respond_to do |format|
       if @alternative.save
-        format.html { redirect_to activity_path(@activity, scroll_to: "question-#{@question.id}"), notice: 'Alternativa foi adicionada com sucesso.' }
+        format.html { redirect_to activity_path(@activity, scroll_to: "question-#{@question.id}"), notice: t('flash.actions.create.notice', resource_name: Alternative.model_name.human) }
       else
         format.html { redirect_to activity_path(@activity), alert: 'Não foi possível adicionar a alternativa.' }
       end
@@ -24,7 +24,7 @@ class AlternativesController < ApplicationController
   def update
     respond_to do |format|
       if @alternative.update(alternative_params)
-        format.html { redirect_to activity_path(@activity, scroll_to: "question-#{@question.id}"), notice: 'Alternativa foi atualizada com sucesso.' }
+        format.html { redirect_to activity_path(@activity, scroll_to: "question-#{@question.id}"), notice: t('flash.actions.update.notice', resource_name: Alternative.model_name.human) }
       else
         format.html { redirect_to activity_path(@activity), alert: 'Não foi possível atualizar a alternativa.' }
       end
@@ -34,7 +34,7 @@ class AlternativesController < ApplicationController
   def destroy
     @alternative.destroy
     respond_to do |format|
-      format.html { redirect_to activity_path(@activity, scroll_to: "question-#{@question.id}"), notice: 'Alternativa foi removida com sucesso.' }
+      format.html { redirect_to activity_path(@activity, scroll_to: "question-#{@question.id}"), notice: t('flash.actions.destroy.notice', resource_name: Alternative.model_name.human) }
     end
   end
 

@@ -23,7 +23,7 @@ class StatementsController < ApplicationController
     
     respond_to do |format|
       if @statement.save
-        format.html { redirect_to activity_path(@activity, scroll_to: "statement-#{@statement.id}"), notice: 'Enunciado foi adicionado com sucesso.' }
+        format.html { redirect_to activity_path(@activity, scroll_to: "statement-#{@statement.id}"), notice: t('flash.actions.create.notice', resource_name: Statement.model_name.human) }
       else
         format.html { redirect_to activity_path(@activity), alert: 'Não foi possível adicionar o enunciado.' }
       end
@@ -37,7 +37,7 @@ class StatementsController < ApplicationController
   def update
     respond_to do |format|
       if @statement.update(statement_params)
-        format.html { redirect_to activity_path(@activity, scroll_to: "statement-#{@statement.id}"), notice: 'Enunciado foi atualizado com sucesso.' }
+        format.html { redirect_to activity_path(@activity, scroll_to: "statement-#{@statement.id}"), notice: t('flash.actions.update.notice', resource_name: Statement.model_name.human) }
       else
         format.html { redirect_to activity_path(@activity), alert: 'Não foi possível atualizar o enunciado.' }
       end
@@ -80,9 +80,9 @@ class StatementsController < ApplicationController
         # Ordenar elementos por ordem decrescente para encontrar o mais próximo
         elemento_anterior = elementos_anteriores.sort_by { |e| -e[:order] }.first
         format.html { redirect_to activity_path(@activity, scroll_to: elemento_anterior[:id]), 
-                                  notice: 'Enunciado foi removido com sucesso.' }
+                                  notice: t('flash.actions.destroy.notice', resource_name: Statement.model_name.human) }
       else
-        format.html { redirect_to activity_path(@activity), notice: 'Enunciado foi removido com sucesso.' }
+        format.html { redirect_to activity_path(@activity), notice: t('flash.actions.destroy.notice', resource_name: Statement.model_name.human) }
       end
     end
   end
@@ -92,7 +92,7 @@ class StatementsController < ApplicationController
     @statement = Statement.find(params[:id])
     
     if @statement.update(display_order: params[:display_order])
-      redirect_to activity_path(@activity, scroll_to: "statement-#{@statement.id}"), notice: 'Ordem atualizada com sucesso.'
+      redirect_to activity_path(@activity, scroll_to: "statement-#{@statement.id}"), notice: t('flash.actions.update.notice', resource_name: Statement.model_name.human)
     else
       redirect_to activity_path(@activity), alert: 'Erro ao atualizar ordem.'
     end

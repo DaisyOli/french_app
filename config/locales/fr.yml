@@ -43,7 +43,7 @@ fr:
       
   # Mensagens e títulos comuns
   common:
-    app_name: "App de Français"
+    app_name: "Practice-FR"
     my_activities: "Mes Activités"
     new_activity: "Nouvelle Activité"
     edit_activity: "Modifier l'Activité"
@@ -116,6 +116,13 @@ fr:
     confirm_delete_image: "Êtes-vous sûr de vouloir supprimer cette image ?"
     confirm_delete_texte: "Êtes-vous sûr de vouloir supprimer ce texte ?"
     back: "Retour"
+    logout: "Se déconnecter"
+    my_profile: "Mon profil"
+    account: "Compte"
+    logout_confirm_title: "Déconnexion"
+    logout_confirm_message: "Êtes-vous sûr de vouloir vous déconnecter ?"
+    logout_confirm_yes: "Oui, me déconnecter"
+    logout_confirm_no: "Annuler"
     
   # Mensagens flash
   flash:

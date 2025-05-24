@@ -14,7 +14,7 @@
  *= require_self
  */
 
- /* Estilos gerais */
+ /* Styles généraux */
 body {
   font-family: 'Arial', sans-serif;
   margin: 0;

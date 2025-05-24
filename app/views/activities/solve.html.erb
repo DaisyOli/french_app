@@ -16,10 +16,10 @@
           </div>
         <% end %>
 
-        <% # Ordenar elementos para exibição %>
+        <% # Ordenar elements pour affichage %>
         <% activity_elements = [] %>
         
-        <% # Coletar todos os elementos com suas ordens %>
+        <% # Collecter tous les elements avec leurs ordres %>
         <% if @activity.video_url.present? %>
           <% activity_elements << {type: 'video', order: @activity.video_order || 1, content: @activity.video_url} %>
         <% end %>
@@ -36,26 +36,26 @@
           <% activity_elements << {type: 'statement', order: statement.display_order || statement.id, content: statement.conteúdo} %>
         <% end %>
         
-        <% # Incluir as questões na ordenação dos elementos %>
+        <% # Inclure les questions dans l'ordre des elements %>
         <% @activity.questions.each do |question| %>
           <% activity_elements << {type: 'question', order: question.display_order || question.id, content: question} %>
         <% end %>
         
-        <% # Incluir sugestões na ordenação dos elementos %>
+        <% # Inclure les suggestions dans l'ordre des elements %>
         <% @activity.suggestions.each do |suggestion| %>
           <% activity_elements << {type: 'suggestion', order: suggestion.display_order || suggestion.id, content: suggestion.conteúdo} %>
         <% end %>
         
-        <% # Ordenar elementos por ordem explícita %>
+        <% # Trier elements par ordre explicite %>
         <% activity_elements.sort_by! { |element| element[:order] } %>
         
-        <% # Exibir conteúdo %>
+        <% # Afficher contenu %>
         <% activity_elements.each do |element| %>
           <% case element[:type] %>
           <% when 'video' %>
             <div class="paper-section" id="video-section">
               <% 
-                # Converter URL do YouTube para formato embed
+                # Convertir URL de YouTube en format embed
                 video_id = nil
                 if @activity.video_url.include?('youtube.com/watch?v=')
                   video_id = @activity.video_url.split('watch?v=').last.split('&').first
@@ -72,7 +72,7 @@
           <% when 'image' %>
             <div class="paper-section" id="image-section">
               <div class="image-container">
-                <img src="<%= @activity.imagem_url %>" alt="Imagem da atividade" class="img-fluid mb-3 rounded">
+                <img src="<%= @activity.imagem_url %>" alt="Image de l'activité" class="img-fluid mb-3 rounded">
               </div>
             </div>
           <% when 'texte' %>
@@ -135,7 +135,7 @@
           <% end %>
         <% end %>
 
-        <% # O formulário agora envolve apenas o botão de envio %>
+        <% # Le formulaire maintenant ne concerne que le bouton d'envoi %>
         <% if @activity.questions.any? %>
           <form id="activity-quiz-form">
             <div class="text-center mt-4 mb-4">
@@ -155,7 +155,7 @@
               </div>
               
               <div id="question-feedback">
-                <!-- O feedback detalhado de cada questão será inserido ici -->
+                <!-- Le feedback détaillé de chaque question sera inséré ici -->
               </div>
               
               <div class="text-center mt-4">
@@ -188,17 +188,17 @@
     const showAnswersButton = document.getElementById('show-answers');
     const retryQuizButton = document.getElementById('retry-quiz');
     
-    // Aplicar cores aos badges de nível
+    // Appliquer couleurs aux badges de niveau
     const nivelBadges = document.querySelectorAll('.nivel-badge');
     
-    // Mapear níveis para cores distintas com bom contraste
+    // Mapper niveaux à couleurs distinctes avec bon contraste
     const nivelColors = {
-      'A1': '#4CAF50',  // Verde
-      'A2': '#2196F3',  // Azul
-      'B1': '#FF9800',  // Laranja
-      'B2': '#9C27B0',  // Roxo
-      'C1': '#F44336',  // Vermelho
-      'C2': '#607D8B'   // Azul acinzentado
+      'A1': '#4CAF50',  // Vert
+      'A2': '#2196F3',  // Bleu
+      'B1': '#FF9800',  // Orange
+      'B2': '#9C27B0',  // Violet
+      'C1': '#F44336',  // Rouge
+      'C2': '#607D8B'   // Bleu acinzenté
     };
     
     nivelBadges.forEach(function(badge) {
@@ -220,26 +220,26 @@
       quizForm.addEventListener('submit', function(event) {
         event.preventDefault();
         
-        // Calcular pontuação
+        // Calculer score
         let correctAnswers = 0;
         let totalQuestions = 0;
         const feedbackItems = [];
         
-        // Obter todas as questões
+        // Obtenir toutes les questions
         const questions = document.querySelectorAll('.question-card');
         totalQuestions = questions.length;
         
-        // Verificar cada questão
+        // Vérifier chaque question
         questions.forEach(function(questionElement, index) {
           const radioInput = questionElement.querySelector('input[type="radio"]');
-          if (!radioInput) return; // Pular se não encontrar o input
+          if (!radioInput) return; // Passer si l'input n'est pas trouvé
           
           const questionId = radioInput.name;
           const selectedAnswer = questionElement.querySelector('input[type="radio"]:checked');
           const questionTextElement = questionElement.querySelector('.card-text');
           const questionHeaderElement = questionElement.querySelector('.card-header h5');
           
-          if (!questionTextElement || !questionHeaderElement) return; // Pular se elementos essenciais não forem encontrados
+          if (!questionTextElement || !questionHeaderElement) return; // Passer si les éléments essentiels ne sont pas trouvés
           
           const questionText = questionTextElement.textContent;
           const questionNumber = parseInt(questionHeaderElement.textContent.replace('Question ', ''));
@@ -254,9 +254,9 @@
             correctLetter: ''
           };
           
-          // Encontrar a alternativa correta para feedback
+          // Trouver la bonne réponse pour le feedback
           const alternatives = questionElement.querySelectorAll('.form-check');
-          if (!alternatives.length) return; // Pular se não houver alternativas
+          if (!alternatives.length) return; // Passer si il n'y a pas d'alternatives
           
           let correctIndex = -1;
           
@@ -291,13 +291,13 @@
           feedbackItems.push(feedback);
         });
         
-        // Calcular porcentagem
+        // Calculer pourcentage
         const scorePercent = totalQuestions > 0 ? Math.round((correctAnswers / totalQuestions) * 100) : 0;
         
-        // Mostrar resultados
+        // Afficher résultats
         if (scoreMessage) scoreMessage.textContent = `Score: ${correctAnswers}/${totalQuestions} (${scorePercent}%)`;
         
-        // Feedback baseado na pontuação
+        // Feedback basé sur le score
         if (feedbackMessage) {
           if (scorePercent >= 80) {
             feedbackMessage.textContent = 'Excellent! Continuez comme ça!';
@@ -308,25 +308,25 @@
           }
         }
         
-        // Desabilitar inputs para evitar alterações
+        // Désactiver inputs pour éviter des modifications
         document.querySelectorAll('.question-card').forEach(function(card) {
           const inputs = card.querySelectorAll('input');
           inputs.forEach(input => input.disabled = true);
         });
         
-        // Mostrar resultados
+        // Afficher résultats
         if (resultsContainer) {
           resultsContainer.style.display = 'block';
           resultsContainer.scrollIntoView({ behavior: 'smooth' });
         }
         
-        // Botão para mostrar respostas detalhadas
+        // Bouton pour afficher réponses détaillées
         if (showAnswersButton && questionFeedback) {
           const handleShowAnswers = function() {
-            // Limpar feedback anterior
+            // Effacer feedback précédent
             questionFeedback.innerHTML = '';
             
-            // Gerar HTML para feedback detalhado de cada questão
+            // Générer HTML pour feedback détaillé de chaque question
             feedbackItems.forEach(function(item) {
               const feedbackHtml = `
                 <div class="card mb-3 ${item.isCorrect ? 'border-success' : 'border-danger'}">
@@ -348,35 +348,35 @@
               questionFeedback.innerHTML += feedbackHtml;
             });
             
-            // Mostrar feedback detalhado
+            // Afficher feedback détaillé
             questionFeedback.style.display = 'block';
           };
           
-          // Remover listener anterior se existir
+          // Supprimer listener précédent si existant
           showAnswersButton.removeEventListener('click', handleShowAnswers);
-          // Adicionar novo listener
+          // Ajouter nouveau listener
           showAnswersButton.addEventListener('click', handleShowAnswers);
         }
         
-        // Botão para tentar novamente
+        // Bouton pour réessayer
         if (retryQuizButton && questionFeedback && resultsContainer) {
           const handleRetry = function() {
-            // Resetar formulário
+            // Réinitialiser formulaire
             document.querySelectorAll('.form-check-input').forEach(function(input) {
               input.checked = false;
               input.disabled = false;
             });
             
-            // Limpar feedback detalhado
+            // Effacer feedback détaillé
             questionFeedback.innerHTML = '';
             
-            // Esconder resultados
+            // Cacher résultats
             resultsContainer.style.display = 'none';
           };
           
-          // Remover listener anterior se existir
+          // Supprimer listener précédent si existant
           retryQuizButton.removeEventListener('click', handleRetry);
-          // Adicionar novo listener
+          // Ajouter nouveau listener
           retryQuizButton.addEventListener('click', handleRetry);
         }
       });
@@ -385,7 +385,7 @@
 </script>
 
 <style>
-  /* Estilos gerais com maior especificidade */
+  /* Styles généraux avec plus d'importance */
   body .container .paper-effect {
     background: white;
     border-radius: 12px;
@@ -395,7 +395,7 @@
     margin-bottom: 2rem;
   }
 
-  /* Cabeçalho da atividade com maior especificidade */
+  /* En-tête de l'activité avec plus d'importance */
   body .container .activity-header {
     margin-bottom: 2rem;
     text-align: center;
@@ -438,7 +438,7 @@
     opacity: 0.8;
   }
 
-  /* Seções de papel */
+  /* Sections de papier */
   .paper-section {
     background: white;
     border-radius: 8px;
@@ -446,7 +446,7 @@
     margin-bottom: 2rem;
   }
 
-  /* Descrição */
+  /* Description */
   .description-text {
     font-family: 'Inter', sans-serif;
     font-size: 1.1rem;
@@ -491,7 +491,7 @@
     border-radius: 8px 8px 0 0;
   }
 
-  /* Alternativas */
+  /* Alternatives */
   .alternatives {
     margin-top: 1.5rem;
   }
@@ -528,7 +528,7 @@
     margin-right: 0.5rem;
   }
 
-  /* Botões */
+  /* Boutons */
   .btn-primary {
     background-color: #1E3D59;
     border: none;
@@ -578,7 +578,7 @@
     transform: translateY(-1px);
   }
 
-  /* Resultados */
+  /* Résultats */
   #results-container {
     margin-top: 2rem;
   }
@@ -597,7 +597,7 @@
     margin-bottom: 1rem;
   }
 
-  /* Feedback detalhado */
+  /* Feedback détaillé */
   #question-feedback .card {
     border: none;
     border-radius: 8px;
@@ -626,7 +626,7 @@
     background-color: #991B1B !important;
   }
 
-  /* Botão de retorno */
+  /* Bouton de retour */
   .btn-retour {
     background-color: #4A90E2;
     border: none;
@@ -644,7 +644,7 @@
     box-shadow: 0 4px 12px rgba(74, 144, 226, 0.15);
   }
 
-  /* Responsividade */
+  /* Responsivité */
   @media (max-width: 768px) {
     .paper-effect {
       padding: 1.5rem;
