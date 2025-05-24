@@ -3,14 +3,16 @@
     <div class="col-lg-10 offset-lg-1">
       <div class="paper-effect">
         <div class="activity-header">
-          <h1><%= @activity.título %></h1>
-          <div class="niveau-badge">Niveau: <span class="badge nivel-badge" data-nivel="<%= @activity.nível %>"><%= @activity.nível %></span></div>
+          <h1 class="main-title"><%= @activity.título %></h1>
+          <div class="niveau-badge">
+            <span class="badge nivel-badge" data-nivel="<%= @activity.nível %>"><%= @activity.nível %></span>
+          </div>
           <div class="decorative-line"></div>
         </div>
 
         <% if @activity.texto.present? %>
           <div class="paper-section">
-            <p class="description-label"><i class="bi bi-info-circle"></i> <%= t('common.description') %>: <span class="description-text preserve-format"><%= @activity.texto %></span></p>
+            <p class="description-text preserve-format"><%= @activity.texto %></p>
           </div>
         <% end %>
 
@@ -91,7 +93,7 @@
             <div class="paper-section">
               <div class="card suggestion-card">
                 <div class="card-header">
-                  <h5><i class="bi bi-lightbulb"></i> <%= t('common.suggestion') || "Suggestion" %></h5>
+                  <h5><i class="bi bi-lightbulb"></i> Suggestion</h5>
                 </div>
                 <div class="card-body">
                   <div class="suggestion-content preserve-format"><%= element[:content] %></div>
@@ -138,7 +140,7 @@
           <form id="activity-quiz-form">
             <div class="text-center mt-4 mb-4">
               <button type="submit" class="btn btn-primary btn-lg" id="submit-answers">
-                <%= t('common.submit_answers') || "Valider les réponses" %>
+                Soumettre les réponses
               </button>
             </div>
           </form>
@@ -146,22 +148,22 @@
           <div id="results-container" style="display: none;">
             <div class="paper-section">
               <div class="alert alert-success">
-                <h4 class="alert-heading"><%= t('common.results') %></h4>
+                <h4 class="alert-heading">Résultats</h4>
                 <p id="score-message"></p>
                 <hr>
                 <p id="feedback-message"></p>
               </div>
               
               <div id="question-feedback">
-                <!-- O feedback detalhado de cada questão será inserido aqui -->
+                <!-- O feedback detalhado de cada questão será inserido ici -->
               </div>
               
               <div class="text-center mt-4">
                 <button type="button" class="btn btn-outline-primary" id="show-answers">
-                  <%= t('common.show_answers') || "Voir les réponses" %>
+                  Voir les réponses
                 </button>
                 <button type="button" class="btn btn-outline-secondary" id="retry-quiz">
-                  <%= t('common.retry') || "Réessayer" %>
+                  Réessayer
                 </button>
               </div>
             </div>
@@ -189,33 +191,29 @@
     // Aplicar cores aos badges de nível
     const nivelBadges = document.querySelectorAll('.nivel-badge');
     
-    // Mapear níveis para cores
+    // Mapear níveis para cores distintas com bom contraste
     const nivelColors = {
-      'A1': '#9d81cc', // Lavanda claro
-      'A2': '#7c63b8', // Lavanda médio
-      'B1': '#5d4777', // Lavanda escuro (original)
-      'B2': '#4a3a60', // Roxo escuro
-      'C1': '#2a1b46', // Roxo profundo
-      'C2': '#1c1036'  // Roxo muito escuro
+      'A1': '#4CAF50',  // Verde
+      'A2': '#2196F3',  // Azul
+      'B1': '#FF9800',  // Laranja
+      'B2': '#9C27B0',  // Roxo
+      'C1': '#F44336',  // Vermelho
+      'C2': '#607D8B'   // Azul acinzentado
     };
     
     nivelBadges.forEach(function(badge) {
       const nivel = badge.getAttribute('data-nivel');
       if (nivelColors[nivel]) {
         badge.style.backgroundColor = nivelColors[nivel];
-        // Adicionar cor de texto branco para níveis B1 ou mais altos para melhor legibilidade
-        if (nivel === 'B1' || nivel === 'B2' || nivel === 'C1' || nivel === 'C2') {
-          badge.style.color = 'white';
-        } else {
-          badge.style.color = '#ffffff'; // Texto branco para todos os badges
-        }
+        badge.style.color = '#ffffff';
+        badge.style.padding = '0.35em 0.65em';
+        badge.style.fontWeight = '600';
+        badge.style.boxShadow = '0 1px 3px rgba(0,0,0,0.2)';
+        badge.style.border = '1px solid rgba(255,255,255,0.1)';
       } else {
-        badge.style.backgroundColor = '#7c639b'; // Cor padrão
-        badge.style.color = 'white';
+        badge.style.backgroundColor = '#607D8B';
+        badge.style.color = '#ffffff';
       }
-      // Adicionar um pouco de padding e border-radius para melhor aparência
-      badge.style.padding = '0.35em 0.65em';
-      badge.style.fontWeight = '600';
     });
     
     if (quizForm) {
@@ -233,10 +231,18 @@
         
         // Verificar cada questão
         questions.forEach(function(questionElement, index) {
-          const questionId = questionElement.querySelector('input[type="radio"]').name;
+          const radioInput = questionElement.querySelector('input[type="radio"]');
+          if (!radioInput) return; // Pular se não encontrar o input
+          
+          const questionId = radioInput.name;
           const selectedAnswer = questionElement.querySelector('input[type="radio"]:checked');
-          const questionText = questionElement.querySelector('.card-text').textContent;
-          const questionNumber = parseInt(questionElement.querySelector('.card-header h5').textContent.replace('Question ', ''));
+          const questionTextElement = questionElement.querySelector('.card-text');
+          const questionHeaderElement = questionElement.querySelector('.card-header h5');
+          
+          if (!questionTextElement || !questionHeaderElement) return; // Pular se elementos essenciais não forem encontrados
+          
+          const questionText = questionTextElement.textContent;
+          const questionNumber = parseInt(questionHeaderElement.textContent.replace('Question ', ''));
           
           let feedback = {
             questionNumber: questionNumber,
@@ -250,27 +256,35 @@
           
           // Encontrar a alternativa correta para feedback
           const alternatives = questionElement.querySelectorAll('.form-check');
+          if (!alternatives.length) return; // Pular se não houver alternativas
+          
           let correctIndex = -1;
           
           alternatives.forEach((alt, idx) => {
             const input = alt.querySelector('input[data-correct="true"]');
-            if (input) {
+            const label = alt.querySelector('label');
+            if (input && label) {
               correctIndex = idx;
-              feedback.correctText = alt.querySelector('label').textContent.trim();
+              feedback.correctText = label.textContent.trim();
               feedback.correctLetter = String.fromCharCode('a'.charCodeAt(0) + idx);
             }
           });
           
           if (selectedAnswer) {
             const selectedAlternative = selectedAnswer.closest('.form-check');
-            const selectedIndex = Array.from(alternatives).indexOf(selectedAlternative);
-            
-            feedback.selectedText = selectedAlternative.querySelector('label').textContent.trim();
-            feedback.selectedLetter = String.fromCharCode('a'.charCodeAt(0) + selectedIndex);
-            feedback.isCorrect = selectedAnswer.getAttribute('data-correct') === 'true';
-            
-            if (feedback.isCorrect) {
-              correctAnswers++;
+            if (selectedAlternative) {
+              const selectedLabel = selectedAlternative.querySelector('label');
+              const selectedIndex = Array.from(alternatives).indexOf(selectedAlternative);
+              
+              if (selectedLabel) {
+                feedback.selectedText = selectedLabel.textContent.trim();
+                feedback.selectedLetter = String.fromCharCode('a'.charCodeAt(0) + selectedIndex);
+                feedback.isCorrect = selectedAnswer.getAttribute('data-correct') === 'true';
+                
+                if (feedback.isCorrect) {
+                  correctAnswers++;
+                }
+              }
             }
           }
           
@@ -281,241 +295,368 @@
         const scorePercent = totalQuestions > 0 ? Math.round((correctAnswers / totalQuestions) * 100) : 0;
         
         // Mostrar resultados
-        scoreMessage.textContent = `Vous avez obtenu ${correctAnswers} sur ${totalQuestions} questions (${scorePercent}%).`;
+        if (scoreMessage) scoreMessage.textContent = `Score: ${correctAnswers}/${totalQuestions} (${scorePercent}%)`;
         
         // Feedback baseado na pontuação
-        if (scorePercent >= 80) {
-          feedbackMessage.textContent = 'Excellent! Vous maîtrisez bien ce contenu.';
-        } else if (scorePercent >= 60) {
-          feedbackMessage.textContent = 'Bon travail! Continuez à pratiquer pour vous améliorer.';
-        } else {
-          feedbackMessage.textContent = 'Continuez à pratiquer pour améliorer votre compréhension.';
+        if (feedbackMessage) {
+          if (scorePercent >= 80) {
+            feedbackMessage.textContent = 'Excellent! Continuez comme ça!';
+          } else if (scorePercent >= 60) {
+            feedbackMessage.textContent = 'Bien! Vous êtes sur la bonne voie.';
+          } else {
+            feedbackMessage.textContent = 'Continuez à pratiquer pour améliorer vos résultats.';
+          }
         }
         
-        // Esconder as questões e mostrar resultados
+        // Desabilitar inputs para evitar alterações
         document.querySelectorAll('.question-card').forEach(function(card) {
-          // Desabilitar inputs para evitar alterações
           const inputs = card.querySelectorAll('input');
           inputs.forEach(input => input.disabled = true);
         });
         
         // Mostrar resultados
-        resultsContainer.style.display = 'block';
-        
-        // Fazer scroll para os resultados
-        resultsContainer.scrollIntoView({ behavior: 'smooth' });
+        if (resultsContainer) {
+          resultsContainer.style.display = 'block';
+          resultsContainer.scrollIntoView({ behavior: 'smooth' });
+        }
         
         // Botão para mostrar respostas detalhadas
-        showAnswersButton.addEventListener('click', function() {
-          // Limpar feedback anterior
-          questionFeedback.innerHTML = '';
-          
-          // Gerar HTML para feedback detalhado de cada questão
-          feedbackItems.forEach(function(item) {
-            const feedbackHtml = `
-              <div class="card mb-3 ${item.isCorrect ? 'border-success' : 'border-danger'}">
-                <div class="card-header ${item.isCorrect ? 'bg-success text-white' : 'bg-danger text-white'}">
-                  Question ${item.questionNumber}
+        if (showAnswersButton && questionFeedback) {
+          const handleShowAnswers = function() {
+            // Limpar feedback anterior
+            questionFeedback.innerHTML = '';
+            
+            // Gerar HTML para feedback detalhado de cada questão
+            feedbackItems.forEach(function(item) {
+              const feedbackHtml = `
+                <div class="card mb-3 ${item.isCorrect ? 'border-success' : 'border-danger'}">
+                  <div class="card-header ${item.isCorrect ? 'bg-success text-white' : 'bg-danger text-white'}">
+                    Question ${item.questionNumber}
+                  </div>
+                  <div class="card-body">
+                    <p class="card-text"><strong>Question:</strong> ${item.questionText}</p>
+                    <p class="card-text"><strong>Votre réponse:</strong> 
+                      ${item.selectedLetter ? `<span class="alternative-letter">${item.selectedLetter})</span> ` : ''}
+                      ${item.selectedText}
+                      ${item.isCorrect ? 
+                        '<span class="badge bg-success">Correct</span>' : 
+                        `<span class="badge bg-danger">Incorrect</span><br><strong>Réponse correcte:</strong> <span class="alternative-letter">${item.correctLetter})</span> ${item.correctText}`}
+                    </p>
+                  </div>
                 </div>
-                <div class="card-body">
-                  <p class="card-text"><strong>Question:</strong> ${item.questionText}</p>
-                  <p class="card-text"><strong>Votre réponse:</strong> 
-                    ${item.selectedLetter ? `<span class="alternative-letter">${item.selectedLetter})</span> ` : ''}
-                    ${item.selectedText}
-                    ${item.isCorrect ? 
-                      '<span class="badge bg-success">Correct</span>' : 
-                      `<span class="badge bg-danger">Incorrect</span><br><strong>Réponse correcte:</strong> <span class="alternative-letter">${item.correctLetter})</span> ${item.correctText}`}
-                  </p>
-                </div>
-              </div>
-            `;
-            questionFeedback.innerHTML += feedbackHtml;
-          });
+              `;
+              questionFeedback.innerHTML += feedbackHtml;
+            });
+            
+            // Mostrar feedback detalhado
+            questionFeedback.style.display = 'block';
+          };
           
-          // Mostrar feedback detalhado
-          questionFeedback.style.display = 'block';
-        });
+          // Remover listener anterior se existir
+          showAnswersButton.removeEventListener('click', handleShowAnswers);
+          // Adicionar novo listener
+          showAnswersButton.addEventListener('click', handleShowAnswers);
+        }
         
         // Botão para tentar novamente
-        retryQuizButton.addEventListener('click', function() {
-          // Resetar formulário
-          document.querySelectorAll('.form-check-input').forEach(function(input) {
-            input.checked = false;
-            input.disabled = false;
-          });
+        if (retryQuizButton && questionFeedback && resultsContainer) {
+          const handleRetry = function() {
+            // Resetar formulário
+            document.querySelectorAll('.form-check-input').forEach(function(input) {
+              input.checked = false;
+              input.disabled = false;
+            });
+            
+            // Limpar feedback detalhado
+            questionFeedback.innerHTML = '';
+            
+            // Esconder resultados
+            resultsContainer.style.display = 'none';
+          };
           
-          // Limpar feedback detalhado
-          questionFeedback.innerHTML = '';
-          
-          // Esconder resultados
-          resultsContainer.style.display = 'none';
-        });
+          // Remover listener anterior se existir
+          retryQuizButton.removeEventListener('click', handleRetry);
+          // Adicionar novo listener
+          retryQuizButton.addEventListener('click', handleRetry);
+        }
       });
     }
   });
 </script>
 
 <style>
-  .enunciado-card {
-    background-color: #f8f9fa;
-    border-left: 5px solid #7c639b;
+  /* Estilos gerais com maior especificidade */
+  body .container .paper-effect {
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(30, 61, 89, 0.08),
+                0 2px 4px rgba(30, 61, 89, 0.04);
+    padding: 2rem;
+    margin-bottom: 2rem;
   }
-  
-  .question-card {
-    margin-bottom: 20px;
-  }
-  
-  .question-card .card-header {
-    background-color: #7c639b;
-    color: white;
-  }
-  
-  /* Estilo para o cartão de sugestões */
-  .suggestion-card {
-    margin-bottom: 20px;
-    border-left: 5px solid #f4bd6a;
-  }
-  
-  .suggestion-card .card-header {
-    background-color: #f4bd6a;
-    color: #4a3a60;
-  }
-  
-  .suggestion-content {
-    font-size: 1.05rem;
-    font-style: italic;
-  }
-  
-  /* Novo estilo para ajustar o espaçamento das opções */
-  .alternatives {
-    margin-top: 15px;
-  }
-  
-  .form-check {
-    margin-bottom: 10px;
-    padding: 10px;
-    border-radius: 5px;
-    transition: background-color 0.2s;
+
+  /* Cabeçalho da atividade com maior especificidade */
+  body .container .activity-header {
+    margin-bottom: 2rem;
+    text-align: center;
     position: relative;
+    padding: 1rem;
+    background: linear-gradient(to right, rgba(30, 61, 89, 0.05), rgba(30, 61, 89, 0.02));
+    border-radius: 12px;
   }
-  
-  .form-check .form-check-input {
-    position: absolute;
-    left: 15px;
-    top: 50%;
-    transform: translateY(-50%);
-    margin: 0;
+
+  body .container .activity-header .main-title {
+    font-family: 'Lora', serif !important;
+    color: #1E3D59 !important;
+    font-size: 2.8rem !important;
+    font-weight: 600 !important;
+    margin-bottom: 1rem !important;
+    line-height: 1.2 !important;
+    letter-spacing: -0.02em !important;
+    text-shadow: 1px 1px 0 rgba(255, 255, 255, 0.8) !important;
   }
-  
-  .form-check .form-check-label {
-    display: block;
-    padding-left: 35px;
-    cursor: pointer;
+
+  body .container .activity-header .niveau-badge {
+    margin: 1rem 0;
   }
-  
-  .alternative-letter {
-    font-weight: bold;
-    color: #5d4777;
-    margin-right: 0.2em;
+
+  body .container .activity-header .nivel-badge {
+    font-family: 'Inter', sans-serif !important;
+    font-size: 1rem !important;
+    font-weight: 500 !important;
+    padding: 0.5em 1em !important;
+    border-radius: 6px !important;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1) !important;
   }
-  
-  .form-check:hover {
-    background-color: #f8f9fa;
+
+  body .container .activity-header .decorative-line {
+    height: 3px;
+    background: linear-gradient(to right, #1E3D59, #4A90E2) !important;
+    margin: 1.5rem auto;
+    width: 80%;
+    border-radius: 2px;
+    opacity: 0.8;
   }
-  
-  /* Novo estilo para ajustar o padding das opções */
-  .option-padding {
-    padding-left: 15px;
-    padding-right: 15px;
-    text-align: left;
-    margin-left: 0;
+
+  /* Seções de papel */
+  .paper-section {
+    background: white;
+    border-radius: 8px;
+    padding: 1.5rem;
+    margin-bottom: 2rem;
   }
-  
-  /* Estilo para aumentar o tamanho da fonte da pergunta */
-  .question-content {
-    font-size: 1.15rem;
-    margin-bottom: 20px;
-  }
-  
-  #submit-answers {
-    background-color: #7c639b;
-    border-color: #7c639b;
-    color: white;
-  }
-  
-  #submit-answers:hover {
-    background-color: #5d4777;
-    border-color: #5d4777;
-    color: white;
-  }
-  
-  /* Novos estilos para o layout atualizado */
-  .niveau-badge {
-    margin-top: -5px;
-    margin-bottom: 10px;
-    font-size: 0.9rem;
-    color: #6c757d;
-  }
-  
-  .description-label {
-    font-size: 0.95rem;
-    color: #6c757d;
-    margin-bottom: 15px;
-  }
-  
+
+  /* Descrição */
   .description-text {
-    font-weight: normal;
-    color: #212529;
+    font-family: 'Inter', sans-serif;
+    font-size: 1.1rem;
+    line-height: 1.6;
+    color: #2D3748;
   }
-  
-  /* Preservar formatação de texto (quebras de linha e espaços) */
-  .preserve-format {
-    white-space: pre-wrap;
-    word-wrap: break-word;
+
+  /* Cards */
+  .enunciado-card {
+    border: none;
+    border-left: 4px solid #1E3D59;
+    border-radius: 8px;
+    background-color: #F8F9FA;
   }
-  
-  /* Estilo para o botão de retorno */
-  .btn-retour {
-    background-color: #6c757d; /* Cinza */
-    border-color: #6c757d;
+
+  .question-card {
+    border: none;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(30, 61, 89, 0.05);
+    margin-bottom: 1.5rem;
+  }
+
+  .question-card .card-header {
+    background-color: #1E3D59;
     color: white;
-    padding: 0.4rem 1rem;
+    border-radius: 8px 8px 0 0;
+    padding: 1rem 1.5rem;
+    font-family: 'Inter', sans-serif;
+    font-weight: 500;
+  }
+
+  .suggestion-card {
+    border: none;
+    border-left: 4px solid #4A90E2;
+    border-radius: 8px;
+    background-color: #F8F9FA;
+  }
+
+  .suggestion-card .card-header {
+    background-color: #4A90E2;
+    color: white;
+    border-radius: 8px 8px 0 0;
+  }
+
+  /* Alternativas */
+  .alternatives {
+    margin-top: 1.5rem;
+  }
+
+  .form-check {
+    background: white;
+    border: 1px solid #E2E8F0;
+    border-radius: 8px;
+    padding: 1rem;
+    margin-bottom: 0.8rem;
     transition: all 0.2s ease;
   }
-  
-  .btn-retour:hover {
-    background-color: #5a6268; /* Cinza mais escuro */
-    border-color: #5a6268;
+
+  .form-check:hover {
+    background-color: #F8F9FA;
+    border-color: #1E3D59;
+    transform: translateY(-1px);
+  }
+
+  .form-check-input {
+    margin-top: 0.3rem;
+  }
+
+  .form-check-label {
+    font-family: 'Inter', sans-serif;
+    font-size: 1rem;
+    color: #2D3748;
+    margin-left: 0.5rem;
+  }
+
+  .alternative-letter {
+    color: #1E3D59;
+    font-weight: 600;
+    margin-right: 0.5rem;
+  }
+
+  /* Botões */
+  .btn-primary {
+    background-color: #1E3D59;
+    border: none;
     color: white;
+    font-family: 'Inter', sans-serif;
+    font-weight: 500;
+    padding: 0.75rem 1.5rem;
+    border-radius: 8px;
+    transition: all 0.2s ease;
   }
-  
-  /* Barra de ações */
-  .actions-bar {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 10px;
-    justify-content: flex-start;
-    align-items: center;
-    margin-top: 20px;
+
+  .btn-primary:hover {
+    background-color: #15304D;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(30, 61, 89, 0.15);
   }
-  
-  /* Estilos para contêineres de vídeo e imagem */
-  .video-container {
-    max-width: 75%;
-    margin: 0 auto;
+
+  .btn-outline-primary {
+    border: 2px solid #1E3D59;
+    color: #1E3D59;
+    font-family: 'Inter', sans-serif;
+    font-weight: 500;
+    padding: 0.75rem 1.5rem;
+    border-radius: 8px;
+    transition: all 0.2s ease;
   }
-  
-  .image-container {
-    max-width: 75%;
-    margin: 0 auto;
-    text-align: center;
+
+  .btn-outline-primary:hover {
+    background-color: #1E3D59;
+    color: white;
+    transform: translateY(-1px);
   }
-  
-  /* Media queries para responsividade */
+
+  .btn-outline-secondary {
+    border: 2px solid #4A90E2;
+    color: #4A90E2;
+    font-family: 'Inter', sans-serif;
+    font-weight: 500;
+    padding: 0.75rem 1.5rem;
+    border-radius: 8px;
+    transition: all 0.2s ease;
+  }
+
+  .btn-outline-secondary:hover {
+    background-color: #4A90E2;
+    color: white;
+    transform: translateY(-1px);
+  }
+
+  /* Resultados */
+  #results-container {
+    margin-top: 2rem;
+  }
+
+  .alert-success {
+    background-color: #F0FDF4;
+    border: none;
+    border-radius: 8px;
+    color: #166534;
+    padding: 1.5rem;
+  }
+
+  .alert-success .alert-heading {
+    font-family: 'Inter', sans-serif;
+    font-weight: 600;
+    margin-bottom: 1rem;
+  }
+
+  /* Feedback detalhado */
+  #question-feedback .card {
+    border: none;
+    border-radius: 8px;
+    margin-bottom: 1rem;
+  }
+
+  #question-feedback .card.border-success {
+    border-left: 4px solid #166534;
+  }
+
+  #question-feedback .card.border-danger {
+    border-left: 4px solid #991B1B;
+  }
+
+  #question-feedback .card-header {
+    border-radius: 8px 8px 0 0;
+    font-family: 'Inter', sans-serif;
+    font-weight: 500;
+  }
+
+  #question-feedback .bg-success {
+    background-color: #166534 !important;
+  }
+
+  #question-feedback .bg-danger {
+    background-color: #991B1B !important;
+  }
+
+  /* Botão de retorno */
+  .btn-retour {
+    background-color: #4A90E2;
+    border: none;
+    color: white;
+    font-family: 'Inter', sans-serif;
+    font-weight: 500;
+    padding: 0.75rem 1.5rem;
+    border-radius: 8px;
+    transition: all 0.2s ease;
+  }
+
+  .btn-retour:hover {
+    background-color: #357ABD;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(74, 144, 226, 0.15);
+  }
+
+  /* Responsividade */
   @media (max-width: 768px) {
-    .video-container,
-    .image-container {
-      max-width: 100%;
+    .paper-effect {
+      padding: 1.5rem;
+    }
+
+    .main-title {
+      font-size: 2rem;
+    }
+
+    .btn {
+      width: 100%;
+      margin-bottom: 0.5rem;
     }
   }
 </style> 

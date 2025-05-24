@@ -1,61 +1,213 @@
-<div class="row mb-4">
-  <div class="col text-center">
-    <h1 class="mb-4"><%= t('common.my_activities') %></h1>
-    <%= link_to t('common.new_activity'), new_activity_path, class: "btn btn-lg nouvelle-activite-btn" %>
+<div class="activities-container">
+  <div class="row mb-4">
+    <div class="col text-center">
+      <h1 class="main-title mb-4"><%= t('common.my_activities') %></h1>
+      <%= link_to t('common.new_activity'), new_activity_path, class: "btn nouvelle-activite-btn" %>
+    </div>
   </div>
-</div>
 
-<% if @activities.any? %>
-  <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4 mt-4">
-    <% @activities.each do |activity| %>
-      <div class="col">
-        <div class="card h-100">
-          <div class="card-header">
-            <%= activity.título %>
-          </div>
-          <div class="card-body">
-            <h5 class="card-title">
-              <span class="badge nivel-badge" data-nivel="<%= activity.nível %>"><%= activity.nível %></span>
-            </h5>
-            <% if activity.texto.present? %>
-              <p class="card-text"><%= truncate(activity.texto, length: 100) %></p>
-            <% end %>
-          </div>
-          <div class="card-footer text-center">
-            <%= link_to "Voir", activity, class: "btn btn-sm btn-voir" %>
-            <%= link_to "Modifier", edit_activity_path(activity), class: "btn btn-sm btn-modifier" %>
-            <%= button_to "Supprimer", activity_path(activity), 
-                  method: :delete, 
-                  data: { confirm: I18n.t('common.confirm_delete_activity', locale: :fr) },
-                  form: { class: "d-inline-block" }, 
-                  class: "btn btn-sm btn-supprimer" %>
+  <% if @activities.any? %>
+    <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+      <% @activities.each do |activity| %>
+        <div class="col">
+          <div class="card h-100">
+            <div class="card-header">
+              <h2 class="card-title">
+                <%= activity.título %>
+                <span class="badge nivel-badge" data-nivel="<%= activity.nível %>"><%= activity.nível %></span>
+              </h2>
+            </div>
+            <div class="card-body">
+              <% if activity.texto.present? %>
+                <p class="card-text"><%= truncate(activity.texto, length: 100) %></p>
+              <% end %>
+            </div>
+            <div class="card-footer">
+              <%= link_to "Voir", activity, class: "action-btn btn-voir" %>
+              <%= link_to "Modifier", edit_activity_path(activity), class: "action-btn btn-modifier" %>
+              <%= button_to "Supprimer", activity_path(activity), 
+                    method: :delete, 
+                    data: { confirm: t('common.confirm_delete_activity') },
+                    class: "action-btn btn-supprimer" %>
+            </div>
           </div>
         </div>
-      </div>
-    <% end %>
-  </div>
-<% else %>
-  <div class="alert alert-info">
-    <p><%= t('common.no_activities') %></p>
-    <p><%= link_to t('common.create_activity'), new_activity_path, class: "btn btn-primary" %></p>
-  </div>
-<% end %>
+      <% end %>
+    </div>
+  <% else %>
+    <div class="alert alert-info">
+      <p><%= t('common.no_activities') %></p>
+      <p><%= link_to t('common.create_activity'), new_activity_path, class: "btn nouvelle-activite-btn" %></p>
+    </div>
+  <% end %>
+</div>
+
+<link href="https://fonts.googleapis.com/css2?family=Lora:wght@400;500;600&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
 
 <style>
-  /* Estilos para formulários inline no card-footer */
-  .card-footer form {
-    display: inline-block;
-    margin: 0;
+  /* Reset e especificidade aumentada para títulos */
+  .activities-container .main-title {
+    font-family: 'Lora', serif !important;
+    font-size: 3.2rem !important;
+    font-weight: 600 !important;
+    color: #1E3D59 !important;
+    margin-bottom: 2rem !important;
+    line-height: 1.2 !important;
   }
-  
-  .card-footer .btn {
-    margin: 2px;
+
+  .activities-container .card .card-header {
+    background: none;
+    border-bottom: 1px solid rgba(30, 61, 89, 0.1);
+    padding: 1.5rem;
   }
-  
+
+  .activities-container .card .card-title {
+    font-family: 'Lora', serif !important;
+    font-size: 1.5rem !important;
+    font-weight: 600 !important;
+    color: #1E3D59 !important;
+    margin: 0 !important;
+    line-height: 1.3 !important;
+    display: flex;
+    align-items: center;
+  }
+
+  /* Texto do card */
+  .activities-container .card-text {
+    font-family: 'Inter', sans-serif !important;
+    font-size: 1rem !important;
+    line-height: 1.6 !important;
+    color: #2D3748 !important;
+    margin: 1rem 0 !important;
+  }
+
+  /* Badge de nível */
+  .activities-container .nivel-badge {
+    font-family: 'Inter', sans-serif !important;
+    font-size: 0.85rem !important;
+    font-weight: 500 !important;
+    padding: 0.35em 0.7em !important;
+    margin-left: 0.8rem !important;
+    border-radius: 4px !important;
+    color: white !important;
+    display: inline-flex !important;
+    align-items: center !important;
+  }
+
+  /* Botões de ação */
+  .activities-container .action-btn {
+    font-family: 'Inter', sans-serif !important;
+    font-size: 0.875rem !important;
+    padding: 0.4rem 0.8rem !important;
+    border-radius: 4px !important;
+    transition: all 0.2s ease !important;
+    margin: 0 !important;
+  }
+
+  .activities-container .card-footer {
+    background: none;
+    border-top: 1px solid rgba(30, 61, 89, 0.1);
+    padding: 1rem 1.5rem;
+    display: flex;
+    gap: 0.5rem;
+  }
+
+  /* Estilos específicos dos botões */
+  .activities-container .btn-voir {
+    background-color: #4A90E2 !important;
+    border: none !important;
+    color: white !important;
+  }
+
+  .activities-container .btn-modifier {
+    background-color: white !important;
+    border: 1px solid #1E3D59 !important;
+    color: #1E3D59 !important;
+  }
+
+  .activities-container .btn-supprimer {
+    background-color: white !important;
+    border: 1px solid #CF4F5C !important;
+    color: #CF4F5C !important;
+  }
+
+  /* Hover states */
+  .activities-container .btn-voir:hover {
+    background-color: #357ABD !important;
+  }
+
+  .activities-container .btn-modifier:hover {
+    background-color: #1E3D59 !important;
+    color: white !important;
+  }
+
+  .activities-container .btn-supprimer:hover {
+    background-color: #CF4F5C !important;
+    color: white !important;
+  }
+
+  /* Botão Nova Atividade */
+  .activities-container .nouvelle-activite-btn {
+    font-size: 1rem !important;
+    padding: 0.6rem 1.5rem !important;
+    background-color: #1E3D59 !important;
+    border: none !important;
+    color: white !important;
+    border-radius: 6px !important;
+    margin-bottom: 2rem !important;
+  }
+
+  .activities-container .nouvelle-activite-btn:hover {
+    background-color: #15304D !important;
+  }
+
+  /* Card styles */
+  .activities-container .card {
+    border: none !important;
+    border-radius: 8px !important;
+    box-shadow: 0 4px 12px rgba(30, 61, 89, 0.08),
+                0 2px 4px rgba(30, 61, 89, 0.04) !important;
+    transition: all 0.3s ease !important;
+  }
+
+  .activities-container .card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 24px rgba(30, 61, 89, 0.12),
+                0 4px 8px rgba(30, 61, 89, 0.08) !important;
+  }
+
+  /* Navbar styling com maior especificidade */
+  body .navbar.navbar-expand-lg {
+    background-color: #2B4F76 !important;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  }
+
+  body .navbar .navbar-brand {
+    color: white !important;
+    font-weight: 500;
+    font-size: 1.4rem;
+  }
+
+  body .navbar .nav-link {
+    color: rgba(255, 255, 255, 0.9) !important;
+    transition: all 0.2s ease;
+    margin: 0 10px;
+  }
+
+  body .navbar .nav-link:hover {
+    color: white !important;
+    transform: translateY(-1px);
+  }
+
+  body .navbar .nav-item.active .nav-link {
+    color: white !important;
+    font-weight: 500;
+  }
+
   /* Estilo para o botão Nouvelle Activité */
   .nouvelle-activite-btn {
-    background-color: #7c639b;
-    border-color: #7c639b;
+    background-color: #1E3D59;
+    border-color: #1E3D59;
     color: white;
     padding: 10px 30px;
     font-size: 1.1rem;
@@ -64,8 +216,8 @@
   
   .nouvelle-activite-btn:hover, 
   .nouvelle-activite-btn:focus {
-    background-color: #5d4777;
-    border-color: #5d4777;
+    background-color: #2C5282;
+    border-color: #2C5282;
     color: white;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
     transform: translateY(-2px);
@@ -73,42 +225,214 @@
   
   /* Estilos para os botões de ação do card */
   .btn-voir {
-    background-color: #5fa8d3; /* Azul turquesa claro */
-    border-color: #5fa8d3;
+    background-color: #4A90E2;
+    border-color: #4A90E2;
     color: white;
     transition: all 0.2s ease;
   }
   
   .btn-voir:hover {
-    background-color: #4d8cb3; /* Azul turquesa mais escuro */
-    border-color: #4d8cb3;
+    background-color: #357ABD;
+    border-color: #357ABD;
     color: white;
   }
   
   .btn-modifier {
-    background-color: #f4bd6a; /* Laranja pastel */
-    border-color: #f4bd6a;
-    color: #4a3a60; /* Roxo escuro para contraste */
+    background-color: white;
+    border: 2px solid #1E3D59;
+    color: #1E3D59;
     transition: all 0.2s ease;
   }
   
   .btn-modifier:hover {
-    background-color: #e8a64c; /* Laranja pastel mais escuro */
-    border-color: #e8a64c;
-    color: #4a3a60;
+    background-color: #1E3D59;
+    color: white;
   }
   
   .btn-supprimer {
-    background-color: #e27d8b; /* Rosa suave */
-    border-color: #e27d8b;
+    background-color: #CF4F5C;
+    border-color: #CF4F5C;
     color: white;
     transition: all 0.2s ease;
   }
   
   .btn-supprimer:hover {
-    background-color: #c5636f; /* Rosa suave mais escuro */
-    border-color: #c5636f;
+    background-color: #B94450;
+    border-color: #B94450;
     color: white;
+  }
+
+  .card {
+    border: 1px solid #E9ECEF;
+    box-shadow: 0 2px 4px rgba(30, 61, 89, 0.05);
+    transition: all 0.3s ease;
+  }
+
+  .card:hover {
+    box-shadow: 0 4px 8px rgba(30, 61, 89, 0.1);
+  }
+
+  .card-header {
+    background-color: #F8F9FA;
+    border-bottom: 1px solid #E9ECEF;
+    color: #1E3D59;
+    font-weight: 500;
+  }
+
+  /* Fontes personalizadas */
+  .activity-title {
+    font-family: 'Lora', serif;
+    color: #1E3D59;
+    font-size: 2.8rem;
+    font-weight: 600;
+    margin-bottom: 1.5rem;
+    line-height: 1.2;
+  }
+
+  .card-header .activity-title {
+    font-size: 2.2rem;
+    margin-bottom: 0;
+    letter-spacing: -0.02em;
+    line-height: 1.3;
+  }
+
+  .card-text {
+    font-family: 'Inter', sans-serif;
+    color: #2D3748;
+    font-size: 1.1rem;
+    line-height: 1.6;
+    margin-bottom: 1.2rem;
+  }
+
+  /* Estilo papel para cards com sombra mais pronunciada */
+  .card {
+    background: #ffffff;
+    border: none;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(30, 61, 89, 0.08),
+                0 2px 4px rgba(30, 61, 89, 0.04);
+    transition: all 0.3s ease;
+    margin-bottom: 0;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 24px rgba(30, 61, 89, 0.12),
+                0 4px 8px rgba(30, 61, 89, 0.08);
+  }
+
+  .card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 5px;
+    background: linear-gradient(to right, #1E3D59, #4A90E2);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+  }
+
+  .card:hover::before {
+    opacity: 1;
+  }
+
+  .card-header {
+    background: none;
+    border-bottom: 1px solid rgba(30, 61, 89, 0.1);
+    padding: 1.8rem 2rem 1.5rem;
+  }
+
+  .card-body {
+    padding: 1.8rem 2rem;
+    background: linear-gradient(to bottom, #ffffff, #f8f9fa);
+  }
+
+  /* Badges de nível com fonte maior */
+  .nivel-badge {
+    font-family: 'Inter', sans-serif;
+    font-weight: 600;
+    padding: 0.4em 0.8em;
+    border-radius: 6px;
+    font-size: 1rem;
+    letter-spacing: 0.5px;
+    margin-left: 15px;
+    color: white;
+    display: inline-block;
+    vertical-align: middle;
+    transform: translateY(-4px);
+  }
+
+  .nivel-badge[data-nivel='A1'] { background-color: #4A90E2; }
+  .nivel-badge[data-nivel='A2'] { background-color: #357ABD; }
+  .nivel-badge[data-nivel='B1'] { background-color: #1E3D59; }
+  .nivel-badge[data-nivel='B2'] { background-color: #15304D; }
+  .nivel-badge[data-nivel='C1'] { background-color: #0C2340; }
+  .nivel-badge[data-nivel='C2'] { background-color: #041628; }
+
+  /* Botões maiores e mais espaçados */
+  .card-footer {
+    background: none;
+    border-top: 1px solid rgba(30, 61, 89, 0.1);
+    padding: 1.5rem 2rem;
+    display: flex;
+    justify-content: flex-start;
+    gap: 0.8rem;
+  }
+
+  .btn {
+    font-family: 'Inter', sans-serif;
+    font-weight: 500;
+    font-size: 0.95rem;
+    padding: 0.5rem 1rem;
+    border-radius: 6px;
+    transition: all 0.2s ease;
+  }
+
+  /* Botão Nova Atividade maior */
+  .nouvelle-activite-btn {
+    background-color: #1E3D59;
+    color: white;
+    padding: 0.8rem 2rem;
+    font-size: 1.1rem;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+    margin-bottom: 3rem;
+    border-radius: 8px;
+  }
+
+  .nouvelle-activite-btn:hover {
+    background-color: #15304D;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(30, 61, 89, 0.15);
+  }
+
+  /* Container principal com mais padding */
+  .activities-container {
+    padding: 3rem 0;
+  }
+
+  /* Mensagem sem atividades */
+  .alert-info {
+    background-color: #EDF2F7;
+    border: none;
+    border-radius: 12px;
+    color: #1E3D59;
+    padding: 2.5rem;
+    text-align: center;
+    font-family: 'Inter', sans-serif;
+    font-size: 1.2rem;
+  }
+
+  /* Grid com mais espaçamento */
+  .row {
+    margin: -1.5rem;
+  }
+
+  .col {
+    padding: 1.5rem;
   }
 </style>
 
@@ -137,33 +461,31 @@
     // Aplicar cores aos badges de nível
     const nivelBadges = document.querySelectorAll('.nivel-badge');
     
-    // Mapear níveis para cores
+    // Mapear níveis para cores distintas com bom contraste
     const nivelColors = {
-      'A1': '#9d81cc', // Lavanda claro
-      'A2': '#7c63b8', // Lavanda médio
-      'B1': '#5d4777', // Lavanda escuro (original)
-      'B2': '#4a3a60', // Roxo escuro
-      'C1': '#2a1b46', // Roxo profundo
-      'C2': '#1c1036'  // Roxo muito escuro
+      'A1': '#4CAF50',  // Verde
+      'A2': '#2196F3',  // Azul
+      'B1': '#FF9800',  // Laranja
+      'B2': '#9C27B0',  // Roxo
+      'C1': '#F44336',  // Vermelho
+      'C2': '#607D8B'   // Azul acinzentado
     };
     
     nivelBadges.forEach(function(badge) {
       const nivel = badge.getAttribute('data-nivel');
       if (nivelColors[nivel]) {
         badge.style.backgroundColor = nivelColors[nivel];
-        // Adicionar cor de texto branco para níveis B1 ou mais altos para melhor legibilidade
-        if (nivel === 'B1' || nivel === 'B2' || nivel === 'C1' || nivel === 'C2') {
-          badge.style.color = 'white';
-        } else {
-          badge.style.color = '#ffffff'; // Texto branco para todos os badges
-        }
+        badge.style.color = '#ffffff';
+        badge.style.padding = '0.35em 0.65em';
+        badge.style.fontWeight = '600';
+        badge.style.boxShadow = '0 1px 3px rgba(0,0,0,0.2)';
+        // Adicionar borda sutil para melhorar a definição
+        badge.style.border = '1px solid rgba(255,255,255,0.1)';
       } else {
-        badge.style.backgroundColor = '#7c639b'; // Cor padrão
-        badge.style.color = 'white';
+        badge.style.backgroundColor = '#607D8B'; // Cor padrão (azul acinzentado)
+        badge.style.color = '#ffffff';
       }
-      // Adicionar um pouco de padding e border-radius para melhor aparência
-      badge.style.padding = '0.35em 0.65em';
-      badge.style.fontWeight = '600';
     });
   });
 </script>
+

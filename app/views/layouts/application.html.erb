@@ -24,7 +24,7 @@
   </head>
 
   <body>
-    <nav class="navbar navbar-expand-lg navbar-dark" style="background-color: #7c639b;">
+    <nav class="navbar navbar-expand-lg navbar-dark custom-navbar">
       <div class="container">
         <a class="navbar-brand" href="/" style="font-family: 'Dancing Script', cursive; font-size: 1.8rem;"><%= t('common.app_name') %></a>
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
@@ -54,10 +54,10 @@
               </li>
             <% else %>
               <li class="nav-item">
-                <%= link_to "Connexion (Professeur)", new_user_session_path, class: "nav-link" %>
+                <%= link_to t('devise.shared.links.sign_in_teacher'), new_user_session_path, class: "nav-link" %>
               </li>
               <li class="nav-item">
-                <%= link_to "Connexion (Élève)", new_student_session_path, class: "nav-link" %>
+                <%= link_to t('devise.shared.links.sign_in_student'), new_student_session_path, class: "nav-link" %>
               </li>
             <% end %>
           </ul>
@@ -83,6 +83,33 @@
     </div>
     
     <style>
+      /* Estilo para a navbar personalizada */
+      .custom-navbar {
+        background-color: #2B4F76 !important;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      }
+
+      .custom-navbar .navbar-brand {
+        color: white !important;
+        font-weight: 500;
+      }
+
+      .custom-navbar .nav-link {
+        color: rgba(255, 255, 255, 0.9) !important;
+        transition: all 0.2s ease;
+        margin: 0 10px;
+      }
+
+      .custom-navbar .nav-link:hover {
+        color: white !important;
+        transform: translateY(-1px);
+      }
+
+      .custom-navbar .nav-item.active .nav-link {
+        color: white !important;
+        font-weight: 500;
+      }
+
       /* Estilo para botão de logout na navbar */
       .btn-logout {
         background: none;

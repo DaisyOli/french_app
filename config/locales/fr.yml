@@ -115,6 +115,7 @@ fr:
     confirm_delete_video: "Êtes-vous sûr de vouloir supprimer cette vidéo ?"
     confirm_delete_image: "Êtes-vous sûr de vouloir supprimer cette image ?"
     confirm_delete_texte: "Êtes-vous sûr de vouloir supprimer ce texte ?"
+    back: "Retour"
     
   # Mensagens flash
   flash:
@@ -129,4 +130,10 @@ fr:
       remove:
         video: "La vidéo a été supprimée avec succès."
         image: "L'image a été supprimée avec succès."
-        texte: "Le texte a été supprimé avec succès." 
+        texte: "Le texte a été supprimé avec succès."
+  quiz:
+    feedback:
+      excellent: "Excellent! Vous maîtrisez bien ce contenu."
+      good: "Bon travail! Continuez à pratiquer pour vous améliorer."
+      keep_practicing: "Continuez à pratiquer pour améliorer votre compréhension."
+      score: "Vous avez obtenu %{correct} sur %{total} questions (%{percent}%)." 

@@ -1,6 +1,6 @@
 <div class="card shadow-sm">
-  <div class="card-header text-center" style="background-color: #7c639b; color: white;">
-    <h2 class="my-2"><%= activity.new_record? ? t('common.new_activity') : t('common.edit_activity') %></h2>
+  <div class="card-header text-center" style="background-color: #1E3D59; color: white;">
+    <h2 class="form-title my-2"><%= activity.new_record? ? t('common.new_activity') : t('common.edit_activity') %></h2>
   </div>
   <div class="card-body p-4">
     <%= form_with(model: activity) do |form| %>
@@ -15,57 +15,143 @@
         </div>
       <% end %>
 
-      <div class="mb-3">
+      <div class="mb-4">
         <%= form.label :título, t('activerecord.attributes.activity.título'), class: "form-label" %>
-        <%= form.text_field :título, class: "form-control" %>
+        <%= form.text_field :título, class: "form-control form-control-lg" %>
       </div>
 
-      <div class="mb-3">
+      <div class="mb-4">
         <%= form.label :nível, t('activerecord.attributes.activity.nível'), class: "form-label" %>
         <%= form.select :nível, ['A1', 'A2', 'B1', 'B2', 'C1', 'C2'], 
                       { prompt: 'Sélectionnez le niveau' }, 
-                      { class: "form-select" } %>
+                      { class: "form-select form-select-lg" } %>
       </div>
 
-      <div class="mb-3">
+      <div class="mb-4">
         <%= form.label :texto, t('activerecord.attributes.activity.texto'), class: "form-label" %>
         <%= form.text_area :texto, rows: 5, class: "form-control" %>
       </div>
       
-      <div class="d-grid gap-2 mt-4">
+      <div class="d-grid gap-3 mt-5">
         <%= form.submit activity.new_record? ? t('common.create_activity') : t('common.update_activity'), 
-                  class: "btn btn-lg", style: "background-color: #7c639b; color: white;" %>
+                  class: "btn btn-lg btn-primary" %>
+        <%= link_to t('helpers.actions.back'), activities_path, class: "btn btn-lg btn-outline-secondary" %>
       </div>
     <% end %>
-
-    <div class="mt-4 text-center">
-      <%= link_to t('helpers.actions.back'), activities_path, class: "btn btn-outline-secondary" %>
-    </div>
   </div>
 </div>
 
 <style>
-  .btn:hover {
-    background-color: #5d4777 !important;
+  /* Estilos do formulário */
+  .form-title {
+    font-family: 'Lora', serif;
+    font-size: 2rem;
+    font-weight: 600;
   }
-  
-  a {
-    color: #7c639b;
-    text-decoration: none;
+
+  .form-label {
+    font-family: 'Inter', sans-serif;
+    font-size: 1rem;
+    font-weight: 500;
+    color: #2D3748;
+    margin-bottom: 0.5rem;
   }
-  
-  a:hover {
-    color: #5d4777;
-    text-decoration: underline;
+
+  .form-control, .form-select {
+    font-family: 'Inter', sans-serif;
+    border: 1px solid #E2E8F0;
+    border-radius: 8px;
+    padding: 0.75rem 1rem;
+    font-size: 1rem;
+    transition: all 0.2s ease;
   }
-  
-  .btn-outline-primary {
-    color: #7c639b;
-    border-color: #7c639b;
+
+  .form-control:focus, .form-select:focus {
+    border-color: #1E3D59;
+    box-shadow: 0 0 0 3px rgba(30, 61, 89, 0.1);
   }
-  
-  .btn-outline-primary:hover {
-    background-color: #7c639b !important;
-    color: white !important;
+
+  .form-control-lg {
+    font-size: 1.1rem;
+    padding: 0.875rem 1.25rem;
+  }
+
+  /* Botões */
+  .btn-primary {
+    background-color: #1E3D59;
+    border: none;
+    color: white;
+    font-family: 'Inter', sans-serif;
+    font-weight: 500;
+    padding: 0.875rem 1.5rem;
+    border-radius: 8px;
+    transition: all 0.2s ease;
+  }
+
+  .btn-primary:hover {
+    background-color: #15304D;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(30, 61, 89, 0.15);
+  }
+
+  .btn-outline-secondary {
+    border: 2px solid #1E3D59;
+    color: #1E3D59;
+    font-family: 'Inter', sans-serif;
+    font-weight: 500;
+    padding: 0.875rem 1.5rem;
+    border-radius: 8px;
+    transition: all 0.2s ease;
+  }
+
+  .btn-outline-secondary:hover {
+    background-color: #1E3D59;
+    color: white;
+    transform: translateY(-1px);
+  }
+
+  /* Card */
+  .card {
+    border: none;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(30, 61, 89, 0.08),
+                0 2px 4px rgba(30, 61, 89, 0.04);
+  }
+
+  .card-header {
+    border-radius: 12px 12px 0 0 !important;
+    border-bottom: none;
+    padding: 1.5rem;
+  }
+
+  .card-body {
+    padding: 2rem;
+  }
+
+  /* Alerta de erro */
+  .alert-danger {
+    background-color: #FEE2E2;
+    border: none;
+    border-radius: 8px;
+    color: #991B1B;
+    padding: 1rem 1.5rem;
+    margin-bottom: 2rem;
+  }
+
+  .alert-danger h5 {
+    font-family: 'Inter', sans-serif;
+    font-weight: 600;
+    margin-bottom: 1rem;
+  }
+
+  .alert-danger ul {
+    margin-bottom: 0;
+    padding-left: 1.5rem;
+  }
+
+  .alert-danger li {
+    font-family: 'Inter', sans-serif;
+    font-size: 0.95rem;
+    margin-bottom: 0.5rem;
   }
 </style> 

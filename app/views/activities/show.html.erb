@@ -453,27 +453,27 @@
     
     // Aplicar estilo a botões de adicionar
     addButtons.forEach(function(button) {
-      button.style.color = '#5d4777';
-      button.style.borderColor = '#5d4777';
+      button.style.color = '#1E3D59';
+      button.style.borderColor = '#1E3D59';
     });
     
     // Aplicar estilo a botões de editar
     editButtons.forEach(function(button) {
-      button.style.color = '#5d4777';
-      button.style.borderColor = '#5d4777';
+      button.style.color = '#1E3D59';
+      button.style.borderColor = '#1E3D59';
     });
     
     // Aplicar hover via JavaScript
     function applyHoverEffect(buttons) {
       buttons.forEach(function(button) {
         button.addEventListener('mouseover', function() {
-          this.style.backgroundColor = '#5d4777';
+          this.style.backgroundColor = '#1E3D59';
           this.style.color = 'white';
         });
         
         button.addEventListener('mouseout', function() {
           this.style.backgroundColor = '';
-          this.style.color = '#5d4777';
+          this.style.color = '#1E3D59';
         });
       });
     }
@@ -484,26 +484,21 @@
     // Aplicar cores aos badges de nível
     const nivelBadges = document.querySelectorAll('.nivel-badge');
     
-    // Mapear níveis para cores
+    // Mapear níveis para tons de azul marinho
     const nivelColors = {
-      'A1': '#9d81cc', // Lavanda claro
-      'A2': '#7c63b8', // Lavanda médio
-      'B1': '#5d4777', // Lavanda escuro (original)
-      'B2': '#4a3a60', // Roxo escuro
-      'C1': '#2a1b46', // Roxo profundo
-      'C2': '#1c1036'  // Roxo muito escuro
+      'A1': '#4A90E2', // Azul mais claro
+      'A2': '#357ABD',
+      'B1': '#1E3D59', // Nosso azul principal
+      'B2': '#15304D',
+      'C1': '#0C2340',
+      'C2': '#041628'  // Roxo muito escuro
     };
     
     nivelBadges.forEach(function(badge) {
       const nivel = badge.getAttribute('data-nivel');
       if (nivelColors[nivel]) {
         badge.style.backgroundColor = nivelColors[nivel];
-        // Adicionar cor de texto branco para níveis B1 ou mais altos para melhor legibilidade
-        if (nivel === 'B1' || nivel === 'B2' || nivel === 'C1' || nivel === 'C2') {
-          badge.style.color = 'white';
-        } else {
-          badge.style.color = '#ffffff'; // Texto branco para todos os badges
-        }
+        badge.style.color = 'white';
       } else {
         badge.style.backgroundColor = '#7c639b'; // Cor padrão
         badge.style.color = 'white';
@@ -631,35 +626,34 @@
   
   /* Estilos para os botões de ação */
   .btn-resoudre {
-    background-color: #4CAF50; /* Verde */
-    border-color: #4CAF50;
+    background-color: #4A90E2;
+    border-color: #4A90E2;
     color: white;
     padding: 0.4rem 1rem;
     transition: all 0.2s ease;
   }
   
   .btn-resoudre:hover {
-    background-color: #3d8b40; /* Verde mais escuro */
-    border-color: #3d8b40;
+    background-color: #357ABD;
+    border-color: #357ABD;
     color: white;
   }
   
   .btn-modifier {
-    background-color: #f4bd6a; /* Laranja pastel */
-    border-color: #f4bd6a;
-    color: #4a3a60; /* Roxo escuro para contraste */
+    background-color: white;
+    border: 2px solid #1E3D59;
+    color: #1E3D59;
     padding: 0.4rem 1rem;
     transition: all 0.2s ease;
   }
   
   .btn-modifier:hover {
-    background-color: #e8a64c; /* Laranja pastel mais escuro */
-    border-color: #e8a64c;
-    color: #4a3a60;
+    background-color: #1E3D59;
+    color: white;
   }
   
   .btn-retour {
-    background-color: #6c757d; /* Cinza */
+    background-color: #6c757d;
     border-color: #6c757d;
     color: white;
     padding: 0.4rem 1rem;
@@ -667,35 +661,35 @@
   }
   
   .btn-retour:hover {
-    background-color: #5a6268; /* Cinza mais escuro */
+    background-color: #5a6268;
     border-color: #5a6268;
     color: white;
   }
   
   .btn-supprimer {
-    background-color: #e27d8b; /* Rosa suave */
-    border-color: #e27d8b;
+    background-color: #CF4F5C;
+    border-color: #CF4F5C;
     color: white;
     padding: 0.4rem 1rem;
     transition: all 0.2s ease;
   }
   
   .btn-supprimer:hover {
-    background-color: #c5636f; /* Rosa suave mais escuro */
-    border-color: #c5636f;
+    background-color: #B94450;
+    border-color: #B94450;
     color: white;
   }
   
   .btn-voir {
-    background-color: #5fa8d3; /* Azul turquesa claro */
-    border-color: #5fa8d3;
+    background-color: #4A90E2;
+    border-color: #4A90E2;
     color: white;
     transition: all 0.2s ease;
   }
   
   .btn-voir:hover {
-    background-color: #4d8cb3; /* Azul turquesa mais escuro */
-    border-color: #4d8cb3;
+    background-color: #357ABD;
+    border-color: #357ABD;
     color: white;
   }
   
@@ -715,17 +709,17 @@
   .order-input {
     width: 50px;
     height: 38px;
-    border: 2px solid #7c639b;
+    border: 2px solid #1E3D59;
     border-radius: 20px;
     text-align: center;
     font-weight: bold;
-    color: #5d4777;
+    color: #1E3D59;
     background-color: white;
     padding: 0 5px;
   }
   
   .order-submit {
-    background-color: #7c639b;
+    background-color: #1E3D59;
     color: white;
     border: none;
     border-radius: 50%;
@@ -764,5 +758,44 @@
     .image-container {
       max-width: 100%;
     }
+  }
+
+  /* Ajustar outros elementos que usavam o lavanda */
+  .paper-section h3 {
+    color: #1E3D59;
+  }
+
+  .decorative-line {
+    background: linear-gradient(to right, #1E3D59, #4A90E2);
+  }
+
+  /* Highlight para elementos novos */
+  .highlight-new-element {
+    animation: highlightFade 3s ease-out;
+  }
+
+  @keyframes highlightFade {
+    0% { background-color: rgba(74, 144, 226, 0.2); }
+    100% { background-color: transparent; }
+  }
+
+  /* Estilo para alternativa correta */
+  .correct-badge {
+    background-color: #4A90E2;
+    color: white;
+    padding: 0.25em 0.5em;
+    border-radius: 4px;
+    margin-left: 0.5em;
+  }
+
+  /* Estilo para o título principal */
+  .activity-header h1 {
+    color: #1E3D59;
+    margin-bottom: 1rem;
+  }
+
+  /* Estilo para o título da página */
+  h1, h2, h3 {
+    color: #1E3D59;
   }
 </style>

@@ -14,6 +14,53 @@
  *= require_self
  */
 
+/* Estilos base */
+body {
+  font-family: 'Inter', sans-serif;
+  color: #2D3748;
+  line-height: 1.6;
+}
+
+/* Estilos de formulário */
+input[type="submit"] {
+  background-color: #1E3D59;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 16px;
+}
+
+input[type="submit"]:hover {
+  background-color: #15304D;
+}
+
+/* Links */
+a {
+  color: #1E3D59;
+  text-decoration: none;
+}
+
+a:hover {
+  text-decoration: underline;
+}
+
+/* Responsividade */
+@media (max-width: 768px) {
+  nav {
+    flex-direction: column;
+  }
+  
+  .nav-links {
+    margin-top: 15px;
+  }
+  
+  .nav-links a {
+    margin: 0 10px;
+  }
+}
+
 /* Estilo para o efeito de papel */
 .paper-effect {
   background: #ffffff;

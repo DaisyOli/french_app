@@ -65,6 +65,8 @@ fr:
     shared:
       links:
         sign_in: "Connexion"
+        sign_in_teacher: "Connexion (Professeur)"
+        sign_in_student: "Connexion (Élève)"
         sign_up: "Inscription"
         forgot_password: "Mot de passe oublié ?"
         confirmation_instructions: "Vous n'avez pas reçu les instructions de confirmation ?"

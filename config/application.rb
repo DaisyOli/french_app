@@ -13,8 +13,8 @@ module FrenchApp
 
     # Set default locale to French
     config.i18n.default_locale = :fr
-    config.i18n.available_locales = [:fr, :pt, :en]
-    config.i18n.fallbacks = [:fr, :en]
+    config.i18n.available_locales = [:fr]
+    config.i18n.fallbacks = [:fr]
 
     # Please, add to the `ignore` list any other `lib` subdirectories that do
     # not contain `.rb` files, or that should not be reloaded or eager loaded.
