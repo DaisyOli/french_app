@@ -1,0 +1,647 @@
+<div class="student-dashboard">
+  <!-- Hero Section -->
+  <div class="hero-section">
+    <div class="hero-content">
+      <div class="welcome-card">
+        <div class="avatar-section">
+          <div class="student-avatar">
+            <i class="bi bi-person-badge-fill"></i>
+          </div>
+          <div class="welcome-text">
+            <h1>Bienvenue!</h1>
+            <p>Prêt à apprendre le français aujourd'hui ?</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Progress Section -->
+  <div class="progress-section">
+    <div class="stats-grid">
+      <div class="stat-card">
+        <div class="stat-icon">
+          <i class="bi bi-trophy-fill"></i>
+        </div>
+        <div class="stat-content">
+          <h3><%= @completed_count %></h3>
+          <p>Activités terminées</p>
+        </div>
+      </div>
+      
+      <div class="stat-card">
+        <div class="stat-icon">
+          <i class="bi bi-star-fill"></i>
+        </div>
+        <div class="stat-content">
+          <h3><%= @average_score %>%</h3>
+          <p>Score moyen</p>
+        </div>
+      </div>
+
+      <div class="stat-card trophy-card">
+        <div class="stat-icon trophy-icon">
+          <span class="trophy-emoji"><%= @current_trophy[:icon] %></span>
+        </div>
+        <div class="stat-content">
+          <h3><%= @current_streak %> jours</h3>
+          <p>Assiduité actuelle</p>
+          <div class="trophy-info">
+            <span class="trophy-name"><%= @current_trophy[:name] %></span>
+            <div class="motivational-message">
+              <%= @motivational_message %>
+            </div>
+            <% if @next_trophy[:needed] > 0 %>
+              <div class="next-trophy">
+                <span class="next-trophy-text">Prochain: <%= @next_trophy[:icon] %> <%= @next_trophy[:name] %></span>
+                <div class="progress-bar">
+                  <div class="progress-fill" style="width: <%= (@next_trophy[:progress].to_f / @next_trophy[:target] * 100).round(1) %>%"></div>
+                </div>
+                <span class="progress-text"><%= @next_trophy[:needed] %> jour<%= @next_trophy[:needed] > 1 ? 's' : '' %> restant<%= @next_trophy[:needed] > 1 ? 's' : '' %></span>
+              </div>
+            <% else %>
+              <span class="max-trophy">🎉 Niveau maximum atteint!</span>
+            <% end %>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Activities Section -->
+  <div class="activities-section">
+    <div class="section-header">
+      <h2>Mes activités</h2>
+      <p>Vos activités récemment terminées</p>
+    </div>
+
+    <!-- My Activities Grid -->
+    <div class="my-activities-grid">
+      <% if @completed_activities.any? %>
+        <% @completed_activities.order(created_at: :desc).limit(6).each do |completed_activity| %>
+          <% activity = completed_activity.activity %>
+          <div class="my-activity-card">
+            <div class="card-header">
+              <div class="level-badge level-<%= activity.nível.downcase %>">
+                <%= activity.nível %>
+              </div>
+              <div class="completed-date">
+                <i class="bi bi-calendar3"></i>
+                <%= completed_activity.created_at.strftime("%d/%m/%Y") %>
+              </div>
+            </div>
+            
+            <div class="card-body">
+              <h3 class="activity-title"><%= activity.título %></h3>
+              <% if activity.texto.present? %>
+                <p class="activity-description">
+                  <%= truncate(activity.texto, length: 100) %>
+                </p>
+              <% end %>
+              
+              <div class="activity-result">
+                <div class="score-circle">
+                  <span class="score-value"><%= completed_activity.percentage.round(1) %>%</span>
+                </div>
+                <div class="result-details">
+                  <div class="stat">
+                    <i class="bi bi-check-circle-fill"></i>
+                    <span>Terminée</span>
+                  </div>
+                  <div class="stat">
+                    <i class="bi bi-clock"></i>
+                    <span>~<%= [5, activity.questions.count * 2].max %> min</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+            <div class="card-footer">
+              <%= link_to solve_activity_path(activity), class: "btn-retry" do %>
+                <i class="bi bi-arrow-clockwise"></i>
+                Refaire
+              <% end %>
+            </div>
+          </div>
+        <% end %>
+      <% else %>
+        <div class="empty-state">
+          <div class="empty-icon">
+            <i class="bi bi-trophy"></i>
+          </div>
+          <h3>Aucune activité terminée</h3>
+          <p>Commencez votre première activité pour voir vos résultats ici.</p>
+        </div>
+      <% end %>
+    </div>
+
+    <!-- More Activities Button -->
+    <div class="more-activities-section">
+      <%= link_to student_activities_path, class: "btn-more-activities" do %>
+        <i class="bi bi-plus-circle"></i>
+        + activités
+        <span class="btn-subtitle">Voir toutes les activités disponibles</span>
+      <% end %>
+    </div>
+  </div>
+</div>
+
+<style>
+  /* === STUDENT DASHBOARD === */
+  .student-dashboard {
+    font-family: 'Inter', sans-serif;
+    background: linear-gradient(135deg, #E8F4FD 0%, #F7FAFC 100%);
+    min-height: 100vh;
+    padding: 2rem 1rem;
+  }
+
+  /* === HERO SECTION === */
+  .hero-section {
+    margin-bottom: 3rem;
+  }
+
+  .welcome-card {
+    background: white;
+    border-radius: 20px;
+    padding: 2rem;
+    box-shadow: 0 8px 32px rgba(30, 61, 89, 0.1);
+    border: 1px solid rgba(30, 61, 89, 0.05);
+  }
+
+  .avatar-section {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+  }
+
+  .student-avatar {
+    width: 80px;
+    height: 80px;
+    background: linear-gradient(135deg, #4A90E2 0%, #1E3D59 100%);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 2.5rem;
+  }
+
+  .welcome-text h1 {
+    font-family: 'Lora', serif;
+    color: #1E3D59;
+    margin: 0 0 0.5rem;
+    font-size: 2rem;
+    font-weight: 600;
+  }
+
+  .student-name {
+    color: #4A90E2;
+    text-transform: capitalize;
+  }
+
+  .welcome-text p {
+    color: #718096;
+    margin: 0;
+    font-size: 1.1rem;
+  }
+
+  /* === PROGRESS SECTION === */
+  .progress-section {
+    margin-bottom: 3rem;
+  }
+
+  .stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 1.5rem;
+  }
+
+  .stat-card {
+    background: white;
+    border-radius: 16px;
+    padding: 1.5rem;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    box-shadow: 0 4px 16px rgba(30, 61, 89, 0.08);
+    border: 1px solid rgba(30, 61, 89, 0.05);
+    transition: transform 0.2s ease;
+  }
+
+  .stat-card:hover {
+    transform: translateY(-2px);
+  }
+
+  .stat-icon {
+    width: 60px;
+    height: 60px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+    color: white;
+  }
+
+  .stat-card:nth-child(1) .stat-icon {
+    background: linear-gradient(135deg, #F6AD55 0%, #ED8936 100%);
+  }
+
+  .stat-card:nth-child(2) .stat-icon {
+    background: linear-gradient(135deg, #68D391 0%, #48BB78 100%);
+  }
+
+  .stat-card:nth-child(3) .stat-icon {
+    background: linear-gradient(135deg, #4A90E2 0%, #357ABD 100%);
+  }
+
+  .stat-content h3 {
+    font-size: 2rem;
+    font-weight: 700;
+    margin: 0;
+    color: #1E3D59;
+  }
+
+  .stat-content p {
+    margin: 0;
+    color: #718096;
+    font-size: 0.9rem;
+  }
+
+  /* === ACTIVITIES SECTION === */
+  .activities-section {
+    background: white;
+    border-radius: 20px;
+    padding: 2rem;
+    box-shadow: 0 8px 32px rgba(30, 61, 89, 0.1);
+    border: 1px solid rgba(30, 61, 89, 0.05);
+  }
+
+  .section-header {
+    text-align: center;
+    margin-bottom: 2rem;
+  }
+
+  .section-header h2 {
+    font-family: 'Lora', serif;
+    color: #1E3D59;
+    font-size: 2rem;
+    margin: 0 0 0.5rem;
+  }
+
+  .section-header p {
+    color: #718096;
+    margin: 0;
+    font-size: 1.1rem;
+  }
+
+  /* === MY ACTIVITIES GRID === */
+  .my-activities-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+  }
+
+  .my-activity-card {
+    background: #F7FAFC;
+    border: 1px solid #E2E8F0;
+    border-radius: 16px;
+    overflow: hidden;
+    transition: all 0.3s ease;
+  }
+
+  .my-activity-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 12px 32px rgba(30, 61, 89, 0.15);
+    border-color: #4A90E2;
+  }
+
+  .my-activity-card .card-header {
+    background: white;
+    padding: 1rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid #E2E8F0;
+  }
+
+  .level-badge {
+    padding: 0.25rem 0.75rem;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: white;
+  }
+
+  .level-badge.level-a1 { background: #68D391; }
+  .level-badge.level-a2 { background: #4FD1C7; }
+  .level-badge.level-b1 { background: #63B3ED; }
+  .level-badge.level-b2 { background: #7C3AED; }
+  .level-badge.level-c1 { background: #F56565; }
+  .level-badge.level-c2 { background: #ED8936; }
+
+  .completed-date {
+    display: flex;
+    align-items: center;
+    gap: 0.3rem;
+    color: #718096;
+    font-size: 0.8rem;
+  }
+
+  .completed-date i {
+    color: #4A90E2;
+  }
+
+  .my-activity-card .card-body {
+    padding: 1.5rem;
+  }
+
+  .activity-title {
+    font-family: 'Lora', serif;
+    color: #1E3D59;
+    font-size: 1.25rem;
+    margin: 0 0 0.75rem;
+    font-weight: 600;
+  }
+
+  .activity-description {
+    color: #4A5568;
+    line-height: 1.5;
+    margin: 0 0 1rem;
+    font-size: 0.9rem;
+  }
+
+  .activity-result {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 1rem;
+  }
+
+  .score-circle {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #22C55E 0%, #16A34A 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-weight: 700;
+    font-size: 0.9rem;
+    box-shadow: 0 4px 12px rgba(34, 197, 94, 0.3);
+  }
+
+  .result-details {
+    flex: 1;
+  }
+
+  .result-details .stat {
+    display: flex;
+    align-items: center;
+    gap: 0.3rem;
+    color: #718096;
+    font-size: 0.8rem;
+    margin-bottom: 0.25rem;
+  }
+
+  .result-details .stat i {
+    color: #22C55E;
+  }
+
+  .my-activity-card .card-footer {
+    padding: 0 1.5rem 1.5rem;
+  }
+
+  .btn-retry {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    width: 100%;
+    background: linear-gradient(135deg, #F6AD55 0%, #ED8936 100%);
+    color: white;
+    padding: 0.75rem 1.5rem;
+    border-radius: 10px;
+    text-decoration: none;
+    font-weight: 600;
+    transition: all 0.2s ease;
+    border: none;
+  }
+
+  .btn-retry:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 6px 20px rgba(246, 173, 85, 0.4);
+    color: white;
+    text-decoration: none;
+  }
+
+  /* === MORE ACTIVITIES SECTION === */
+  .more-activities-section {
+    text-align: center;
+    padding-top: 1.5rem;
+    border-top: 1px solid #E2E8F0;
+  }
+
+  .btn-more-activities {
+    display: inline-flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+    background: linear-gradient(135deg, #4A90E2 0%, #1E3D59 100%);
+    color: white;
+    padding: 1.5rem 2rem;
+    border-radius: 16px;
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 1.1rem;
+    transition: all 0.3s ease;
+    border: none;
+    box-shadow: 0 8px 24px rgba(74, 144, 226, 0.3);
+  }
+
+  .btn-more-activities:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 12px 32px rgba(74, 144, 226, 0.4);
+    color: white;
+    text-decoration: none;
+  }
+
+  .btn-more-activities i {
+    font-size: 1.5rem;
+  }
+
+  .btn-subtitle {
+    font-size: 0.9rem;
+    opacity: 0.9;
+    font-weight: 400;
+  }
+
+  /* === EMPTY STATE === */
+  .empty-state {
+    text-align: center;
+    padding: 3rem 1rem;
+    color: #718096;
+  }
+
+  .empty-icon {
+    font-size: 4rem;
+    margin-bottom: 1rem;
+    opacity: 0.5;
+  }
+
+  .empty-state h3 {
+    color: #4A5568;
+    margin-bottom: 0.5rem;
+  }
+
+  /* === RESPONSIVIDADE === */
+  @media (max-width: 768px) {
+    .student-dashboard {
+      padding: 1rem 0.5rem;
+    }
+
+    .welcome-card {
+      padding: 1.5rem;
+    }
+
+    .avatar-section {
+      flex-direction: column;
+      text-align: center;
+      gap: 1rem;
+    }
+
+    .welcome-text h1 {
+      font-size: 1.5rem;
+    }
+
+    .stats-grid {
+      grid-template-columns: 1fr;
+    }
+
+    .my-activities-grid {
+      grid-template-columns: 1fr;
+    }
+
+    .activities-section {
+      padding: 1.5rem;
+    }
+
+    .section-header h2 {
+      font-size: 1.5rem;
+    }
+
+    .btn-more-activities {
+      padding: 1.25rem 1.5rem;
+      font-size: 1rem;
+    }
+
+    .trophy-card::before {
+      display: none;
+    }
+
+    .trophy-info {
+      margin-top: 0.3rem;
+    }
+
+    .trophy-name {
+      font-size: 0.8rem;
+    }
+
+    .next-trophy-text {
+      font-size: 0.7rem;
+    }
+
+    .progress-bar {
+      height: 4px;
+    }
+  }
+
+  /* === TROPHY CARD === */
+  .trophy-card {
+    position: relative;
+    overflow: visible;
+  }
+
+  .trophy-card::before {
+    content: '';
+    position: absolute;
+    top: -2px;
+    left: -2px;
+    right: -2px;
+    bottom: -2px;
+    background: linear-gradient(135deg, #FFD700, #FFA500, #FF6B6B, #4ECDC4);
+    border-radius: 18px;
+    z-index: -1;
+    opacity: 0.3;
+  }
+
+  .trophy-icon {
+    background: linear-gradient(135deg, #FFD700 0%, #FFA500 100%) !important;
+    position: relative;
+  }
+
+  .trophy-emoji {
+    font-size: 1.8rem;
+    filter: drop-shadow(0 2px 4px rgba(0,0,0,0.2));
+  }
+
+  .trophy-info {
+    margin-top: 0.5rem;
+  }
+
+  .trophy-name {
+    display: block;
+    font-weight: 600;
+    color: #1E3D59;
+    font-size: 0.9rem;
+    margin-bottom: 0.5rem;
+  }
+
+  .motivational-message {
+    font-size: 0.8rem;
+    color: #4A90E2;
+    font-style: italic;
+    margin-bottom: 0.5rem;
+    line-height: 1.3;
+  }
+
+  .next-trophy {
+    margin-top: 0.5rem;
+  }
+
+  .next-trophy-text {
+    font-size: 0.8rem;
+    color: #4A5568;
+    display: block;
+    margin-bottom: 0.3rem;
+  }
+
+  .progress-bar {
+    width: 100%;
+    height: 6px;
+    background: #E2E8F0;
+    border-radius: 3px;
+    overflow: hidden;
+    margin-bottom: 0.2rem;
+  }
+
+  .progress-fill {
+    height: 100%;
+    background: linear-gradient(135deg, #4A90E2 0%, #357ABD 100%);
+    border-radius: 3px;
+    transition: width 0.3s ease;
+  }
+
+  .progress-text {
+    font-size: 0.7rem;
+    color: #718096;
+  }
+
+  .max-trophy {
+    font-size: 0.8rem;
+    color: #22C55E;
+    font-weight: 600;
+  }
+</style> 

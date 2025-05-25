@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2025_05_13_164519) do
+ActiveRecord::Schema[7.1].define(version: 2025_05_25_071617) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -38,6 +38,23 @@ ActiveRecord::Schema[7.1].define(version: 2025_05_13_164519) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["question_id"], name: "index_alternatives_on_question_id"
+  end
+
+  create_table "completed_activities", force: :cascade do |t|
+    t.bigint "user_id"
+    t.bigint "activity_id", null: false
+    t.integer "score"
+    t.datetime "completed_at"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.bigint "student_id"
+    t.integer "total_questions"
+    t.decimal "percentage"
+    t.index ["activity_id"], name: "index_completed_activities_on_activity_id"
+    t.index ["student_id", "activity_id"], name: "index_completed_activities_on_student_id_and_activity_id", unique: true, where: "(student_id IS NOT NULL)"
+    t.index ["student_id"], name: "index_completed_activities_on_student_id"
+    t.index ["user_id", "activity_id"], name: "index_completed_activities_on_user_id_and_activity_id", unique: true, where: "(user_id IS NOT NULL)"
+    t.index ["user_id"], name: "index_completed_activities_on_user_id"
   end
 
   create_table "questions", force: :cascade do |t|
@@ -68,6 +85,9 @@ ActiveRecord::Schema[7.1].define(version: 2025_05_13_164519) do
     t.datetime "remember_created_at"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.integer "current_streak", default: 0
+    t.integer "best_streak", default: 0
+    t.date "last_activity_date"
     t.index ["email"], name: "index_students_on_email", unique: true
     t.index ["reset_password_token"], name: "index_students_on_reset_password_token", unique: true
   end
@@ -95,6 +115,9 @@ ActiveRecord::Schema[7.1].define(version: 2025_05_13_164519) do
 
   add_foreign_key "activities", "users"
   add_foreign_key "alternatives", "questions"
+  add_foreign_key "completed_activities", "activities"
+  add_foreign_key "completed_activities", "students"
+  add_foreign_key "completed_activities", "users"
   add_foreign_key "questions", "activities"
   add_foreign_key "statements", "activities"
   add_foreign_key "suggestions", "activities"

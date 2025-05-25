@@ -28,10 +28,15 @@
     <!-- Navbar Moderna -->
     <nav class="navbar navbar-expand-lg navbar-dark modern-navbar fixed-top">
       <div class="container">
-        <!-- Brand -->
+        <!-- Brand com logo francês mais lúdico -->
         <a class="navbar-brand modern-brand" href="/">
-          <i class="bi bi-mortarboard-fill brand-icon"></i>
-          <%= t('common.app_name') %>
+          <div class="french-logo">
+            <!-- Opção 6: Círculo Elegante -->
+            <div class="logo-circle">
+              <span class="logo-letters">FR</span>
+            </div>
+            <span class="brand-text">Practice-FR</span>
+          </div>
         </a>
         
         <!-- Mobile toggle -->
@@ -85,23 +90,51 @@
                 </ul>
               </li>
             <% elsif student_signed_in? %>
+              <!-- Troféus na navbar para estudantes -->
+              <li class="nav-item navbar-trophy-stats">
+                <div class="trophy-mini-cards">
+                  <div class="trophy-mini-card">
+                    <div class="trophy-mini-icon">
+                      <i class="bi bi-trophy-fill"></i>
+                    </div>
+                    <span class="trophy-mini-number"><%= current_student.completed_activities.count %></span>
+                  </div>
+                  
+                  <div class="trophy-mini-card">
+                    <div class="trophy-mini-icon trophy-streak">
+                      <span class="trophy-emoji-mini"><%= current_student.current_trophy[:icon] %></span>
+                    </div>
+                    <span class="trophy-mini-number"><%= current_student.current_streak %></span>
+                  </div>
+                  
+                  <div class="trophy-mini-card">
+                    <div class="trophy-mini-icon">
+                      <i class="bi bi-star-fill"></i>
+                    </div>
+                    <% avg_score = current_student.completed_activities.any? ? 
+                         (current_student.completed_activities.where.not(percentage: nil).average(:percentage) || 0).round(1) : 0 %>
+                    <span class="trophy-mini-number"><%= avg_score %>%</span>
+                  </div>
+                </div>
+              </li>
+              
               <li class="nav-item">
-                <%= link_to root_path, class: "nav-link modern-nav-link" do %>
-                  <i class="bi bi-book-fill"></i>
-                  Activités disponibles
+                <%= link_to student_dashboard_path, class: "nav-link modern-nav-link" do %>
+                  <i class="bi bi-house-fill"></i>
+                  Tableau de bord
                 <% end %>
               </li>
               <li class="nav-item">
-                <%= link_to "#", class: "nav-link modern-nav-link" do %>
-                  <i class="bi bi-graph-up"></i>
-                  Mon progrès
+                <%= link_to student_activities_path, class: "nav-link modern-nav-link" do %>
+                  <i class="bi bi-book-fill"></i>
+                  Activités
                 <% end %>
               </li>
               <!-- Dropdown do estudante -->
               <li class="nav-item dropdown">
                 <a class="nav-link dropdown-toggle user-dropdown" href="#" id="studentDropdown" role="button" data-bs-toggle="dropdown">
-                  <div class="user-avatar">
-                    <i class="bi bi-person-circle"></i>
+                  <div class="user-avatar student-avatar-nav">
+                    <span class="student-initials">É</span>
                   </div>
                   <span class="user-email d-none d-md-inline"><%= current_student.email %></span>
                 </a>
@@ -252,6 +285,125 @@
       .brand-icon {
         font-size: 1.5rem;
         color: #4A90E2;
+      }
+
+      /* === LOGO FRANCÊS === */
+      .french-logo {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+      }
+
+      /* Opção 6: Círculo Elegante */
+      .logo-circle {
+        width: 40px;
+        height: 40px;
+        background: linear-gradient(135deg, #4A90E2 0%, #357ABD 100%);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        box-shadow: 0 4px 12px rgba(74, 144, 226, 0.3);
+        transition: all 0.3s ease;
+      }
+
+      .logo-letters {
+        font-size: 1.2rem;
+        font-weight: 700;
+        color: white;
+        font-family: 'Lora', serif;
+        letter-spacing: 1px;
+      }
+
+      .modern-brand:hover .logo-circle {
+        transform: scale(1.05);
+        box-shadow: 0 6px 16px rgba(74, 144, 226, 0.4);
+      }
+
+      .brand-text {
+        font-family: 'Lora', serif;
+        font-weight: 600;
+        color: white;
+        font-size: 1.75rem;
+        text-shadow: 0 2px 4px rgba(0,0,0,0.1);
+      }
+
+      /* === AVATAR DO ESTUDANTE NA NAVBAR === */
+      .student-avatar-nav {
+        width: 32px;
+        height: 32px;
+        background: linear-gradient(135deg, #22C55E 0%, #16A34A 100%);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        box-shadow: 0 2px 8px rgba(34, 197, 94, 0.3);
+      }
+
+      .student-initials {
+        font-size: 0.9rem;
+        font-weight: 700;
+        color: white;
+        font-family: 'Lora', serif;
+      }
+
+      /* === TROFÉUS NA NAVBAR === */
+      .navbar-trophy-stats {
+        margin-right: 1rem;
+      }
+
+      .trophy-mini-cards {
+        display: flex;
+        gap: 0.5rem;
+        align-items: center;
+      }
+
+      .trophy-mini-card {
+        background: rgba(255, 255, 255, 0.1);
+        border-radius: 12px;
+        padding: 0.5rem;
+        display: flex;
+        align-items: center;
+        gap: 0.4rem;
+        backdrop-filter: blur(10px);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        transition: all 0.3s ease;
+        min-width: 55px;
+      }
+
+      .trophy-mini-card:hover {
+        background: rgba(255, 255, 255, 0.15);
+        transform: translateY(-2px);
+      }
+
+      .trophy-mini-icon {
+        width: 22px;
+        height: 22px;
+        border-radius: 6px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 0.8rem;
+        color: white;
+        background: linear-gradient(135deg, #4A90E2 0%, #357ABD 100%);
+        flex-shrink: 0;
+      }
+
+      .trophy-mini-icon.trophy-streak {
+        background: linear-gradient(135deg, #FFD700 0%, #FFA500 100%);
+      }
+
+      .trophy-emoji-mini {
+        font-size: 0.8rem;
+        filter: drop-shadow(0 1px 2px rgba(0,0,0,0.2));
+      }
+
+      .trophy-mini-number {
+        font-size: 0.9rem;
+        font-weight: 700;
+        color: white;
+        margin: 0;
+        white-space: nowrap;
       }
 
       .modern-nav-link {
@@ -473,12 +625,53 @@
           font-size: 1.5rem !important;
         }
         
+        .brand-text {
+          font-size: 1.5rem !important;
+        }
+        
+        .logo-circle {
+          width: 35px;
+          height: 35px;
+        }
+        
+        .logo-letters {
+          font-size: 1rem;
+        }
+        
         .user-menu {
           min-width: 250px;
         }
         
         .main-content {
           padding-top: 70px;
+        }
+        
+        /* Esconder troféus em mobile para economizar espaço */
+        .navbar-trophy-stats {
+          display: none;
+        }
+      }
+
+      @media (max-width: 991px) and (min-width: 769px) {
+        /* Em tablets, mostrar troféus menores */
+        .trophy-mini-card {
+          padding: 0.4rem;
+          min-width: 50px;
+          gap: 0.3rem;
+        }
+        
+        .trophy-mini-number {
+          font-size: 0.8rem;
+        }
+        
+        .trophy-mini-icon {
+          width: 20px;
+          height: 20px;
+          font-size: 0.7rem;
+        }
+        
+        .trophy-emoji-mini {
+          font-size: 0.7rem;
         }
       }
 
@@ -515,6 +708,25 @@
           margin-left: 0;
           margin-top: 0.5rem;
           justify-content: flex-start;
+        }
+        
+        /* Mostrar troféus no mobile quando navbar expandida */
+        .navbar-trophy-stats {
+          display: block !important;
+          margin: 1rem 0;
+          padding: 1rem;
+          background: rgba(255, 255, 255, 0.1);
+          border-radius: 12px;
+        }
+        
+        .trophy-mini-cards {
+          justify-content: space-between;
+        }
+        
+        .trophy-mini-card {
+          flex: 1;
+          margin: 0 0.25rem;
+          min-width: auto;
         }
       }
     </style>

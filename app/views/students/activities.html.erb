@@ -1,0 +1,854 @@
+<div class="student-activities-page">
+  <!-- Header Section -->
+  <div class="page-header">
+    <div class="header-content">
+      <h1>Toutes les activités</h1>
+    </div>
+  </div>
+
+  <!-- Level Selection Section -->
+  <div class="level-selection-section">
+    <div class="level-selection-card">
+      <div class="selection-header">
+        <h3>Quel est votre niveau de français ?</h3>
+        <p>Sélectionnez votre niveau pour voir les activités adaptées</p>
+      </div>
+      
+      <div class="level-selector">
+        <% ['A1', 'A2', 'B1', 'B2', 'C1', 'C2'].each_with_index do |level, index| %>
+          <div class="level-option" data-level="<%= level %>" data-level-index="<%= index %>">
+            <div class="level-badge-selector level-<%= level.downcase %>">
+              <%= level %>
+            </div>
+            <div class="level-description">
+              <span class="level-name">
+                <% case level
+                   when 'A1' then %>Débutant<% 
+                   when 'A2' then %>Élémentaire<% 
+                   when 'B1' then %>Intermédiaire<% 
+                   when 'B2' then %>Intermédiaire avancé<% 
+                   when 'C1' then %>Avancé<% 
+                   when 'C2' then %>Maîtrise<% 
+                   end %>
+              </span>
+            </div>
+          </div>
+        <% end %>
+      </div>
+      
+
+    </div>
+  </div>
+
+  <!-- Activities Section -->
+  <div class="activities-section">
+    <div class="section-header">
+      <h2>Activités par niveau</h2>
+    </div>
+
+    <!-- Level Filters -->
+    <div class="level-filters">
+      <button class="level-btn active" data-level="all">Tous les niveaux</button>
+      <% ['A1', 'A2', 'B1', 'B2', 'C1', 'C2'].each do |level| %>
+        <button class="level-btn level-btn-<%= level.downcase %>" data-level="<%= level %>">
+          <%= level %>
+          <span class="count">(<%= @activities.where(nível: level).count %>)</span>
+        </button>
+      <% end %>
+    </div>
+
+    <!-- Activities Grid -->
+    <div class="activities-grid">
+      <% if @activities.any? %>
+        <% @activities.each do |activity| %>
+          <div class="activity-card" data-level="<%= activity.nível %>">
+            <div class="card-header">
+              <div class="level-badge level-<%= activity.nível.downcase %>">
+                <%= activity.nível %>
+              </div>
+              <div class="difficulty-indicator">
+                <% difficulty = case activity.nível
+                     when 'A1' then 1
+                     when 'A2' then 2  
+                     when 'B1' then 3
+                     when 'B2' then 4
+                     when 'C1' then 5
+                     when 'C2' then 6
+                   end %>
+                <% (1..6).each do |i| %>
+                  <span class="dot <%= 'active' if i <= difficulty %>"></span>
+                <% end %>
+              </div>
+              
+              <% if @completed_activity_ids.include?(activity.id) %>
+                              <div class="completed-indicator">
+                <i class="bi bi-trophy-fill"></i>
+                <% completed_activity = @completed_activities.find { |ca| ca.activity_id == activity.id } %>
+                <span class="completed-score"><%= completed_activity.percentage.round(1) %>%</span>
+              </div>
+              <% end %>
+            </div>
+            
+            <div class="card-body">
+              <h3 class="activity-title"><%= activity.título %></h3>
+              <% if activity.texto.present? %>
+                <p class="activity-description">
+                  <%= truncate(activity.texto, length: 120) %>
+                </p>
+              <% end %>
+              
+              <div class="activity-stats">
+                <div class="stat">
+                  <i class="bi bi-question-circle"></i>
+                  <span><%= activity.questions.count %> questions</span>
+                </div>
+                <div class="stat">
+                  <i class="bi bi-clock"></i>
+                  <span>~<%= [5, activity.questions.count * 2].max %> min</span>
+                </div>
+              </div>
+            </div>
+            
+            <div class="card-footer">
+              <%= link_to solve_activity_path(activity), class: "btn-start" do %>
+                <i class="bi bi-play-fill"></i>
+                <% if @completed_activity_ids.include?(activity.id) %>
+                  Refaire
+                <% else %>
+                  Commencer
+                <% end %>
+              <% end %>
+            </div>
+          </div>
+        <% end %>
+      <% else %>
+        <div class="empty-state">
+          <div class="empty-icon">
+            <i class="bi bi-book"></i>
+          </div>
+          <h3>Aucune activité disponible</h3>
+          <p>Les activités seront ajoutées bientôt par vos professeurs.</p>
+        </div>
+      <% end %>
+    </div>
+  </div>
+
+  <!-- Back Button Section -->
+  <div class="back-button-section">
+    <%= link_to student_dashboard_path, class: "btn-back-centered" do %>
+      <i class="bi bi-arrow-left"></i>
+      Retour au tableau de bord
+    <% end %>
+  </div>
+</div>
+
+<style>
+  /* === STUDENT ACTIVITIES PAGE === */
+  .student-activities-page {
+    font-family: 'Inter', sans-serif;
+    background: linear-gradient(135deg, #E8F4FD 0%, #F7FAFC 100%);
+    min-height: 100vh;
+    padding: 2rem 1rem;
+  }
+
+  /* === PAGE HEADER === */
+  .page-header {
+    margin-bottom: 3rem;
+  }
+
+  .header-content {
+    background: white;
+    border-radius: 20px;
+    padding: 2rem;
+    box-shadow: 0 8px 32px rgba(30, 61, 89, 0.1);
+    border: 1px solid rgba(30, 61, 89, 0.05);
+    text-align: center;
+  }
+
+  .header-content h1 {
+    font-family: 'Lora', serif;
+    color: #1E3D59;
+    margin: 0;
+    font-size: 2rem;
+    font-weight: 600;
+  }
+
+  .header-content p {
+    color: #718096;
+    margin: 0;
+    font-size: 1.1rem;
+  }
+
+  /* === LEVEL SELECTION SECTION === */
+  .level-selection-section {
+    margin-bottom: 3rem;
+  }
+
+  .level-selection-card {
+    background: white;
+    border-radius: 20px;
+    padding: 2rem;
+    box-shadow: 0 8px 32px rgba(30, 61, 89, 0.1);
+    border: 1px solid rgba(30, 61, 89, 0.05);
+  }
+
+  .selection-header {
+    text-align: center;
+    margin-bottom: 2rem;
+  }
+
+  .selection-header h3 {
+    font-family: 'Lora', serif;
+    color: #1E3D59;
+    font-size: 1.5rem;
+    margin: 0 0 0.5rem;
+    font-weight: 600;
+  }
+
+  .selection-header p {
+    color: #718096;
+    margin: 0;
+    font-size: 1rem;
+  }
+
+  .level-selector {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .level-option {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+    cursor: pointer;
+    transition: transform 0.2s ease;
+    padding: 0.5rem;
+    border-radius: 12px;
+  }
+
+  .level-option:hover {
+    transform: translateY(-2px);
+  }
+
+  .level-option.selected {
+    background: rgba(74, 144, 226, 0.1);
+    box-shadow: 0 4px 16px rgba(74, 144, 226, 0.2);
+  }
+
+  .level-badge-selector {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-weight: 700;
+    font-size: 1.2rem;
+    transition: all 0.3s ease;
+    cursor: pointer;
+    position: relative;
+  }
+
+  .level-badge-selector:hover {
+    transform: scale(1.1);
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2);
+  }
+
+  .level-option.selected .level-badge-selector {
+    transform: scale(1.1);
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+  }
+
+  .level-option.selected .level-badge-selector::after {
+    content: '✓';
+    position: absolute;
+    bottom: -8px;
+    right: -8px;
+    width: 24px;
+    height: 24px;
+    background: #22C55E;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.8rem;
+    border: 3px solid white;
+  }
+
+  /* Cores dos badges consistentes */
+  .level-badge-selector.level-a1 { background: linear-gradient(135deg, #68D391 0%, #48BB78 100%); }
+  .level-badge-selector.level-a2 { background: linear-gradient(135deg, #4FD1C7 0%, #38B2AC 100%); }
+  .level-badge-selector.level-b1 { background: linear-gradient(135deg, #63B3ED 0%, #4299E1 100%); }
+  .level-badge-selector.level-b2 { background: linear-gradient(135deg, #7C3AED 0%, #6B46C1 100%); }
+  .level-badge-selector.level-c1 { background: linear-gradient(135deg, #F56565 0%, #E53E3E 100%); }
+  .level-badge-selector.level-c2 { background: linear-gradient(135deg, #ED8936 0%, #DD6B20 100%); }
+
+  .level-description {
+    text-align: center;
+  }
+
+  .level-name {
+    font-size: 0.85rem;
+    color: #4A5568;
+    font-weight: 500;
+  }
+
+
+
+  /* === ACTIVITIES SECTION === */
+  .activities-section {
+    background: white;
+    border-radius: 20px;
+    padding: 2rem;
+    box-shadow: 0 8px 32px rgba(30, 61, 89, 0.1);
+    border: 1px solid rgba(30, 61, 89, 0.05);
+  }
+
+  .section-header {
+    text-align: center;
+    margin-bottom: 2rem;
+  }
+
+  .section-header h2 {
+    font-family: 'Lora', serif;
+    color: #1E3D59;
+    font-size: 2rem;
+    margin: 0 0 0.5rem;
+  }
+
+  .section-header p {
+    color: #718096;
+    margin: 0;
+    font-size: 1.1rem;
+  }
+
+
+
+  /* === LEVEL FILTERS === */
+  .level-filters {
+    display: flex;
+    justify-content: center;
+    gap: 0.5rem;
+    margin-bottom: 2rem;
+    flex-wrap: wrap;
+  }
+
+  .level-btn {
+    background: #F7FAFC;
+    border: 2px solid #E2E8F0;
+    color: #4A5568;
+    padding: 0.5rem 1rem;
+    border-radius: 25px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    font-size: 0.9rem;
+  }
+
+  .level-btn.active,
+  .level-btn:hover {
+    background: #4A90E2;
+    border-color: #4A90E2;
+    color: white;
+  }
+
+  .level-btn .count {
+    font-size: 0.8rem;
+    opacity: 0.8;
+  }
+
+  /* Cores específicas para cada nível */
+  .level-btn-a1 {
+    background: linear-gradient(135deg, #68D391 0%, #48BB78 100%) !important;
+    border-color: #48BB78 !important;
+    color: white !important;
+  }
+
+  .level-btn-a1:hover {
+    background: linear-gradient(135deg, #48BB78 0%, #38A169 100%) !important;
+    transform: translateY(-1px);
+  }
+
+  .level-btn-a2 {
+    background: linear-gradient(135deg, #4FD1C7 0%, #38B2AC 100%) !important;
+    border-color: #38B2AC !important;
+    color: white !important;
+  }
+
+  .level-btn-a2:hover {
+    background: linear-gradient(135deg, #38B2AC 0%, #319795 100%) !important;
+    transform: translateY(-1px);
+  }
+
+  .level-btn-b1 {
+    background: linear-gradient(135deg, #63B3ED 0%, #4299E1 100%) !important;
+    border-color: #4299E1 !important;
+    color: white !important;
+  }
+
+  .level-btn-b1:hover {
+    background: linear-gradient(135deg, #4299E1 0%, #3182CE 100%) !important;
+    transform: translateY(-1px);
+  }
+
+  .level-btn-b2 {
+    background: linear-gradient(135deg, #7C3AED 0%, #6B46C1 100%) !important;
+    border-color: #6B46C1 !important;
+    color: white !important;
+  }
+
+  .level-btn-b2:hover {
+    background: linear-gradient(135deg, #6B46C1 0%, #553C9A 100%) !important;
+    transform: translateY(-1px);
+  }
+
+  .level-btn-c1 {
+    background: linear-gradient(135deg, #F56565 0%, #E53E3E 100%) !important;
+    border-color: #E53E3E !important;
+    color: white !important;
+  }
+
+  .level-btn-c1:hover {
+    background: linear-gradient(135deg, #E53E3E 0%, #C53030 100%) !important;
+    transform: translateY(-1px);
+  }
+
+  .level-btn-c2 {
+    background: linear-gradient(135deg, #ED8936 0%, #DD6B20 100%) !important;
+    border-color: #DD6B20 !important;
+    color: white !important;
+  }
+
+  .level-btn-c2:hover {
+    background: linear-gradient(135deg, #DD6B20 0%, #C05621 100%) !important;
+    transform: translateY(-1px);
+  }
+
+  /* === ACTIVITIES GRID === */
+  .activities-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+    gap: 1.5rem;
+  }
+
+  .activity-card {
+    background: #F7FAFC;
+    border: 1px solid #E2E8F0;
+    border-radius: 16px;
+    overflow: hidden;
+    transition: all 0.3s ease;
+    cursor: pointer;
+  }
+
+  .activity-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 12px 32px rgba(30, 61, 89, 0.15);
+    border-color: #4A90E2;
+  }
+
+  .activity-card .card-header {
+    background: white;
+    padding: 1rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid #E2E8F0;
+  }
+
+  .level-badge {
+    padding: 0.25rem 0.75rem;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: white;
+  }
+
+  .level-badge.level-a1 { background: #68D391; }
+  .level-badge.level-a2 { background: #4FD1C7; }
+  .level-badge.level-b1 { background: #63B3ED; }
+  .level-badge.level-b2 { background: #7C3AED; }
+  .level-badge.level-c1 { background: #F56565; }
+  .level-badge.level-c2 { background: #ED8936; }
+
+  .difficulty-indicator {
+    display: flex;
+    gap: 0.2rem;
+  }
+
+  .difficulty-indicator .dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: #E2E8F0;
+    transition: background 0.2s ease;
+  }
+
+  .difficulty-indicator .dot.active {
+    background: #4A90E2;
+  }
+
+  .activity-card .card-body {
+    padding: 1.5rem;
+  }
+
+  .activity-title {
+    font-family: 'Lora', serif;
+    color: #1E3D59;
+    font-size: 1.25rem;
+    margin: 0 0 0.75rem;
+    font-weight: 600;
+  }
+
+  .activity-description {
+    color: #4A5568;
+    line-height: 1.5;
+    margin: 0 0 1rem;
+    font-size: 0.9rem;
+  }
+
+  .activity-stats {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 1rem;
+  }
+
+  .activity-stats .stat {
+    display: flex;
+    align-items: center;
+    gap: 0.3rem;
+    color: #718096;
+    font-size: 0.8rem;
+  }
+
+  .activity-stats .stat i {
+    color: #4A90E2;
+  }
+
+  .activity-card .card-footer {
+    padding: 0 1.5rem 1.5rem;
+  }
+
+  .btn-start {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    width: 100%;
+    background: linear-gradient(135deg, #4A90E2 0%, #1E3D59 100%);
+    color: white;
+    padding: 0.75rem 1.5rem;
+    border-radius: 10px;
+    text-decoration: none;
+    font-weight: 600;
+    transition: all 0.2s ease;
+    border: none;
+  }
+
+  .btn-start:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 6px 20px rgba(74, 144, 226, 0.4);
+    color: white;
+    text-decoration: none;
+  }
+
+  /* === COMPLETED INDICATOR === */
+  .completed-indicator {
+    display: flex;
+    align-items: center;
+    gap: 0.3rem;
+    color: #F6AD55;
+    font-size: 0.8rem;
+    font-weight: 600;
+  }
+
+  .completed-indicator i {
+    font-size: 1rem;
+    color: #F6AD55;
+  }
+
+  .completed-score {
+    background: linear-gradient(135deg, #68D391 0%, #48BB78 100%);
+    color: white;
+    padding: 0.2rem 0.4rem;
+    border-radius: 10px;
+    font-size: 0.7rem;
+  }
+
+  /* === EMPTY STATE === */
+  .empty-state {
+    text-align: center;
+    padding: 3rem 1rem;
+    color: #718096;
+  }
+
+  .empty-icon {
+    font-size: 4rem;
+    margin-bottom: 1rem;
+    opacity: 0.5;
+  }
+
+  .empty-state h3 {
+    color: #4A5568;
+    margin-bottom: 0.5rem;
+  }
+
+  /* === RESPONSIVIDADE === */
+  @media (max-width: 768px) {
+    .student-activities-page {
+      padding: 1rem 0.5rem;
+    }
+
+    .header-content {
+      padding: 1.5rem;
+      flex-direction: column;
+      text-align: center;
+    }
+
+    .header-content h1 {
+      font-size: 1.5rem;
+    }
+
+    .level-selection-card {
+      padding: 1.5rem;
+    }
+
+    .selection-header h3 {
+      font-size: 1.25rem;
+    }
+
+    .level-selector {
+      grid-template-columns: repeat(3, 1fr);
+      gap: 0.75rem;
+    }
+
+    .level-badge-selector {
+      width: 50px;
+      height: 50px;
+      font-size: 1rem;
+    }
+
+    .level-name {
+      font-size: 0.75rem;
+    }
+
+    .activities-grid {
+      grid-template-columns: 1fr;
+    }
+
+    .level-filters {
+      gap: 0.25rem;
+    }
+
+    .level-btn {
+      padding: 0.4rem 0.8rem;
+      font-size: 0.8rem;
+    }
+  }
+
+  /* === BACK BUTTON SECTION === */
+  .back-button-section {
+    margin-top: 3rem;
+    text-align: center;
+  }
+
+  .btn-back-centered {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    background: white;
+    color: #4A5568;
+    padding: 1rem 2rem;
+    border-radius: 16px;
+    text-decoration: none;
+    font-weight: 500;
+    transition: all 0.3s ease;
+    border: 1px solid #E2E8F0;
+    box-shadow: 0 4px 16px rgba(30, 61, 89, 0.08);
+    font-size: 1rem;
+  }
+
+  .btn-back-centered:hover {
+    background: #4A90E2;
+    color: white;
+    text-decoration: none;
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px rgba(74, 144, 226, 0.3);
+  }
+</style>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    const levelOptions = document.querySelectorAll('.level-option');
+    const levelBtns = document.querySelectorAll('.level-btn');
+    const activityCards = document.querySelectorAll('.activity-card');
+
+    
+    let selectedLevel = null;
+    let selectedLevelIndex = -1;
+    
+    // Mapeamento dos níveis para facilitar comparações
+    const levelOrder = ['A1', 'A2', 'B1', 'B2', 'C1', 'C2'];
+    
+    // Carregar filtro salvo do localStorage
+    loadSavedFilter();
+    
+    function loadSavedFilter() {
+      const savedLevel = localStorage.getItem('student_selected_level');
+      const savedLevelIndex = localStorage.getItem('student_selected_level_index');
+      const savedFilterLevel = localStorage.getItem('student_filter_level');
+      
+      if (savedLevel && savedLevelIndex !== null) {
+        selectedLevel = savedLevel;
+        selectedLevelIndex = parseInt(savedLevelIndex);
+        
+        // Restaurar seleção visual
+        levelOptions.forEach(opt => opt.classList.remove('selected'));
+        const targetOption = document.querySelector(`[data-level="${savedLevel}"]`);
+        if (targetOption) {
+          targetOption.classList.add('selected');
+        }
+        
+        // Aplicar filtros
+        filterActivitiesByLevel();
+        updateLevelButtons();
+        
+        // Restaurar filtro específico se existir
+        if (savedFilterLevel) {
+          levelBtns.forEach(btn => btn.classList.remove('active'));
+          const targetBtn = document.querySelector(`[data-level="${savedFilterLevel}"]`);
+          if (targetBtn) {
+            targetBtn.classList.add('active');
+            applySpecificFilter(savedFilterLevel);
+          }
+        }
+      }
+    }
+    
+    function saveFilter() {
+      if (selectedLevel) {
+        localStorage.setItem('student_selected_level', selectedLevel);
+        localStorage.setItem('student_selected_level_index', selectedLevelIndex.toString());
+      }
+    }
+    
+    function saveSpecificFilter(filterLevel) {
+      localStorage.setItem('student_filter_level', filterLevel);
+    }
+    
+    // Level selection functionality
+    levelOptions.forEach(option => {
+      option.addEventListener('click', function() {
+        // Remove selection from all options
+        levelOptions.forEach(opt => opt.classList.remove('selected'));
+        
+        // Add selection to clicked option
+        this.classList.add('selected');
+        
+        selectedLevel = this.dataset.level;
+        selectedLevelIndex = parseInt(this.dataset.levelIndex);
+        
+        // Salvar no localStorage
+        saveFilter();
+        
+        // Filter activities based on selected level
+        filterActivitiesByLevel();
+        
+        // Update level buttons to show available levels
+        updateLevelButtons();
+      });
+    });
+    
+
+    
+    function filterActivitiesByLevel() {
+      if (selectedLevel === null) return;
+      
+      const availableLevels = levelOrder.slice(0, selectedLevelIndex + 1);
+      
+      activityCards.forEach(card => {
+        const cardLevel = card.dataset.level;
+        if (availableLevels.includes(cardLevel)) {
+          card.style.display = 'block';
+        } else {
+          card.style.display = 'none';
+        }
+      });
+    }
+    
+    function updateLevelButtons() {
+      if (selectedLevel === null) return;
+      
+      const availableLevels = levelOrder.slice(0, selectedLevelIndex + 1);
+      
+      levelBtns.forEach(btn => {
+        const btnLevel = btn.dataset.level;
+        
+        if (btnLevel === 'all') {
+          // Reset "Tous les niveaux" to show only available levels
+          btn.textContent = `Niveaux ${availableLevels.join('-')}`;
+        } else if (availableLevels.includes(btnLevel)) {
+          btn.style.display = 'inline-block';
+        } else {
+          btn.style.display = 'none';
+        }
+      });
+      
+      // Auto-select "all available levels" when level is chosen
+      const allBtn = document.querySelector('.level-btn[data-level="all"]');
+      if (allBtn) {
+        levelBtns.forEach(b => b.classList.remove('active'));
+        allBtn.classList.add('active');
+      }
+    }
+    
+    // Enhanced level filtering for buttons
+    levelBtns.forEach(btn => {
+      btn.addEventListener('click', function() {
+        if (selectedLevel === null) {
+          // If no level selected, show message
+          alert('Veuillez d\'abord sélectionner votre niveau de français ci-dessus.');
+          return;
+        }
+        
+        // Remove active from all buttons
+        levelBtns.forEach(b => b.classList.remove('active'));
+        // Add active to clicked button
+        this.classList.add('active');
+        
+        const selectedBtnLevel = this.dataset.level;
+        
+        // Salvar filtro específico
+        saveSpecificFilter(selectedBtnLevel);
+        
+        // Aplicar filtro
+        applySpecificFilter(selectedBtnLevel);
+      });
+    });
+    
+    function applySpecificFilter(selectedBtnLevel) {
+      const availableLevels = levelOrder.slice(0, selectedLevelIndex + 1);
+      
+      // Show/hide cards based on button selection
+      activityCards.forEach(card => {
+        const cardLevel = card.dataset.level;
+        
+        if (selectedBtnLevel === 'all') {
+          // Show all available levels
+          if (availableLevels.includes(cardLevel)) {
+            card.style.display = 'block';
+          } else {
+            card.style.display = 'none';
+          }
+        } else if (availableLevels.includes(selectedBtnLevel) && cardLevel === selectedBtnLevel) {
+          card.style.display = 'block';
+        } else {
+          card.style.display = 'none';
+        }
+      });
+    }
+  });
+</script> 

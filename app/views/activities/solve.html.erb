@@ -171,7 +171,11 @@
         <% end %>
 
         <div class="actions-bar">
-          <%= link_to "Retour", activities_path, class: "btn btn-retour" %>
+          <% if student_signed_in? %>
+            <%= link_to "Retour", student_dashboard_path, class: "btn btn-retour" %>
+          <% else %>
+            <%= link_to "Retour", activities_path, class: "btn btn-retour" %>
+          <% end %>
         </div>
       </div>
     </div>
@@ -320,6 +324,9 @@
           resultsContainer.scrollIntoView({ behavior: 'smooth' });
         }
         
+        // Salvar resultado se for estudante
+        saveActivityResult(correctAnswers, totalQuestions, scorePercent);
+        
         // Bouton pour afficher réponses détaillées
         if (showAnswersButton && questionFeedback) {
           const handleShowAnswers = function() {
@@ -379,6 +386,58 @@
           // Ajouter nouveau listener
           retryQuizButton.addEventListener('click', handleRetry);
         }
+      });
+    }
+    
+    // Função para salvar resultado da atividade
+    function saveActivityResult(score, totalQuestions, percentage) {
+      // Melhor verificação se é um estudante logado
+      const isStudent = document.querySelector('nav #studentDropdown') !== null || 
+                       document.querySelector('nav a[href*="student_dashboard"]') !== null;
+      
+      console.log('Is student?', isStudent);
+      console.log('Score:', score, 'Total:', totalQuestions, 'Percentage:', percentage);
+      
+      if (!isStudent) {
+        console.log('Não é estudante, não salvando resultado');
+        return; // Só salva para estudantes
+      }
+      
+      const activityId = window.location.pathname.split('/')[2]; // Extrair ID da URL
+      console.log('Activity ID:', activityId);
+      
+      const data = {
+        completed_activity: {
+          score: score,
+          total_questions: totalQuestions
+        }
+      };
+      
+      console.log('Enviando dados:', data);
+      
+      fetch(`/activities/${activityId}/save_result`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-CSRF-Token': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+        },
+        body: JSON.stringify(data)
+      })
+      .then(response => {
+        console.log('Response status:', response.status);
+        return response.json();
+      })
+      .then(data => {
+        console.log('Response data:', data);
+        if (data.success) {
+          console.log('Resultado salvo com sucesso:', data.data);
+          // Opcional: mostrar notificação de sucesso
+        } else {
+          console.error('Erro ao salvar resultado:', data.message);
+        }
+      })
+      .catch(error => {
+        console.error('Erro na requisição:', error);
       });
     }
   });

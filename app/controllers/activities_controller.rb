@@ -1,6 +1,7 @@
 class ActivitiesController < ApplicationController
-  before_action :authenticate_user!, except: [:solve]
-  before_action :set_activity, only: [:show, :edit, :update, :destroy, :remove_video, :remove_image, :remove_texte, :solve]
+  before_action :authenticate_user_or_student!, except: [:solve]
+  before_action :authenticate_user!, only: [:new, :create, :edit, :update, :destroy, :remove_video, :remove_image, :remove_texte]
+  before_action :set_activity, only: [:show, :edit, :update, :destroy, :remove_video, :remove_image, :remove_texte, :solve, :save_result]
 
   def index
     @activities = Activity.all
@@ -20,6 +21,49 @@ class ActivitiesController < ApplicationController
     # Não requer autenticação, pois é para os alunos
     # Renderiza a view de resolução
     render :solve
+  end
+
+  def save_result
+    # Endpoint para salvar resultados das atividades dos estudantes
+    Rails.logger.info "=== SAVE RESULT DEBUG ==="
+    Rails.logger.info "Student signed in: #{student_signed_in?}"
+    Rails.logger.info "Current student: #{current_student.inspect}"
+    Rails.logger.info "Activity: #{@activity.inspect}"
+    Rails.logger.info "Params: #{params.inspect}"
+    
+    if student_signed_in?
+      @completed_activity = current_student.completed_activities.build(completed_activity_params)
+      @completed_activity.activity = @activity
+      @completed_activity.completed_at = Time.current
+      
+      Rails.logger.info "Completed activity before save: #{@completed_activity.inspect}"
+      Rails.logger.info "Valid?: #{@completed_activity.valid?}"
+      Rails.logger.info "Errors: #{@completed_activity.errors.full_messages}"
+      
+      if @completed_activity.save
+        render json: { 
+          success: true, 
+          message: 'Resultado salvo com sucesso!',
+          data: {
+            score: @completed_activity.score,
+            total_questions: @completed_activity.total_questions,
+            percentage: @completed_activity.percentage
+          }
+        }
+      else
+        Rails.logger.error "Failed to save completed activity: #{@completed_activity.errors.full_messages}"
+        render json: { 
+          success: false, 
+          message: 'Erro ao salvar resultado',
+          errors: @completed_activity.errors.full_messages 
+        }, status: :unprocessable_entity
+      end
+    else
+      render json: { 
+        success: false, 
+        message: 'Não autorizado' 
+      }, status: :unauthorized
+    end
   end
 
   def create
@@ -208,6 +252,10 @@ class ActivitiesController < ApplicationController
       params.require(:activity).permit(:título, :nível, :texto, :video_url, :imagem_url, :texte, :video_order, :imagem_order, :texte_order)
     end
 
+    def completed_activity_params
+      params.require(:completed_activity).permit(:score, :total_questions)
+    end
+
     def update_related_orders
       # Atualizar ordem dos statements
       if params[:statements]
@@ -230,6 +278,17 @@ class ActivitiesController < ApplicationController
         params[:suggestions].each do |suggestion_id, suggestion_params|
           suggestion = @activity.suggestions.find_by(id: suggestion_id)
           suggestion.update(display_order: suggestion_params[:display_order]) if suggestion
+        end
+      end
+    end
+
+    def authenticate_user_or_student!
+      unless user_signed_in? || student_signed_in?
+        # Redirecionar para a página de login apropriada baseada no contexto
+        if request.path.include?('student') || params[:student_context]
+          redirect_to new_student_session_path, alert: t('devise.failure.unauthenticated')
+        else
+          redirect_to new_user_session_path, alert: t('devise.failure.unauthenticated')
         end
       end
     end
