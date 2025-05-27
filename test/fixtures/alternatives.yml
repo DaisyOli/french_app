@@ -1,11 +1,11 @@
 # Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
 
 one:
-  conteúdo: MyText
-  correta: false
+  conteúdo: "Paris"
+  correta: true
   question: one
 
 two:
-  conteúdo: MyText
-  correta: false
+  conteúdo: "Merci"
+  correta: true
   question: two

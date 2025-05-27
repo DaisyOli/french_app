@@ -1,9 +1,11 @@
 # Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
 
 one:
-  conteúdo: MyText
+  conteúdo: "Esta é uma sugestão de exemplo para testes"
   activity: one
+  display_order: 1
 
 two:
-  conteúdo: MyText
+  conteúdo: "Outra sugestão de exemplo para a segunda atividade"
   activity: two
+  display_order: 2

@@ -1,4 +1,5 @@
 class AlternativesController < ApplicationController
+  before_action :authenticate_user!
   before_action :set_activity
   before_action :set_question
   before_action :set_alternative, only: [:update, :destroy]

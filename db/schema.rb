@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2025_05_25_071617) do
+ActiveRecord::Schema[7.1].define(version: 2025_05_26_130830) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -40,6 +40,38 @@ ActiveRecord::Schema[7.1].define(version: 2025_05_25_071617) do
     t.index ["question_id"], name: "index_alternatives_on_question_id"
   end
 
+  create_table "association_pairs", force: :cascade do |t|
+    t.bigint "column_association_id", null: false
+    t.string "item_a", null: false
+    t.string "item_b", null: false
+    t.integer "pair_order", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["column_association_id", "pair_order"], name: "idx_on_column_association_id_pair_order_50a71b93fe", unique: true
+    t.index ["column_association_id"], name: "index_association_pairs_on_column_association_id"
+  end
+
+  create_table "blanks", force: :cascade do |t|
+    t.integer "position"
+    t.string "correct_answer"
+    t.bigint "fill_blank_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["fill_blank_id"], name: "index_blanks_on_fill_blank_id"
+  end
+
+  create_table "column_associations", force: :cascade do |t|
+    t.bigint "activity_id", null: false
+    t.string "title", null: false
+    t.text "instruction"
+    t.string "column_a_title", default: "Première colonne"
+    t.string "column_b_title", default: "Seconde colonne"
+    t.integer "display_order"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["activity_id"], name: "index_column_associations_on_activity_id"
+  end
+
   create_table "completed_activities", force: :cascade do |t|
     t.bigint "user_id"
     t.bigint "activity_id", null: false
@@ -57,6 +89,35 @@ ActiveRecord::Schema[7.1].define(version: 2025_05_25_071617) do
     t.index ["user_id"], name: "index_completed_activities_on_user_id"
   end
 
+  create_table "fill_blanks", force: :cascade do |t|
+    t.text "conteúdo"
+    t.bigint "activity_id", null: false
+    t.integer "display_order"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["activity_id"], name: "index_fill_blanks_on_activity_id"
+  end
+
+  create_table "paragraph_orderings", force: :cascade do |t|
+    t.string "titre"
+    t.text "instruction"
+    t.bigint "activity_id", null: false
+    t.integer "display_order"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["activity_id"], name: "index_paragraph_orderings_on_activity_id"
+  end
+
+  create_table "paragraph_sentences", force: :cascade do |t|
+    t.text "sentence"
+    t.integer "correct_position"
+    t.integer "display_position"
+    t.bigint "paragraph_ordering_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["paragraph_ordering_id"], name: "index_paragraph_sentences_on_paragraph_ordering_id"
+  end
+
   create_table "questions", force: :cascade do |t|
     t.text "conteúdo"
     t.string "tipo"
@@ -65,6 +126,25 @@ ActiveRecord::Schema[7.1].define(version: 2025_05_25_071617) do
     t.datetime "updated_at", null: false
     t.integer "display_order"
     t.index ["activity_id"], name: "index_questions_on_activity_id"
+  end
+
+  create_table "sentence_orderings", force: :cascade do |t|
+    t.text "conteúdo"
+    t.bigint "activity_id", null: false
+    t.integer "display_order"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["activity_id"], name: "index_sentence_orderings_on_activity_id"
+  end
+
+  create_table "sentence_words", force: :cascade do |t|
+    t.string "word"
+    t.integer "correct_position"
+    t.integer "display_position"
+    t.bigint "sentence_ordering_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["sentence_ordering_id"], name: "index_sentence_words_on_sentence_ordering_id"
   end
 
   create_table "statements", force: :cascade do |t|
@@ -88,7 +168,18 @@ ActiveRecord::Schema[7.1].define(version: 2025_05_25_071617) do
     t.integer "current_streak", default: 0
     t.integer "best_streak", default: 0
     t.date "last_activity_date"
+    t.string "invitation_token"
+    t.datetime "invitation_created_at"
+    t.datetime "invitation_sent_at"
+    t.datetime "invitation_accepted_at"
+    t.integer "invitation_limit"
+    t.string "invited_by_type"
+    t.bigint "invited_by_id"
+    t.integer "invitations_count", default: 0
     t.index ["email"], name: "index_students_on_email", unique: true
+    t.index ["invitation_token"], name: "index_students_on_invitation_token", unique: true
+    t.index ["invited_by_id"], name: "index_students_on_invited_by_id"
+    t.index ["invited_by_type", "invited_by_id"], name: "index_students_on_invited_by"
     t.index ["reset_password_token"], name: "index_students_on_reset_password_token", unique: true
   end
 
@@ -109,16 +200,35 @@ ActiveRecord::Schema[7.1].define(version: 2025_05_25_071617) do
     t.datetime "remember_created_at"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.string "invitation_token"
+    t.datetime "invitation_created_at"
+    t.datetime "invitation_sent_at"
+    t.datetime "invitation_accepted_at"
+    t.integer "invitation_limit"
+    t.string "invited_by_type"
+    t.bigint "invited_by_id"
+    t.integer "invitations_count", default: 0
     t.index ["email"], name: "index_users_on_email", unique: true
+    t.index ["invitation_token"], name: "index_users_on_invitation_token", unique: true
+    t.index ["invited_by_id"], name: "index_users_on_invited_by_id"
+    t.index ["invited_by_type", "invited_by_id"], name: "index_users_on_invited_by"
     t.index ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true
   end
 
   add_foreign_key "activities", "users"
   add_foreign_key "alternatives", "questions"
+  add_foreign_key "association_pairs", "column_associations"
+  add_foreign_key "blanks", "fill_blanks"
+  add_foreign_key "column_associations", "activities"
   add_foreign_key "completed_activities", "activities"
   add_foreign_key "completed_activities", "students"
   add_foreign_key "completed_activities", "users"
+  add_foreign_key "fill_blanks", "activities"
+  add_foreign_key "paragraph_orderings", "activities"
+  add_foreign_key "paragraph_sentences", "paragraph_orderings"
   add_foreign_key "questions", "activities"
+  add_foreign_key "sentence_orderings", "activities"
+  add_foreign_key "sentence_words", "sentence_orderings"
   add_foreign_key "statements", "activities"
   add_foreign_key "suggestions", "activities"
 end

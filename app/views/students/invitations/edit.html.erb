@@ -1,0 +1,260 @@
+<div class="student-invitation-container">
+  <div class="invitation-welcome-card">
+    <!-- Header de boas-vindas -->
+    <div class="welcome-header">
+      <div class="welcome-icon">
+        <i class="bi bi-person-badge-fill"></i>
+      </div>
+      <h1 class="welcome-title">Bienvenue dans Practice-FR!</h1>
+      <p class="welcome-subtitle">Créez votre mot de passe pour commencer votre aventure française</p>
+    </div>
+
+    <!-- Formulário de criação de senha -->
+    <div class="password-form-section">
+      <%= simple_form_for(resource, as: resource_name, url: invitation_path(resource_name), html: { method: :put, class: "student-form" }) do |f| %>
+        <%= f.error_notification %>
+        <%= f.hidden_field :invitation_token %>
+
+        <div class="form-group">
+          <div class="input-wrapper">
+            <div class="input-icon">
+              <i class="bi bi-lock-fill"></i>
+            </div>
+            <%= f.input :password, 
+                  label: "Mot de passe",
+                  placeholder: "Choisissez un mot de passe sécurisé...",
+                  input_html: { class: "student-input" },
+                  wrapper_html: { class: "student-input-container" } %>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <div class="input-wrapper">
+            <div class="input-icon">
+              <i class="bi bi-shield-check"></i>
+            </div>
+            <%= f.input :password_confirmation, 
+                  label: "Confirmer le mot de passe",
+                  placeholder: "Répétez votre mot de passe...",
+                  input_html: { class: "student-input" },
+                  wrapper_html: { class: "student-input-container" } %>
+          </div>
+        </div>
+
+        <div class="form-actions">
+          <%= f.button :submit, 
+                class: "btn student-btn-primary",
+                value: "Créer mon compte et commencer!" %>
+        </div>
+      <% end %>
+    </div>
+
+    <!-- Informações motivacionais -->
+    <div class="motivation-section">
+      <div class="motivation-cards">
+        <div class="motivation-card">
+          <div class="card-icon">🎯</div>
+          <h3>Activités interactives</h3>
+          <p>Apprenez avec des exercices amusants</p>
+        </div>
+        <div class="motivation-card">
+          <div class="card-icon">🏆</div>
+          <h3>Système de récompenses</h3>
+          <p>Gagnez des trophées en étudiant</p>
+        </div>
+        <div class="motivation-card">
+          <div class="card-icon">📈</div>
+          <h3>Suivi des progrès</h3>
+          <p>Voyez votre évolution en temps réel</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<style>
+  /* === ESTILO MODERNO DO ESTUDANTE PARA ACEITAR CONVITE === */
+  .student-invitation-container {
+    min-height: 100vh;
+    background: linear-gradient(135deg, #E8F4FD 0%, #F7FAFC 100%);
+    padding: 2rem 1rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Inter', sans-serif;
+  }
+
+  .invitation-welcome-card {
+    background: white;
+    border-radius: 20px;
+    padding: 3rem;
+    box-shadow: 0 8px 32px rgba(30, 61, 89, 0.1);
+    border: 1px solid rgba(30, 61, 89, 0.05);
+    max-width: 600px;
+    width: 100%;
+  }
+
+  .welcome-header {
+    text-align: center;
+    margin-bottom: 3rem;
+  }
+
+  .welcome-icon {
+    width: 80px;
+    height: 80px;
+    background: linear-gradient(135deg, #4A90E2 0%, #1E3D59 100%);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 1.5rem;
+    color: white;
+    font-size: 2.5rem;
+    box-shadow: 0 8px 25px rgba(74, 144, 226, 0.3);
+  }
+
+  .welcome-title {
+    font-family: 'Lora', serif;
+    color: #1E3D59;
+    font-size: 2.5rem;
+    font-weight: 600;
+    margin: 0 0 0.5rem;
+  }
+
+  .welcome-subtitle {
+    color: #4A90E2;
+    font-size: 1.1rem;
+    margin: 0;
+  }
+
+  .password-form-section {
+    margin-bottom: 3rem;
+  }
+
+  .form-group {
+    margin-bottom: 1.5rem;
+  }
+
+  .student-input-container {
+    margin-bottom: 0 !important;
+  }
+
+  .input-wrapper {
+    position: relative;
+  }
+
+  .input-icon {
+    position: absolute;
+    left: 15px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #4A90E2;
+    font-size: 1.2rem;
+    z-index: 3;
+  }
+
+  .student-input {
+    background: rgba(232, 244, 253, 0.5) !important;
+    border: 2px solid rgba(74, 144, 226, 0.2) !important;
+    border-radius: 12px !important;
+    padding: 15px 20px 15px 50px !important;
+    font-size: 1rem !important;
+    color: #1E3D59 !important;
+    transition: all 0.3s ease !important;
+    width: 100% !important;
+  }
+
+  .student-input:focus {
+    border-color: #4A90E2 !important;
+    box-shadow: 0 0 20px rgba(74, 144, 226, 0.2) !important;
+    background: white !important;
+  }
+
+  .form-actions {
+    text-align: center;
+    margin-top: 2rem;
+  }
+
+  .student-btn-primary {
+    background: linear-gradient(135deg, #4A90E2 0%, #1E3D59 100%) !important;
+    border: none !important;
+    border-radius: 12px !important;
+    padding: 15px 30px !important;
+    font-size: 1.1rem !important;
+    font-weight: 600 !important;
+    color: white !important;
+    box-shadow: 0 8px 25px rgba(74, 144, 226, 0.3) !important;
+    transition: all 0.3s ease !important;
+    width: 100%;
+  }
+
+  .student-btn-primary:hover {
+    transform: translateY(-2px) !important;
+    box-shadow: 0 12px 35px rgba(74, 144, 226, 0.4) !important;
+  }
+
+  .motivation-section {
+    border-top: 1px solid rgba(74, 144, 226, 0.1);
+    padding-top: 2rem;
+  }
+
+  .motivation-cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 1.5rem;
+  }
+
+  .motivation-card {
+    text-align: center;
+    padding: 1.5rem;
+    background: rgba(232, 244, 253, 0.3);
+    border-radius: 15px;
+    border: 1px solid rgba(74, 144, 226, 0.1);
+  }
+
+  .card-icon {
+    font-size: 2rem;
+    margin-bottom: 1rem;
+  }
+
+  .motivation-card h3 {
+    color: #1E3D59;
+    font-size: 1rem;
+    font-weight: 600;
+    margin: 0 0 0.5rem;
+  }
+
+  .motivation-card p {
+    color: #4A90E2;
+    font-size: 0.9rem;
+    margin: 0;
+    line-height: 1.4;
+  }
+
+  /* Labels do Simple Form */
+  .student-input-container label {
+    color: #1E3D59 !important;
+    font-weight: 600 !important;
+    margin-bottom: 0.5rem !important;
+    font-size: 0.95rem !important;
+  }
+
+  /* Responsividade */
+  @media (max-width: 768px) {
+    .student-invitation-container {
+      padding: 1rem;
+    }
+    
+    .invitation-welcome-card {
+      padding: 2rem;
+    }
+    
+    .welcome-title {
+      font-size: 2rem;
+    }
+    
+    .motivation-cards {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

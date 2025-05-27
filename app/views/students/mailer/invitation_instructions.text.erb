@@ -1,0 +1,28 @@
+🥐 Practice-FR - Invitation à rejoindre la plateforme
+
+Bonjour!
+
+Vous avez été invité(e) à rejoindre Practice-FR, une plateforme d'apprentissage du français interactive et amusante!
+
+Daisy 🌼 vous a préparé des activités spécialement conçues pour vous aider à progresser en français de manière ludique et efficace.
+
+Pour créer votre compte et commencer votre aventure française, cliquez sur le lien suivant:
+
+<%= accept_invitation_url(@resource, invitation_token: @token) %>
+
+Ce que vous trouverez sur Practice-FR:
+🎯 Activités interactives et exercices amusants
+🏆 Système de récompenses avec des trophées
+📈 Suivi de vos progrès en temps réel
+
+<% if @resource.invitation_due_at %>
+Cette invitation expire le <%= l(@resource.invitation_due_at, format: :long) %>.
+<% end %>
+
+Si vous n'avez pas demandé cette invitation, vous pouvez ignorer cet email.
+
+Bonne chance dans votre apprentissage du français!
+
+---
+Practice-FR
+Apprendre le français n'a jamais été aussi amusant!

@@ -25,20 +25,10 @@ class ActivitiesController < ApplicationController
 
   def save_result
     # Endpoint para salvar resultados das atividades dos estudantes
-    Rails.logger.info "=== SAVE RESULT DEBUG ==="
-    Rails.logger.info "Student signed in: #{student_signed_in?}"
-    Rails.logger.info "Current student: #{current_student.inspect}"
-    Rails.logger.info "Activity: #{@activity.inspect}"
-    Rails.logger.info "Params: #{params.inspect}"
-    
     if student_signed_in?
       @completed_activity = current_student.completed_activities.build(completed_activity_params)
       @completed_activity.activity = @activity
       @completed_activity.completed_at = Time.current
-      
-      Rails.logger.info "Completed activity before save: #{@completed_activity.inspect}"
-      Rails.logger.info "Valid?: #{@completed_activity.valid?}"
-      Rails.logger.info "Errors: #{@completed_activity.errors.full_messages}"
       
       if @completed_activity.save
         render json: { 
@@ -71,10 +61,22 @@ class ActivitiesController < ApplicationController
     @activity.user = current_user if defined?(current_user)
 
     respond_to do |format|
-      if @activity.save
-        format.html { redirect_to activity_path(@activity), notice: t('flash.actions.create.notice', resource_name: Activity.model_name.human) }
+      # Verificar se a atividade é muito grande (baseado na experiência do app de português)
+      if activity_too_large?(@activity)
+        # Processar de forma assíncrona para atividades grandes
+        if @activity.save
+          ActivityProcessingJob.perform_later(@activity.id, current_user.id)
+          format.html { redirect_to activity_path(@activity), notice: 'Activité créée avec succès. Le traitement est en cours...' }
+        else
+          format.html { render :new }
+        end
       else
-        format.html { render :new }
+        # Processamento síncrono para atividades pequenas
+        if @activity.save
+          format.html { redirect_to activity_path(@activity), notice: t('flash.actions.create.notice', resource_name: Activity.model_name.human) }
+        else
+          format.html { render :new }
+        end
       end
     end
   end
@@ -291,5 +293,18 @@ class ActivitiesController < ApplicationController
           redirect_to new_user_session_path, alert: t('devise.failure.unauthenticated')
         end
       end
+    end
+    
+    # Método para verificar se a atividade é muito grande (baseado na experiência do app de português)
+    def activity_too_large?(activity)
+      # Estimar o número total de elementos que serão processados
+      estimated_questions = activity.questions.count + 
+                           activity.fill_blanks.sum { |fb| fb.blanks.count } +
+                           activity.sentence_orderings.count +
+                           activity.paragraph_orderings.sum { |po| po.paragraph_sentences.count } +
+                           activity.column_associations.sum { |ca| ca.association_pairs.count }
+      
+      # Considerar atividade grande se tiver mais de 20 questões
+      estimated_questions > 20
     end
 end

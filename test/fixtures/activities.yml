@@ -1,17 +1,17 @@
 # Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
 
 one:
-  título: MyString
-  nível: MyString
-  texto: MyText
-  video_url: MyString
-  imagem_url: MyString
+  título: "French Basics"
+  nível: "Débutant"
+  texto: "Learn basic French vocabulary"
+  video_url: "https://www.youtube.com/watch?v=example1"
+  imagem_url: "https://example.com/image1.jpg"
   user: one
 
 two:
-  título: MyString
-  nível: MyString
-  texto: MyText
-  video_url: MyString
-  imagem_url: MyString
+  título: "Advanced French Grammar"
+  nível: "Avancé"
+  texto: "Master French grammar rules"
+  video_url: "https://www.youtube.com/watch?v=example2"
+  imagem_url: "https://example.com/image2.jpg"
   user: two

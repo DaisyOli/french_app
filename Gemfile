@@ -39,10 +39,11 @@ gem "redis", ">= 4.0.1"
 gem "tzinfo-data", platforms: %i[ windows jruby ]
 
 # Reduces boot times through caching; required in config/boot.rb
-gem "bootsnap", require: false
+# gem "bootsnap", require: false  # Removido para evitar duplicação
 
 # Authentication
 gem "devise"
+gem "devise_invitable"
 
 # Forms and UI
 gem "simple_form"
@@ -53,12 +54,20 @@ gem "sassc-rails"
 gem "rails-i18n"
 gem "devise-i18n"
 
+# Production gems for performance and security
+gem "rack-attack" # Rate limiting and security
+gem "rack-timeout" # Timeout protection baseado na experiência do app de português
+gem "bootsnap", require: false # Faster boot times
+gem "image_processing", "~> 1.2" # Active Storage image processing
+
 # Use Active Storage variants [https://guides.rubyonrails.org/active_storage_overview.html#transforming-images]
 # gem "image_processing", "~> 1.2"
 
 group :development, :test do
   # See https://guides.rubyonrails.org/debugging_rails_applications.html#debugging-with-the-debug-gem
   gem "debug", platforms: %i[ mri windows ]
+  # Para variáveis de ambiente
+  gem "dotenv-rails"
 end
 
 group :development do

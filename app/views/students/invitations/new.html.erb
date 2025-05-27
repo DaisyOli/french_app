@@ -1,0 +1,303 @@
+<div class="daisy-invite-container">
+  <div class="daisy-invite-card">
+    <!-- Header mágico -->
+    <div class="daisy-invite-header">
+      <div class="magic-sparkles">
+        <span class="sparkle sparkle-1">✨</span>
+        <span class="sparkle sparkle-2">🌟</span>
+        <span class="sparkle sparkle-3">💫</span>
+      </div>
+      <div class="invite-icon">
+        <i class="bi bi-envelope-heart-fill"></i>
+      </div>
+      <h2 class="daisy-invite-title">Inviter un nouvel étudiant</h2>
+      <p class="daisy-invite-subtitle">Partagez la magie du français avec un nouveau petit cœur! 🌼</p>
+    </div>
+
+    <!-- Formulário mágico -->
+    <div class="daisy-invite-form">
+      <%= simple_form_for(resource, as: resource_name, url: invitation_path(resource_name), html: { method: :post, class: "magic-form" }) do |f| %>
+        <%= f.error_notification %>
+
+        <div class="magic-input-group">
+          <div class="input-magic-wrapper">
+            <div class="input-icon">
+              <i class="bi bi-envelope-at-fill"></i>
+            </div>
+            <%= f.input :email, 
+                  label: false, 
+                  placeholder: "Email de votre futur étudiant...",
+                  input_html: { class: "magic-input" },
+                  wrapper_html: { class: "magic-input-container" } %>
+            <div class="input-sparkle">✨</div>
+          </div>
+        </div>
+
+        <div class="magic-actions">
+          <%= f.button :submit, 
+                class: "btn daisy-btn-magic",
+                value: "Envoyer l'invitation magique! 🎭" %>
+        </div>
+      <% end %>
+    </div>
+
+    <!-- Dica fofa -->
+    <div class="daisy-invite-tip">
+      <div class="tip-icon">💡</div>
+      <p>Votre étudiant recevra un email avec un lien spécial pour créer son compte et commencer son aventure française!</p>
+    </div>
+  </div>
+</div>
+
+<style>
+  /* === ESTILO MÁGICO DA DAISY PARA CONVITES === */
+  .daisy-invite-container {
+    min-height: 100vh;
+    background: linear-gradient(135deg, 
+      rgba(255, 240, 245, 0.95) 0%, 
+      rgba(255, 228, 225, 0.95) 50%, 
+      rgba(232, 244, 253, 0.95) 100%);
+    padding: 2rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .daisy-invite-container::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: 
+      radial-gradient(circle at 20% 20%, rgba(255, 192, 203, 0.1) 0%, transparent 50%),
+      radial-gradient(circle at 80% 80%, rgba(255, 182, 193, 0.1) 0%, transparent 50%);
+    pointer-events: none;
+  }
+
+  .daisy-invite-card {
+    background: white;
+    border-radius: 25px;
+    padding: 3rem;
+    box-shadow: 
+      0 20px 60px rgba(255, 105, 180, 0.15),
+      0 8px 32px rgba(255, 192, 203, 0.1);
+    border: 2px solid rgba(255, 192, 203, 0.2);
+    max-width: 500px;
+    width: 100%;
+    position: relative;
+    z-index: 2;
+  }
+
+  .daisy-invite-header {
+    text-align: center;
+    margin-bottom: 2.5rem;
+    position: relative;
+  }
+
+  .magic-sparkles {
+    position: absolute;
+    top: -20px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 100%;
+    height: 40px;
+  }
+
+  .sparkle {
+    position: absolute;
+    font-size: 1.2rem;
+    animation: sparkleFloat 3s ease-in-out infinite;
+  }
+
+  .sparkle-1 {
+    left: 20%;
+    animation-delay: 0s;
+  }
+
+  .sparkle-2 {
+    left: 50%;
+    animation-delay: 1s;
+  }
+
+  .sparkle-3 {
+    left: 80%;
+    animation-delay: 2s;
+  }
+
+  @keyframes sparkleFloat {
+    0%, 100% { transform: translateY(0px) rotate(0deg); opacity: 0.7; }
+    50% { transform: translateY(-10px) rotate(180deg); opacity: 1; }
+  }
+
+  .invite-icon {
+    width: 80px;
+    height: 80px;
+    background: linear-gradient(135deg, #FF69B4 0%, #FFB6C1 100%);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 1.5rem;
+    color: white;
+    font-size: 2.5rem;
+    box-shadow: 0 8px 25px rgba(255, 105, 180, 0.3);
+  }
+
+  .daisy-invite-title {
+    font-family: 'Dancing Script', cursive;
+    color: #FF69B4;
+    font-size: 2.5rem;
+    font-weight: 700;
+    margin: 0 0 0.5rem;
+    text-shadow: 2px 2px 4px rgba(255, 105, 180, 0.1);
+  }
+
+  .daisy-invite-subtitle {
+    color: #8B4B8C;
+    font-size: 1.1rem;
+    margin: 0;
+    font-style: italic;
+  }
+
+  .magic-input-group {
+    margin-bottom: 2rem;
+  }
+
+  .magic-input-container {
+    position: relative;
+    margin-bottom: 0 !important;
+  }
+
+  .input-magic-wrapper {
+    position: relative;
+  }
+
+  .input-icon {
+    position: absolute;
+    left: 15px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #FF69B4;
+    font-size: 1.2rem;
+    z-index: 3;
+  }
+
+  .magic-input {
+    background: rgba(255, 240, 245, 0.8) !important;
+    border: 2px solid rgba(255, 192, 203, 0.3) !important;
+    border-radius: 15px !important;
+    padding: 15px 20px 15px 50px !important;
+    font-size: 1.1rem !important;
+    color: #8B4B8C !important;
+    transition: all 0.3s ease !important;
+    box-shadow: inset 0 2px 8px rgba(255, 192, 203, 0.1) !important;
+  }
+
+  .magic-input:focus {
+    border-color: #FF69B4 !important;
+    box-shadow: 
+      inset 0 2px 8px rgba(255, 192, 203, 0.2),
+      0 0 20px rgba(255, 105, 180, 0.2) !important;
+    background: white !important;
+  }
+
+  .input-sparkle {
+    position: absolute;
+    right: 15px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 1.2rem;
+    opacity: 0.7;
+    animation: sparkleGlow 2s ease-in-out infinite;
+  }
+
+  @keyframes sparkleGlow {
+    0%, 100% { opacity: 0.7; transform: translateY(-50%) scale(1); }
+    50% { opacity: 1; transform: translateY(-50%) scale(1.1); }
+  }
+
+  .magic-actions {
+    text-align: center;
+    margin-bottom: 2rem;
+  }
+
+  .daisy-btn-magic {
+    background: linear-gradient(135deg, #FF69B4 0%, #FFB6C1 50%, #DDA0DD 100%) !important;
+    border: none !important;
+    border-radius: 20px !important;
+    padding: 15px 30px !important;
+    font-size: 1.2rem !important;
+    font-weight: 600 !important;
+    color: white !important;
+    text-shadow: 1px 1px 2px rgba(0,0,0,0.1) !important;
+    box-shadow: 
+      0 8px 25px rgba(255, 105, 180, 0.3),
+      inset 0 1px 0 rgba(255, 255, 255, 0.2) !important;
+    transition: all 0.3s ease !important;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .daisy-btn-magic::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+    transition: left 0.5s ease;
+  }
+
+  .daisy-btn-magic:hover {
+    transform: translateY(-2px) !important;
+    box-shadow: 
+      0 12px 35px rgba(255, 105, 180, 0.4),
+      inset 0 1px 0 rgba(255, 255, 255, 0.3) !important;
+  }
+
+  .daisy-btn-magic:hover::before {
+    left: 100%;
+  }
+
+  .daisy-invite-tip {
+    background: rgba(255, 240, 245, 0.6);
+    border: 1px solid rgba(255, 192, 203, 0.3);
+    border-radius: 15px;
+    padding: 1.5rem;
+    display: flex;
+    align-items: flex-start;
+    gap: 1rem;
+  }
+
+  .tip-icon {
+    font-size: 1.5rem;
+    flex-shrink: 0;
+  }
+
+  .daisy-invite-tip p {
+    margin: 0;
+    color: #8B4B8C;
+    font-size: 0.95rem;
+    line-height: 1.5;
+  }
+
+  /* Responsividade */
+  @media (max-width: 768px) {
+    .daisy-invite-container {
+      padding: 1rem;
+    }
+    
+    .daisy-invite-card {
+      padding: 2rem;
+    }
+    
+    .daisy-invite-title {
+      font-size: 2rem;
+    }
+  }
+</style>

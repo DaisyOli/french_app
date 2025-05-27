@@ -1,11 +1,13 @@
 # Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
 
 one:
-  conteúdo: MyText
-  tipo: MyString
+  conteúdo: "Qual é a capital da França?"
+  tipo: "multiple_choice"
   activity: one
+  display_order: 1
 
 two:
-  conteúdo: MyText
-  tipo: MyString
+  conteúdo: "Como se diz 'obrigado' em francês?"
+  tipo: "multiple_choice"
   activity: two
+  display_order: 2

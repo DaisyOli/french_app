@@ -1,59 +1,83 @@
-<div class="container mt-4">
-  <div class="row">
-    <div class="col-lg-10 offset-lg-1">
-      <div class="paper-effect">
-        <div class="activity-header">
-          <h1 class="main-title"><%= @activity.título %></h1>
-          <div class="niveau-badge">
-            <span class="badge nivel-badge" data-nivel="<%= @activity.nível %>"><%= @activity.nível %></span>
+<div class="solve-activity">
+  <!-- Hero Section -->
+  <div class="hero-section">
+    <div class="hero-content">
+      <div class="activity-header-card">
+        <div class="activity-info">
+          <div class="level-badge level-<%= @activity.nível.downcase %>">
+            <%= @activity.nível %>
           </div>
-          <div class="decorative-line"></div>
+          <h1 class="activity-title"><%= @activity.título %></h1>
+          <% if @activity.texto.present? %>
+            <p class="activity-description preserve-format"><%= @activity.texto %></p>
+          <% end %>
         </div>
+      </div>
+    </div>
+  </div>
 
-        <% if @activity.texto.present? %>
-          <div class="paper-section">
-            <p class="description-text preserve-format"><%= @activity.texto %></p>
-          </div>
-        <% end %>
-
-        <% # Ordenar elements pour affichage %>
-        <% activity_elements = [] %>
-        
-        <% # Collecter tous les elements avec leurs ordres %>
-        <% if @activity.video_url.present? %>
-          <% activity_elements << {type: 'video', order: @activity.video_order || 1, content: @activity.video_url} %>
-        <% end %>
-        
-        <% if @activity.imagem_url.present? %>
-          <% activity_elements << {type: 'image', order: @activity.imagem_order || 2, content: @activity.imagem_url} %>
-        <% end %>
-        
-        <% if @activity.texte.present? %>
-          <% activity_elements << {type: 'texte', order: @activity.texte_order || 3, content: @activity.texte} %>
-        <% end %>
-        
-        <% @activity.statements.each do |statement| %>
-          <% activity_elements << {type: 'statement', order: statement.display_order || statement.id, content: statement.conteúdo} %>
-        <% end %>
-        
-        <% # Inclure les questions dans l'ordre des elements %>
-        <% @activity.questions.each do |question| %>
-          <% activity_elements << {type: 'question', order: question.display_order || question.id, content: question} %>
-        <% end %>
-        
-        <% # Inclure les suggestions dans l'ordre des elements %>
-        <% @activity.suggestions.each do |suggestion| %>
-          <% activity_elements << {type: 'suggestion', order: suggestion.display_order || suggestion.id, content: suggestion.conteúdo} %>
-        <% end %>
-        
-        <% # Trier elements par ordre explicite %>
-        <% activity_elements.sort_by! { |element| element[:order] } %>
-        
-        <% # Afficher contenu %>
-        <% activity_elements.each do |element| %>
-          <% case element[:type] %>
-          <% when 'video' %>
-            <div class="paper-section" id="video-section">
+  <!-- Content Section -->
+  <div class="content-section">
+    <div class="activity-container">
+      <% # Ordenar elements pour affichage %>
+      <% activity_elements = [] %>
+      
+      <% # Collecter tous les elements avec leurs ordres %>
+      <% if @activity.video_url.present? %>
+        <% activity_elements << {type: 'video', order: @activity.video_order || 1, content: @activity.video_url} %>
+      <% end %>
+      
+      <% if @activity.imagem_url.present? %>
+        <% activity_elements << {type: 'image', order: @activity.imagem_order || 2, content: @activity.imagem_url} %>
+      <% end %>
+      
+      <% if @activity.texte.present? %>
+        <% activity_elements << {type: 'texte', order: @activity.texte_order || 3, content: @activity.texte} %>
+      <% end %>
+      
+      <% @activity.statements.each do |statement| %>
+        <% activity_elements << {type: 'statement', order: statement.display_order || statement.id, content: statement.conteúdo} %>
+      <% end %>
+      
+      <% # Inclure les questions dans l'ordre des elements %>
+      <% @activity.questions.each do |question| %>
+        <% activity_elements << {type: 'question', order: question.display_order || question.id, content: question} %>
+      <% end %>
+      
+      <% # Inclure les suggestions dans l'ordre des elements %>
+      <% @activity.suggestions.each do |suggestion| %>
+        <% activity_elements << {type: 'suggestion', order: suggestion.display_order || suggestion.id, content: suggestion.conteúdo} %>
+      <% end %>
+      
+      <% # Inclure les exercices de lacunas dans l'ordre des elements %>
+      <% @activity.fill_blanks.each do |fill_blank| %>
+        <% activity_elements << {type: 'fill_blank', order: fill_blank.display_order || fill_blank.id, content: fill_blank} %>
+      <% end %>
+      
+      <% # Inclure les exercices d'organisation de mots dans l'ordre des elements %>
+      <% @activity.sentence_orderings.each do |sentence_ordering| %>
+        <% activity_elements << {type: 'sentence_ordering', order: sentence_ordering.display_order || sentence_ordering.id, content: sentence_ordering} %>
+      <% end %>
+      
+      <% # Inclure les exercices d'organisation de phrases dans l'ordre des elements %>
+      <% @activity.paragraph_orderings.each do |paragraph_ordering| %>
+        <% activity_elements << {type: 'paragraph_ordering', order: paragraph_ordering.display_order || paragraph_ordering.id, content: paragraph_ordering} %>
+      <% end %>
+      
+      <% # Inclure les exercices d'association de colonnes dans l'ordre des elements %>
+      <% @activity.column_associations.each do |column_association| %>
+        <% activity_elements << {type: 'column_association', order: column_association.display_order || column_association.id, content: column_association} %>
+      <% end %>
+      
+      <% # Trier elements par ordre explicite %>
+      <% activity_elements.sort_by! { |element| element[:order] } %>
+      
+      <% # Afficher contenu %>
+      <% activity_elements.each do |element| %>
+        <% case element[:type] %>
+        <% when 'video' %>
+          <div class="content-card video-card" id="video-section">
+            <div class="card-body">
               <% 
                 # Convertir URL de YouTube en format embed
                 video_id = nil
@@ -65,118 +89,284 @@
                 
                 embed_url = video_id ? "https://www.youtube.com/embed/#{video_id}" : @activity.video_url
               %>
-              <div class="ratio ratio-16x9 mb-3 video-container">
+              <div class="video-container">
                 <iframe src="<%= embed_url %>" allowfullscreen></iframe>
               </div>
             </div>
-          <% when 'image' %>
-            <div class="paper-section" id="image-section">
+          </div>
+        <% when 'image' %>
+          <div class="content-card image-card" id="image-section">
+            <div class="card-body">
               <div class="image-container">
-                <img src="<%= @activity.imagem_url %>" alt="Image de l'activité" class="img-fluid mb-3 rounded">
+                <img src="<%= @activity.imagem_url %>" alt="Image de l'activité" class="activity-image">
               </div>
             </div>
-          <% when 'texte' %>
-            <div class="paper-section" id="texte-section">
-              <div class="texte content-box">
-                <p class="preserve-format"><%= @activity.texte %></p>
+          </div>
+        <% when 'texte' %>
+          <div class="content-card text-card" id="texte-section">
+            <div class="card-body">
+              <div class="text-content preserve-format"><%= @activity.texte %></div>
+            </div>
+          </div>
+        <% when 'statement' %>
+          <div class="content-card statement-card">
+            <div class="card-body">
+              <div class="preserve-format"><%= element[:content] %></div>
+            </div>
+          </div>
+        <% when 'suggestion' %>
+          <div class="content-card suggestion-card">
+            <div class="card-body">
+              <div class="suggestion-content preserve-format"><%= element[:content] %></div>
+            </div>
+          </div>
+        <% when 'fill_blank' %>
+          <% fill_blank = element[:content] %>
+          <div class="content-card fill-blank-card">
+            <div class="card-header">
+              <i class="bi bi-dash-square-fill"></i>
+              <span>Exercice de lacunes <%= activity_elements.select { |e| e[:type] == 'fill_blank' }.index { |e| e[:content] == fill_blank } + 1 %></span>
+            </div>
+            <div class="card-body">
+              <div class="fill-blank-text">
+                <%= fill_blank.text_with_inputs("fill_blank").html_safe %>
               </div>
             </div>
-          <% when 'statement' %>
-            <div class="paper-section">
-              <div class="card enunciado-card">
-                <div class="card-body">
-                  <div class="preserve-format"><%= element[:content] %></div>
-                </div>
-              </div>
+          </div>
+        <% when 'question' %>
+          <% question = element[:content] %>
+          <div class="content-card question-card">
+            <div class="card-header">
+              <i class="bi bi-question-circle-fill"></i>
+              <span>Question <%= activity_elements.select { |e| e[:type] == 'question' }.index { |e| e[:content] == question } + 1 %></span>
             </div>
-          <% when 'suggestion' %>
-            <div class="paper-section">
-              <div class="card suggestion-card">
-                <div class="card-header">
-                  <h5><i class="bi bi-lightbulb"></i> Suggestion</h5>
-                </div>
-                <div class="card-body">
-                  <div class="suggestion-content preserve-format"><%= element[:content] %></div>
-                </div>
-              </div>
-            </div>
-          <% when 'question' %>
-            <% question = element[:content] %>
-            <div class="paper-section">
-              <div class="card question-card">
-                <div class="card-header">
-                  <h5>Question <%= activity_elements.select { |e| e[:type] == 'question' }.index { |e| e[:content] == question } + 1 %></h5>
-                </div>
-                <div class="card-body">
-                  <p class="card-text question-content preserve-format"><%= question.conteúdo %></p>
-                  
-                  <% if question.alternatives.any? %>
-                    <div class="alternatives">
-                      <% question.alternatives.each_with_index do |alternative, index| %>
-                        <div class="form-check">
-                          <input 
-                            class="form-check-input" 
-                            type="radio" 
-                            name="question_<%= question.id %>" 
-                            id="alternative_<%= alternative.id %>" 
-                            value="<%= alternative.id %>" 
-                            data-correct="<%= alternative.correta %>">
-                          <label class="form-check-label preserve-format" for="alternative_<%= alternative.id %>">
-                            <span class="alternative-letter"><%= ('a'.ord + index).chr %>) </span>
-                            <%= alternative.conteúdo %>
-                          </label>
-                        </div>
-                      <% end %>
+            <div class="card-body">
+              <p class="question-text preserve-format"><%= question.conteúdo %></p>
+              
+              <% if question.alternatives.any? %>
+                <div class="alternatives-container">
+                  <% question.alternatives.each_with_index do |alternative, index| %>
+                    <div class="alternative-option">
+                      <input 
+                        class="alternative-input" 
+                        type="radio" 
+                        name="question_<%= question.id %>" 
+                        id="alternative_<%= alternative.id %>" 
+                        value="<%= alternative.id %>" 
+                        data-correct="<%= alternative.correta %>">
+                      <label class="alternative-label preserve-format" for="alternative_<%= alternative.id %>">
+                        <span class="alternative-letter"><%= ('a'.ord + index).chr %></span>
+                        <span class="alternative-text"><%= alternative.conteúdo %></span>
+                      </label>
                     </div>
                   <% end %>
                 </div>
+              <% end %>
+            </div>
+          </div>
+        <% when 'sentence_ordering' %>
+          <% sentence_ordering = element[:content] %>
+          <div class="content-card sentence-ordering-card">
+            <div class="card-header">
+              <i class="bi bi-arrows-move"></i>
+              <span>Exercice d'organisation de mots <%= activity_elements.select { |e| e[:type] == 'sentence_ordering' }.index { |e| e[:content] == sentence_ordering } + 1 %></span>
+            </div>
+            <div class="card-body">
+              <p class="instruction-text">Remettez les mots dans le bon ordre pour former la phrase correcte:</p>
+              <div class="drag-drop-exercise" data-exercise-type="sentence" data-exercise-id="<%= sentence_ordering.id %>">
+                <!-- Zone des mots à organiser -->
+                <div class="words-pool">
+                  <% sentence_ordering.sentence_words.shuffle.each do |word| %>
+                    <div class="draggable-word" 
+                         data-word-id="<%= word.id %>" 
+                         data-correct-position="<%= word.correct_position %>">
+                      <%= word.word %>
+                    </div>
+                  <% end %>
+                </div>
+                <!-- Zone de construction de la phrase -->
+                <div class="sentence-builder">
+                  <p class="builder-instruction">Glissez les mots ici:</p>
+                  <div class="drop-zones" data-word-count="<%= sentence_ordering.sentence_words.count %>">
+                    <% sentence_ordering.sentence_words.count.times do |i| %>
+                      <div class="drop-zone" data-position="<%= i + 1 %>">
+                        <span class="position-number"><%= i + 1 %></span>
+                      </div>
+                    <% end %>
+                  </div>
+                  <div class="sentence-result">
+                    <span class="result-text"></span>
+                    <div class="result-feedback"></div>
+                  </div>
+                </div>
               </div>
             </div>
-          <% end %>
-        <% end %>
-
-        <% # Le formulaire maintenant ne concerne que le bouton d'envoi %>
-        <% if @activity.questions.any? %>
-          <form id="activity-quiz-form">
-            <div class="text-center mt-4 mb-4">
-              <button type="submit" class="btn btn-primary btn-lg" id="submit-answers">
-                Soumettre les réponses
-              </button>
+          </div>
+        <% when 'paragraph_ordering' %>
+          <% paragraph_ordering = element[:content] %>
+          <div class="content-card paragraph-ordering-card">
+            <div class="card-header">
+              <i class="bi bi-list-ol"></i>
+              <span>Exercice d'organisation de phrases <%= activity_elements.select { |e| e[:type] == 'paragraph_ordering' }.index { |e| e[:content] == paragraph_ordering } + 1 %></span>
             </div>
-          </form>
+            <div class="card-body">
+              <% if paragraph_ordering.titre.present? %>
+                <h4 class="exercise-title"><%= paragraph_ordering.titre %></h4>
+              <% end %>
+              <% if paragraph_ordering.instruction.present? %>
+                <p class="instruction-text"><%= paragraph_ordering.instruction %></p>
+              <% else %>
+                <p class="instruction-text">Remettez ces phrases dans le bon ordre pour former un paragraphe cohérent:</p>
+              <% end %>
+              <div class="drag-drop-exercise" data-exercise-type="paragraph" data-exercise-id="<%= paragraph_ordering.id %>">
+                <!-- Zone des phrases à organiser -->
+                <div class="sentences-pool">
+                  <% paragraph_ordering.paragraph_sentences.shuffle.each do |sentence| %>
+                    <div class="draggable-sentence" 
+                         data-sentence-id="<%= sentence.id %>" 
+                         data-correct-position="<%= sentence.correct_position %>">
+                      <span class="sentence-content"><%= sentence.sentence %></span>
+                    </div>
+                  <% end %>
+                </div>
+                <!-- Zone de construction du paragraphe -->
+                <div class="paragraph-builder">
+                  <p class="builder-instruction">Glissez les phrases ici dans l'ordre correct:</p>
+                  <div class="paragraph-drop-zones" data-sentence-count="<%= paragraph_ordering.paragraph_sentences.count %>">
+                    <% paragraph_ordering.paragraph_sentences.count.times do |i| %>
+                      <div class="paragraph-drop-zone" data-position="<%= i + 1 %>">
+                        <span class="position-number"><%= i + 1 %></span>
+                        <div class="drop-content"></div>
+                      </div>
+                    <% end %>
+                  </div>
+                  <div class="paragraph-result">
+                    <div class="result-feedback"></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        <% when 'column_association' %>
+          <% column_association = element[:content] %>
+          <div class="content-card column-association-card">
+            <div class="card-header">
+              <i class="bi bi-diagram-3"></i>
+              <span>Exercice d'association <%= activity_elements.select { |e| e[:type] == 'column_association' }.index { |e| e[:content] == column_association } + 1 %></span>
+            </div>
+            <div class="card-body">
+              <% if column_association.title.present? %>
+                <h4 class="exercise-title"><%= column_association.title %></h4>
+              <% end %>
+              <% if column_association.instruction.present? %>
+                <p class="instruction-text"><%= column_association.instruction %></p>
+              <% end %>
+              
+              <div class="association-exercise" data-exercise-type="column_association" data-exercise-id="<%= column_association.id %>">
+                <div class="association-container">
+                  <!-- Colonne A -->
+                  <div class="association-column column-a">
+                    <div class="column-items">
+                      <% column_association.association_pairs.ordered.each_with_index do |pair, index| %>
+                        <div class="association-item" data-pair-id="<%= pair.id %>" data-item-type="a">
+                          <span class="item-text"><%= pair.item_a %></span>
+                          <div class="connection-point" data-pair-id="<%= pair.id %>" data-side="a" data-pair-index="<%= index %>"></div>
+                        </div>
+                      <% end %>
+                    </div>
+                  </div>
+                  
+                  <!-- Zone de connexion SVG -->
+                  <div class="connection-zone">
+                    <svg class="connection-svg" width="100%" height="100%">
+                      <!-- Les lignes de connexion seront ajoutées ici par JavaScript -->
+                    </svg>
+                  </div>
+                  
+                  <!-- Colonne B -->
+                  <div class="association-column column-b">
+                    <div class="column-items">
+                      <% ordered_pairs = column_association.association_pairs.ordered.to_a %>
+                      <% shuffled_pairs = ordered_pairs.shuffle %>
+                      <% shuffled_pairs.each do |pair| %>
+                        <% pair_index = ordered_pairs.index(pair) %>
+                        <div class="association-item" data-pair-id="<%= pair.id %>" data-item-type="b">
+                          <div class="connection-point" data-pair-id="<%= pair.id %>" data-side="b" data-pair-index="<%= pair_index %>"></div>
+                          <span class="item-text"><%= pair.item_b %></span>
+                        </div>
+                      <% end %>
+                    </div>
+                  </div>
+                </div>
+                
+                <div class="association-result">
+                  <div class="result-feedback"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        <% end %>
+      <% end %>
 
-          <div id="results-container" style="display: none;">
-            <div class="paper-section">
-              <div class="alert alert-success">
-                <h4 class="alert-heading">Résultats</h4>
-                <p id="score-message"></p>
-                <hr>
-                <p id="feedback-message"></p>
+      <% # Le formulaire maintenant ne concerne que le bouton d'envoi %>
+      <% if @activity.questions.any? || @activity.fill_blanks.any? || @activity.sentence_orderings.any? || @activity.paragraph_orderings.any? || @activity.column_associations.any? %>
+        <form id="activity-quiz-form">
+          <div class="submit-section">
+            <button type="submit" class="btn-submit" id="submit-answers">
+              <i class="bi bi-check-circle-fill"></i>
+              Soumettre les réponses
+            </button>
+          </div>
+        </form>
+
+        <div id="results-container" style="display: none;">
+          <div class="content-card results-card">
+            <div class="card-header success-header">
+              <i class="bi bi-trophy-fill"></i>
+              <span>Résultats</span>
+            </div>
+            <div class="card-body">
+              <div class="score-display">
+                <div class="score-circle">
+                  <span id="score-percentage"></span>
+                </div>
+                <div class="score-details">
+                  <p id="score-message"></p>
+                  <p id="feedback-message"></p>
+                </div>
               </div>
               
               <div id="question-feedback">
                 <!-- Le feedback détaillé de chaque question sera inséré ici -->
               </div>
               
-              <div class="text-center mt-4">
-                <button type="button" class="btn btn-outline-primary" id="show-answers">
+              <div class="action-buttons">
+                <button type="button" class="btn-secondary" id="show-answers">
+                  <i class="bi bi-eye-fill"></i>
                   Voir les réponses
                 </button>
-                <button type="button" class="btn btn-outline-secondary" id="retry-quiz">
+                <button type="button" class="btn-outline" id="retry-quiz">
+                  <i class="bi bi-arrow-clockwise"></i>
                   Réessayer
                 </button>
               </div>
             </div>
           </div>
-        <% end %>
-
-        <div class="actions-bar">
-          <% if student_signed_in? %>
-            <%= link_to "Retour", student_dashboard_path, class: "btn btn-retour" %>
-          <% else %>
-            <%= link_to "Retour", activities_path, class: "btn btn-retour" %>
-          <% end %>
         </div>
+      <% end %>
+
+      <div class="navigation-section">
+        <% if student_signed_in? %>
+          <%= link_to student_dashboard_path, class: "btn-back" do %>
+            <i class="bi bi-arrow-left"></i>
+            Retour au tableau de bord
+          <% end %>
+        <% else %>
+          <%= link_to activities_path, class: "btn-back" do %>
+            <i class="bi bi-arrow-left"></i>
+            Retour aux activités
+          <% end %>
+        <% end %>
       </div>
     </div>
   </div>
@@ -229,9 +419,26 @@
         let totalQuestions = 0;
         const feedbackItems = [];
         
-        // Obtenir toutes les questions
-        const questions = document.querySelectorAll('.question-card');
+        // Obtenir toutes les questions et exercices
+        const questions = document.querySelectorAll('.content-card.question-card');
+        const fillBlanks = document.querySelectorAll('.content-card.fill-blank-card');
+        const sentenceOrderings = document.querySelectorAll('.content-card.sentence-ordering-card');
+        const paragraphOrderings = document.querySelectorAll('.content-card.paragraph-ordering-card');
+        const columnAssociations = document.querySelectorAll('.content-card.column-association-card');
+        
+        // Contar questões normais
         totalQuestions = questions.length;
+        
+        // Contar lacunas individuais como questões separadas
+        fillBlanks.forEach(function(fillBlankElement) {
+          const fillBlankInputs = fillBlankElement.querySelectorAll('.blank-input');
+          totalQuestions += fillBlankInputs.length;
+        });
+        
+        // Contar exercícios de organização (cada exercício conta como 1 questão)
+        totalQuestions += sentenceOrderings.length;
+        totalQuestions += paragraphOrderings.length;
+        totalQuestions += columnAssociations.length;
         
         // Vérifier chaque question
         questions.forEach(function(questionElement, index) {
@@ -240,8 +447,8 @@
           
           const questionId = radioInput.name;
           const selectedAnswer = questionElement.querySelector('input[type="radio"]:checked');
-          const questionTextElement = questionElement.querySelector('.card-text');
-          const questionHeaderElement = questionElement.querySelector('.card-header h5');
+          const questionTextElement = questionElement.querySelector('.question-text');
+          const questionHeaderElement = questionElement.querySelector('.card-header span');
           
           if (!questionTextElement || !questionHeaderElement) return; // Passer si les éléments essentiels ne sont pas trouvés
           
@@ -259,7 +466,7 @@
           };
           
           // Trouver la bonne réponse pour le feedback
-          const alternatives = questionElement.querySelectorAll('.form-check');
+          const alternatives = questionElement.querySelectorAll('.alternative-option');
           if (!alternatives.length) return; // Passer si il n'y a pas d'alternatives
           
           let correctIndex = -1;
@@ -275,7 +482,7 @@
           });
           
           if (selectedAnswer) {
-            const selectedAlternative = selectedAnswer.closest('.form-check');
+            const selectedAlternative = selectedAnswer.closest('.alternative-option');
             if (selectedAlternative) {
               const selectedLabel = selectedAlternative.querySelector('label');
               const selectedIndex = Array.from(alternatives).indexOf(selectedAlternative);
@@ -295,11 +502,147 @@
           feedbackItems.push(feedback);
         });
         
+        // Vérifier chaque exercice de lacunas
+        fillBlanks.forEach(function(fillBlankElement, index) {
+          const fillBlankInputs = fillBlankElement.querySelectorAll('.blank-input');
+          const questionHeaderElement = fillBlankElement.querySelector('.card-header span');
+          
+          if (!questionHeaderElement) return;
+          
+          const exerciseNumber = parseInt(questionHeaderElement.textContent.replace('Exercice de lacunes ', ''));
+          
+          // Pour chaque lacuna dans cet exercice
+          fillBlankInputs.forEach(function(input, blankIndex) {
+            const fillBlankId = input.getAttribute('data-blank-id');
+            const userAnswer = input.value.trim();
+            
+            // Récupérer la réponse correcte depuis les données du serveur
+            const correctAnswer = getCorrectAnswerForBlank(fillBlankElement, blankIndex + 1);
+            
+            const isCorrect = userAnswer && correctAnswer && 
+                            normalizeAnswer(userAnswer) === normalizeAnswer(correctAnswer);
+            
+            if (isCorrect) {
+              correctAnswers++;
+            }
+            
+            const feedback = {
+              questionNumber: `${exerciseNumber}.${blankIndex + 1}`,
+              questionText: `Exercice de lacunes ${exerciseNumber} - Lacune ${blankIndex + 1}`,
+              isCorrect: isCorrect,
+              selectedText: userAnswer || 'Pas de réponse',
+              selectedLetter: '',
+              correctText: correctAnswer || 'Non définie',
+              correctLetter: '',
+              isFillBlank: true
+            };
+            
+            feedbackItems.push(feedback);
+          });
+        });
+        
+        // Vérifier chaque exercice d'organisation de mots
+        sentenceOrderings.forEach(function(sentenceElement, index) {
+          const questionHeaderElement = sentenceElement.querySelector('.card-header span');
+          
+          if (!questionHeaderElement) return;
+          
+          const exerciseNumber = parseInt(questionHeaderElement.textContent.replace('Exercice d\'organisation de mots ', ''));
+          const dragDropExercise = sentenceElement.querySelector('.drag-drop-exercise');
+          
+          if (!dragDropExercise) return;
+          
+          const isCorrect = checkSentenceOrder(dragDropExercise);
+          
+          if (isCorrect) {
+            correctAnswers++;
+          }
+          
+          const feedback = {
+            questionNumber: `Org.Mots ${exerciseNumber}`,
+            questionText: `Exercice d'organisation de mots ${exerciseNumber}`,
+            isCorrect: isCorrect,
+            selectedText: isCorrect ? 'Ordre correct' : 'Ordre incorrect',
+            selectedLetter: '',
+            correctText: 'Ordre correct des mots',
+            correctLetter: '',
+            isDragDrop: true
+          };
+          
+          feedbackItems.push(feedback);
+        });
+        
+        // Vérifier chaque exercice d'organisation de phrases
+        paragraphOrderings.forEach(function(paragraphElement, index) {
+          const questionHeaderElement = paragraphElement.querySelector('.card-header span');
+          
+          if (!questionHeaderElement) return;
+          
+          const exerciseNumber = parseInt(questionHeaderElement.textContent.replace('Exercice d\'organisation de phrases ', ''));
+          const dragDropExercise = paragraphElement.querySelector('.drag-drop-exercise');
+          
+          if (!dragDropExercise) return;
+          
+          const isCorrect = checkParagraphOrder(dragDropExercise);
+          
+          if (isCorrect) {
+            correctAnswers++;
+          }
+          
+          const feedback = {
+            questionNumber: `Org.Phrases ${exerciseNumber}`,
+            questionText: `Exercice d'organisation de phrases ${exerciseNumber}`,
+            isCorrect: isCorrect,
+            selectedText: isCorrect ? 'Ordre correct' : 'Ordre incorrect',
+            selectedLetter: '',
+            correctText: 'Ordre correct des phrases',
+            correctLetter: '',
+            isDragDrop: true
+          };
+          
+          feedbackItems.push(feedback);
+        });
+        
+        // Vérifier chaque exercice d'association de colonnes
+        columnAssociations.forEach(function(associationElement, index) {
+          const questionHeaderElement = associationElement.querySelector('.card-header span');
+          
+          if (!questionHeaderElement) return;
+          
+          const exerciseNumber = parseInt(questionHeaderElement.textContent.replace('Exercice d\'association ', ''));
+          const associationExercise = associationElement.querySelector('.association-exercise');
+          
+          if (!associationExercise) return;
+          
+          const isCorrect = checkColumnAssociation(associationExercise);
+          
+          if (isCorrect) {
+            correctAnswers++;
+          }
+          
+          const feedback = {
+            questionNumber: `Association ${exerciseNumber}`,
+            questionText: `Exercice d'association ${exerciseNumber}`,
+            isCorrect: isCorrect,
+            selectedText: isCorrect ? 'Associations correctes' : 'Associations incorrectes',
+            selectedLetter: '',
+            correctText: 'Toutes les associations correctes',
+            correctLetter: '',
+            isAssociation: true
+          };
+          
+          feedbackItems.push(feedback);
+        });
+        
         // Calculer pourcentage
         const scorePercent = totalQuestions > 0 ? Math.round((correctAnswers / totalQuestions) * 100) : 0;
         
         // Afficher résultats
-        if (scoreMessage) scoreMessage.textContent = `Score: ${correctAnswers}/${totalQuestions} (${scorePercent}%)`;
+        if (scoreMessage) scoreMessage.textContent = `Score: ${correctAnswers}/${totalQuestions}`;
+        
+        // Afficher pourcentage dans le cercle
+        const scorePercentageElement = document.getElementById('score-percentage');
+        if (scorePercentageElement) scorePercentageElement.textContent = `${scorePercent}%`;
         
         // Feedback basé sur le score
         if (feedbackMessage) {
@@ -313,9 +656,35 @@
         }
         
         // Désactiver inputs pour éviter des modifications
-        document.querySelectorAll('.question-card').forEach(function(card) {
+        document.querySelectorAll('.content-card.question-card').forEach(function(card) {
           const inputs = card.querySelectorAll('input');
           inputs.forEach(input => input.disabled = true);
+        });
+        
+        // Désactiver aussi les inputs de lacunas
+        document.querySelectorAll('.content-card.fill-blank-card').forEach(function(card) {
+          const inputs = card.querySelectorAll('.blank-input');
+          inputs.forEach(input => input.disabled = true);
+        });
+        
+        // Désactiver les exercices de drag and drop
+        document.querySelectorAll('.drag-drop-exercise').forEach(function(exercise) {
+          exercise.classList.add('disabled');
+          const draggables = exercise.querySelectorAll('.draggable-word, .draggable-sentence');
+          draggables.forEach(item => {
+            item.style.pointerEvents = 'none';
+            item.style.opacity = '0.6';
+          });
+        });
+        
+        // Désactiver les exercices d'association
+        document.querySelectorAll('.association-exercise').forEach(function(exercise) {
+          exercise.classList.add('disabled');
+          const connectionPoints = exercise.querySelectorAll('.connection-point');
+          connectionPoints.forEach(point => {
+            point.style.pointerEvents = 'none';
+            point.style.opacity = '0.6';
+          });
         });
         
         // Afficher résultats
@@ -369,9 +738,41 @@
         if (retryQuizButton && questionFeedback && resultsContainer) {
           const handleRetry = function() {
             // Réinitialiser formulaire
-            document.querySelectorAll('.form-check-input').forEach(function(input) {
+            document.querySelectorAll('.alternative-input').forEach(function(input) {
               input.checked = false;
               input.disabled = false;
+            });
+            
+            // Réinitialiser aussi les inputs de lacunas
+            document.querySelectorAll('.blank-input').forEach(function(input) {
+              input.value = '';
+              input.disabled = false;
+            });
+            
+            // Réinitialiser les exercices de drag and drop
+            document.querySelectorAll('.drag-drop-exercise').forEach(function(exercise) {
+              exercise.classList.remove('disabled');
+              const draggables = exercise.querySelectorAll('.draggable-word, .draggable-sentence');
+              draggables.forEach(item => {
+                item.style.pointerEvents = '';
+                item.style.opacity = '';
+              });
+              resetDragDropExercise(exercise);
+            });
+            
+            // Réinitialiser les exercices d'association
+            document.querySelectorAll('.association-exercise').forEach(function(exercise) {
+              exercise.classList.remove('disabled');
+              const connectionPoints = exercise.querySelectorAll('.connection-point');
+              connectionPoints.forEach(point => {
+                point.style.pointerEvents = '';
+                point.style.opacity = '';
+              });
+              resetAssociationExercise(exercise);
+              
+              // Resetar contador específico do exercício
+              // Isso é feito reinicializando o exercício
+              initializeAssociationExercise(exercise);
             });
             
             // Effacer feedback détaillé
@@ -387,6 +788,31 @@
           retryQuizButton.addEventListener('click', handleRetry);
         }
       });
+    }
+    
+    // Função para normalizar respostas (mesmo algoritmo do modelo Ruby)
+    function normalizeAnswer(text) {
+      return text.toString()
+        .trim()                           // Remove espaços no início e fim
+        .toLowerCase()                    // Converte para minúsculas
+        .replace(/\s+/g, ' ')            // Substitui múltiplos espaços por um só
+        .replace(/[.,;:!?'"()[\]{}]/g, '') // Remove pontuação
+        .replace(/[àáâãäå]/g, 'a')
+        .replace(/[èéêë]/g, 'e')
+        .replace(/[ìíîï]/g, 'i')
+        .replace(/[òóôõö]/g, 'o')
+        .replace(/[ùúûü]/g, 'u')
+        .replace(/[ç]/g, 'c')
+        .replace(/[ñ]/g, 'n')
+        .trim();                         // Remove espaços novamente após limpeza
+    }
+    
+    // Função para obter a resposta correta de uma lacuna
+    function getCorrectAnswerForBlank(fillBlankElement, blankPosition) {
+      // Buscar nos dados do elemento ou fazer uma requisição AJAX
+      // Por enquanto, vamos usar um atributo data no input
+      const input = fillBlankElement.querySelector(`.blank-input[data-blank-id="${blankPosition}"]`);
+      return input ? input.getAttribute('data-correct-answer') : null;
     }
     
     // Função para salvar resultado da atividade
@@ -440,282 +866,2082 @@
         console.error('Erro na requisição:', error);
       });
     }
+    
+    // === FUNÇÕES PARA DRAG AND DROP ===
+    
+    // Função para verificar ordem das palavras
+    function checkSentenceOrder(exercise) {
+      const dropZones = exercise.querySelectorAll('.drop-zone');
+      let isCorrect = true;
+      
+      dropZones.forEach((zone, index) => {
+        const word = zone.querySelector('.draggable-word');
+        if (!word) {
+          isCorrect = false;
+          return;
+        }
+        
+        const correctPosition = parseInt(word.getAttribute('data-correct-position'));
+        const currentPosition = index + 1;
+        
+        if (correctPosition !== currentPosition) {
+          isCorrect = false;
+        }
+      });
+      
+      return isCorrect;
+    }
+    
+    // Função para verificar ordem das frases
+    function checkParagraphOrder(exercise) {
+      const dropZones = exercise.querySelectorAll('.paragraph-drop-zone');
+      let isCorrect = true;
+      
+      dropZones.forEach((zone, index) => {
+        const sentence = zone.querySelector('.draggable-sentence');
+        if (!sentence) {
+          isCorrect = false;
+          return;
+        }
+        
+        const correctPosition = parseInt(sentence.getAttribute('data-correct-position'));
+        const currentPosition = index + 1;
+        
+        if (correctPosition !== currentPosition) {
+          isCorrect = false;
+        }
+      });
+      
+      return isCorrect;
+    }
+    
+    // Função para resetar exercício de drag and drop
+    function resetDragDropExercise(exercise) {
+      const exerciseType = exercise.getAttribute('data-exercise-type');
+      
+      if (exerciseType === 'sentence') {
+        // Mover todas as palavras de volta para o pool
+        const wordsPool = exercise.querySelector('.words-pool');
+        const dropZones = exercise.querySelectorAll('.drop-zone');
+        
+        dropZones.forEach(zone => {
+          const word = zone.querySelector('.draggable-word');
+          if (word) {
+            wordsPool.appendChild(word);
+          }
+        });
+        
+        // Limpar resultado
+        const resultText = exercise.querySelector('.result-text');
+        const resultFeedback = exercise.querySelector('.result-feedback');
+        if (resultText) resultText.textContent = '';
+        if (resultFeedback) resultFeedback.innerHTML = '';
+        
+      } else if (exerciseType === 'paragraph') {
+        // Mover todas as frases de volta para o pool
+        const sentencesPool = exercise.querySelector('.sentences-pool');
+        const dropZones = exercise.querySelectorAll('.paragraph-drop-zone');
+        
+        dropZones.forEach(zone => {
+          const sentence = zone.querySelector('.draggable-sentence');
+          if (sentence) {
+            sentencesPool.appendChild(sentence);
+          }
+        });
+        
+        // Limpar resultado
+        const resultFeedback = exercise.querySelector('.result-feedback');
+        if (resultFeedback) resultFeedback.innerHTML = '';
+      }
+    }
+    
+    // Inicializar drag and drop quando a página carregar
+    initializeDragAndDrop();
+    
+    // Função para inicializar drag and drop
+    function initializeDragAndDrop() {
+      // Inicializar exercícios de palavras
+      document.querySelectorAll('.drag-drop-exercise[data-exercise-type="sentence"]').forEach(exercise => {
+        initializeSentenceOrdering(exercise);
+      });
+      
+      // Inicializar exercícios de frases
+      document.querySelectorAll('.drag-drop-exercise[data-exercise-type="paragraph"]').forEach(exercise => {
+        initializeParagraphOrdering(exercise);
+      });
+    }
+    
+    // Função para inicializar organização de palavras
+    function initializeSentenceOrdering(exercise) {
+      const draggableWords = exercise.querySelectorAll('.draggable-word');
+      const dropZones = exercise.querySelectorAll('.drop-zone');
+      const resultText = exercise.querySelector('.result-text');
+      const resultFeedback = exercise.querySelector('.result-feedback');
+      
+      // Tornar palavras arrastáveis
+      draggableWords.forEach(word => {
+        word.draggable = true;
+        word.addEventListener('dragstart', handleDragStart);
+        word.addEventListener('dragend', handleDragEnd);
+      });
+      
+      // Configurar zonas de drop
+      dropZones.forEach(zone => {
+        zone.addEventListener('dragover', handleDragOver);
+        zone.addEventListener('drop', handleDrop);
+        zone.addEventListener('dragenter', handleDragEnter);
+        zone.addEventListener('dragleave', handleDragLeave);
+      });
+      
+      // Configurar pool de palavras para receber de volta
+      const wordsPool = exercise.querySelector('.words-pool');
+      wordsPool.addEventListener('dragover', handleDragOver);
+      wordsPool.addEventListener('drop', handleDropToPool);
+      
+      function handleDragStart(e) {
+        e.dataTransfer.setData('text/plain', '');
+        e.target.classList.add('dragging');
+      }
+      
+      function handleDragEnd(e) {
+        e.target.classList.remove('dragging');
+        updateSentenceResult();
+      }
+      
+      function handleDragOver(e) {
+        e.preventDefault();
+      }
+      
+      function handleDragEnter(e) {
+        e.preventDefault();
+        if (e.target.classList.contains('drop-zone')) {
+          e.target.classList.add('drag-over');
+        }
+      }
+      
+      function handleDragLeave(e) {
+        if (e.target.classList.contains('drop-zone')) {
+          e.target.classList.remove('drag-over');
+        }
+      }
+      
+      function handleDrop(e) {
+        e.preventDefault();
+        const dropZone = e.target.closest('.drop-zone');
+        if (!dropZone) return;
+        
+        dropZone.classList.remove('drag-over');
+        
+        const draggingWord = exercise.querySelector('.dragging');
+        if (!draggingWord) return;
+        
+        // Se já há uma palavra na zona, trocar posições
+        const existingWord = dropZone.querySelector('.draggable-word');
+        if (existingWord && existingWord !== draggingWord) {
+          const draggingParent = draggingWord.parentNode;
+          draggingParent.appendChild(existingWord);
+        }
+        
+        dropZone.appendChild(draggingWord);
+      }
+      
+      function handleDropToPool(e) {
+        e.preventDefault();
+        const draggingWord = exercise.querySelector('.dragging');
+        if (!draggingWord) return;
+        
+        wordsPool.appendChild(draggingWord);
+      }
+      
+      function updateSentenceResult() {
+        const words = [];
+        dropZones.forEach(zone => {
+          const word = zone.querySelector('.draggable-word');
+          if (word) {
+            words.push(word.textContent.trim());
+          } else {
+            words.push('___');
+          }
+        });
+        
+        resultText.textContent = words.join(' ');
+        
+        // Não mostrar feedback automático - apenas atualizar o resultado visual
+        // O feedback será mostrado apenas após submissão
+      }
+    }
+    
+    // Função para inicializar organização de frases
+    function initializeParagraphOrdering(exercise) {
+      const draggableSentences = exercise.querySelectorAll('.draggable-sentence');
+      const dropZones = exercise.querySelectorAll('.paragraph-drop-zone');
+      const resultFeedback = exercise.querySelector('.result-feedback');
+      
+      // Tornar frases arrastáveis
+      draggableSentences.forEach(sentence => {
+        sentence.draggable = true;
+        sentence.addEventListener('dragstart', handleDragStart);
+        sentence.addEventListener('dragend', handleDragEnd);
+      });
+      
+      // Configurar zonas de drop
+      dropZones.forEach(zone => {
+        zone.addEventListener('dragover', handleDragOver);
+        zone.addEventListener('drop', handleDrop);
+        zone.addEventListener('dragenter', handleDragEnter);
+        zone.addEventListener('dragleave', handleDragLeave);
+      });
+      
+      // Configurar pool de frases para receber de volta
+      const sentencesPool = exercise.querySelector('.sentences-pool');
+      sentencesPool.addEventListener('dragover', handleDragOver);
+      sentencesPool.addEventListener('drop', handleDropToPool);
+      
+      function handleDragStart(e) {
+        e.dataTransfer.setData('text/plain', '');
+        e.target.classList.add('dragging');
+      }
+      
+      function handleDragEnd(e) {
+        e.target.classList.remove('dragging');
+        updateParagraphResult();
+      }
+      
+      function handleDragOver(e) {
+        e.preventDefault();
+      }
+      
+      function handleDragEnter(e) {
+        e.preventDefault();
+        if (e.target.classList.contains('paragraph-drop-zone') || e.target.closest('.paragraph-drop-zone')) {
+          const zone = e.target.classList.contains('paragraph-drop-zone') ? e.target : e.target.closest('.paragraph-drop-zone');
+          zone.classList.add('drag-over');
+        }
+      }
+      
+      function handleDragLeave(e) {
+        const zone = e.target.classList.contains('paragraph-drop-zone') ? e.target : e.target.closest('.paragraph-drop-zone');
+        if (zone) {
+          zone.classList.remove('drag-over');
+        }
+      }
+      
+      function handleDrop(e) {
+        e.preventDefault();
+        const dropZone = e.target.closest('.paragraph-drop-zone');
+        if (!dropZone) return;
+        
+        dropZone.classList.remove('drag-over');
+        
+        const draggingSentence = exercise.querySelector('.dragging');
+        if (!draggingSentence) return;
+        
+        // Se já há uma frase na zona, trocar posições
+        const existingSentence = dropZone.querySelector('.draggable-sentence');
+        if (existingSentence && existingSentence !== draggingSentence) {
+          const draggingParent = draggingSentence.parentNode;
+          draggingParent.appendChild(existingSentence);
+        }
+        
+        const dropContent = dropZone.querySelector('.drop-content');
+        dropContent.appendChild(draggingSentence);
+      }
+      
+      function handleDropToPool(e) {
+        e.preventDefault();
+        const draggingSentence = exercise.querySelector('.dragging');
+        if (!draggingSentence) return;
+        
+        sentencesPool.appendChild(draggingSentence);
+      }
+      
+      function updateParagraphResult() {
+        const sentences = [];
+        dropZones.forEach(zone => {
+          const sentence = zone.querySelector('.draggable-sentence');
+          sentences.push(sentence ? true : false);
+        });
+        
+        // Não mostrar feedback automático - apenas permitir organização
+        // O feedback será mostrado apenas após submissão
+      }
+    }
+    
+    // === FUNÇÕES PARA EXERCÍCIOS DE ASSOCIAÇÃO ===
+    
+    // Função para verificar associações de colunas
+    function checkColumnAssociation(exercise) {
+      const associationItems = exercise.querySelectorAll('.association-item[data-item-type="a"]');
+      const totalPairs = associationItems.length;
+      let correctConnections = 0;
+      
+      // Verificar cada item da coluna A
+      associationItems.forEach(itemA => {
+        const pairId = itemA.getAttribute('data-pair-id');
+        const pointA = itemA.querySelector('.connection-point');
+        
+        // Encontrar se há conexão para este ponto
+        const connectionLines = exercise.querySelectorAll('.connection-line');
+        connectionLines.forEach(line => {
+          const startPoint = line.getAttribute('data-start-point');
+          const endPoint = line.getAttribute('data-end-point');
+          const pointAId = pairId + '-a';
+          const pointBId = pairId + '-b';
+          
+          // Verificar se a linha conecta os pontos corretos do mesmo par
+          if ((startPoint === pointAId && endPoint === pointBId) || 
+              (startPoint === pointBId && endPoint === pointAId)) {
+            correctConnections++;
+          }
+        });
+      });
+      
+      return correctConnections === totalPairs;
+    }
+    
+    // Função para resetar exercício de associação
+    function resetAssociationExercise(exercise) {
+      // Remover todas as linhas de conexão
+      const svg = exercise.querySelector('.connection-svg');
+      if (svg) {
+        svg.innerHTML = '';
+      }
+      
+      // Remover classes de conexão dos pontos e restaurar estado neutro
+      const connectionPoints = exercise.querySelectorAll('.connection-point');
+      connectionPoints.forEach(point => {
+        point.classList.remove('connected', 'selected');
+        point.removeAttribute('data-connection-color');
+        
+        // Restaurar estado neutro (cinza)
+        point.style.backgroundColor = '#E2E8F0';
+        point.style.border = '3px solid #CBD5E0';
+        point.style.opacity = '0.8';
+        point.style.transform = 'scale(1)';
+        point.style.boxShadow = 'none';
+      });
+      
+      // Resetar contador de conexões para cada exercício
+      // Isso será feito na reinicialização do exercício específico
+      
+      // Limpar resultado
+      const resultFeedback = exercise.querySelector('.result-feedback');
+      if (resultFeedback) {
+        resultFeedback.innerHTML = '';
+      }
+    }
+    
+    // Inicializar exercícios de associação
+    initializeColumnAssociations();
+    
+    // Função para inicializar exercícios de associação
+    function initializeColumnAssociations() {
+      document.querySelectorAll('.association-exercise').forEach(exercise => {
+        initializeAssociationExercise(exercise);
+      });
+    }
+    
+    // Função para inicializar um exercício de associação específico
+    function initializeAssociationExercise(exercise) {
+      const connectionPoints = exercise.querySelectorAll('.connection-point');
+      const svg = exercise.querySelector('.connection-svg');
+      const resultFeedback = exercise.querySelector('.result-feedback');
+      
+
+      
+      let selectedPoint = null;
+      let connections = new Map(); // Para rastrear conexões
+      let connectionCounter = 0; // Contador para garantir cores diferentes
+      
+      // Cores para diferentes pares
+      const pairColors = [
+        '#EF4444', // Vermelho
+        '#3B82F6', // Azul
+        '#68D391', // Verde
+        '#F59E0B', // Amarelo/Laranja
+        '#7C3AED', // Roxo
+        '#EC4899', // Rosa
+        '#06B6D4', // Ciano
+        '#84CC16', // Lima
+        '#F97316', // Laranja
+        '#6366F1'  // Índigo
+      ];
+      
+            // Aplicar estilo inicial neutro aos pontos de conexão
+      connectionPoints.forEach(point => {
+        // Começar com cor neutra (cinza)
+        point.style.backgroundColor = '#E2E8F0';
+        point.style.border = '3px solid #CBD5E0';
+        point.style.opacity = '0.8';
+        point.style.cursor = 'pointer';
+        
+      });
+      
+      // Adicionar event listeners aos pontos de conexão
+      connectionPoints.forEach(point => {
+        point.addEventListener('click', handleConnectionPointClick);
+
+      });
+      
+
+      
+      function handleConnectionPointClick(e) {
+        const clickedPoint = e.target;
+
+        
+        if (exercise.classList.contains('disabled')) {
+          return; // Não permitir interação se desabilitado
+        }
+        
+        // Se clicou em um ponto já selecionado, desselecionar
+        if (selectedPoint === clickedPoint) {
+
+          deselectPoint(selectedPoint);
+          selectedPoint = null;
+          return;
+        }
+        
+        // Se clicou em um ponto conectado, permitir reconexão
+        if (clickedPoint.classList.contains('connected')) {
+          removeExistingConnections(clickedPoint);
+        }
+        
+        if (!selectedPoint) {
+          // Primeiro clique - selecionar ponto
+          selectedPoint = clickedPoint;
+          selectPoint(clickedPoint);
+        } else {
+          // Segundo clique - tentar fazer conexão
+          const firstSide = selectedPoint.getAttribute('data-side');
+          const secondSide = clickedPoint.getAttribute('data-side');
+          
+          if (firstSide !== secondSide) {
+            // Lados diferentes - fazer conexão
+            // Remover conexões existentes destes pontos
+            removeExistingConnections(selectedPoint);
+            removeExistingConnections(clickedPoint);
+            
+            // Criar nova conexão
+            createConnection(selectedPoint, clickedPoint);
+            
+            // Aplicar cor de conexão aos pontos conectados
+            applyConnectedColor(selectedPoint, clickedPoint);
+            
+            // Marcar pontos como conectados
+            selectedPoint.classList.add('connected');
+            clickedPoint.classList.add('connected');
+            
+            // Armazenar conexão
+            connections.set(selectedPoint, clickedPoint);
+          } else {
+            // Mesmo lado - apenas selecionar o novo ponto
+            deselectPoint(selectedPoint);
+            selectPoint(clickedPoint);
+          }
+          
+          // Limpar seleção anterior
+          if (selectedPoint) {
+            deselectPoint(selectedPoint);
+          }
+          selectedPoint = null;
+        }
+      }
+      
+      // Funções auxiliares para gerenciar estados visuais
+      function selectPoint(point) {
+        point.classList.add('selected');
+        point.style.opacity = '1';
+        point.style.transform = 'scale(1.2)';
+        point.style.boxShadow = '0 0 0 4px rgba(246, 173, 85, 0.3)';
+      }
+      
+      function deselectPoint(point) {
+        point.classList.remove('selected');
+        point.style.boxShadow = 'none';
+        if (!point.classList.contains('connected')) {
+          resetPointToOriginalColor(point);
+        }
+      }
+      
+      function applyConnectedColor(point1, point2) {
+        // Usar o contador para garantir cores diferentes para cada conexão
+        const color = pairColors[connectionCounter % pairColors.length];
+        connectionCounter++;
+        
+        // Aplicar a mesma cor a ambos os pontos
+        [point1, point2].forEach(point => {
+          point.style.backgroundColor = color;
+          point.style.border = `3px solid ${color}`;
+          point.style.opacity = '1';
+          point.style.transform = 'scale(1)';
+          point.style.boxShadow = 'none';
+        });
+        
+        // Armazenar a cor da conexão nos pontos para uso posterior
+        point1.setAttribute('data-connection-color', color);
+        point2.setAttribute('data-connection-color', color);
+      }
+      
+      function resetPointToOriginalColor(point) {
+        // Restaurar estado neutro (cinza)
+        point.style.backgroundColor = '#E2E8F0';
+        point.style.border = '3px solid #CBD5E0';
+        point.style.opacity = '0.8';
+        point.style.transform = 'scale(1)';
+        point.style.boxShadow = 'none';
+      }
+      
+      function removeExistingConnections(point) {
+        // Encontrar e remover linha SVG existente
+        const existingLines = svg.querySelectorAll('.connection-line');
+        existingLines.forEach(line => {
+          const startPoint = line.getAttribute('data-start-point');
+          const endPoint = line.getAttribute('data-end-point');
+          const pointId = point.getAttribute('data-pair-id') + '-' + point.getAttribute('data-side');
+          
+          if (startPoint === pointId || endPoint === pointId) {
+            line.remove();
+          }
+        });
+        
+        // Remover da lista de conexões
+        for (let [key, value] of connections) {
+          if (key === point || value === point) {
+            connections.delete(key);
+            key.classList.remove('connected');
+            value.classList.remove('connected');
+            key.removeAttribute('data-connection-color');
+            value.removeAttribute('data-connection-color');
+            resetPointToOriginalColor(key);
+            resetPointToOriginalColor(value);
+            break;
+          }
+        }
+      }
+      
+      function createConnection(point1, point2) {
+        const rect1 = point1.getBoundingClientRect();
+        const rect2 = point2.getBoundingClientRect();
+        const svgRect = svg.getBoundingClientRect();
+        
+        // Calcular posições relativas ao SVG
+        const x1 = rect1.left + rect1.width / 2 - svgRect.left;
+        const y1 = rect1.top + rect1.height / 2 - svgRect.top;
+        const x2 = rect2.left + rect2.width / 2 - svgRect.left;
+        const y2 = rect2.top + rect2.height / 2 - svgRect.top;
+        
+        // Usar a cor armazenada na conexão
+        const color = point1.getAttribute('data-connection-color');
+        
+        const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+        line.setAttribute('x1', x1);
+        line.setAttribute('y1', y1);
+        line.setAttribute('x2', x2);
+        line.setAttribute('y2', y2);
+        line.setAttribute('stroke', color); // Cor da conexão
+        line.setAttribute('stroke-width', '3');
+        line.setAttribute('stroke-linecap', 'round');
+        line.classList.add('connection-line');
+        
+        // Adicionar dados para identificação
+        const point1Id = point1.getAttribute('data-pair-id') + '-' + point1.getAttribute('data-side');
+        const point2Id = point2.getAttribute('data-pair-id') + '-' + point2.getAttribute('data-side');
+        line.setAttribute('data-start-point', point1Id);
+        line.setAttribute('data-end-point', point2Id);
+        line.setAttribute('data-pair-id', point1.getAttribute('data-pair-id'));
+        
+        svg.appendChild(line);
+      }
+      
+
+    }
   });
 </script>
 
 <style>
-  /* Styles généraux avec plus d'importance */
-  body .container .paper-effect {
-    background: white;
-    border-radius: 12px;
-    box-shadow: 0 4px 12px rgba(30, 61, 89, 0.08),
-                0 2px 4px rgba(30, 61, 89, 0.04);
-    padding: 2rem;
-    margin-bottom: 2rem;
+  /* === ESQUEMA DE CORES DINÂMICO PARA SOLVE === */
+  
+  /* Variáveis CSS para consistência */
+  :root {
+    --primary-blue: #4A90E2;
+    --primary-dark: #1E3D59;
+    --success-green: #68D391; /* Verde mais suave, harmonizado com student_dashboard */
+    --warning-orange: #F6AD55;
+    --info-purple: #7C3AED; /* Roxo harmonizado com student_dashboard */
+    --accent-pink: #EC4899;
+    --accent-teal: #14B8A6;
+    --accent-indigo: #6366F1;
+    
+    /* Cores específicas por tipo de exercício */
+    --question-color: var(--primary-blue);
+    --fill-blank-color: var(--success-green);
+    --sentence-ordering-color: var(--warning-orange);
+    --paragraph-ordering-color: var(--info-purple);
+    --column-association-color: var(--accent-teal);
+    --suggestion-color: var(--accent-pink);
+    --statement-color: var(--accent-indigo);
   }
 
-  /* En-tête de l'activité avec plus d'importance */
-  body .container .activity-header {
-    margin-bottom: 2rem;
-    text-align: center;
-    position: relative;
-    padding: 1rem;
-    background: linear-gradient(to right, rgba(30, 61, 89, 0.05), rgba(30, 61, 89, 0.02));
-    border-radius: 12px;
-  }
-
-  body .container .activity-header .main-title {
-    font-family: 'Lora', serif !important;
-    color: #1E3D59 !important;
-    font-size: 2.8rem !important;
-    font-weight: 600 !important;
-    margin-bottom: 1rem !important;
-    line-height: 1.2 !important;
-    letter-spacing: -0.02em !important;
-    text-shadow: 1px 1px 0 rgba(255, 255, 255, 0.8) !important;
-  }
-
-  body .container .activity-header .niveau-badge {
-    margin: 1rem 0;
-  }
-
-  body .container .activity-header .nivel-badge {
-    font-family: 'Inter', sans-serif !important;
-    font-size: 1rem !important;
-    font-weight: 500 !important;
-    padding: 0.5em 1em !important;
-    border-radius: 6px !important;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1) !important;
-  }
-
-  body .container .activity-header .decorative-line {
-    height: 3px;
-    background: linear-gradient(to right, #1E3D59, #4A90E2) !important;
-    margin: 1.5rem auto;
-    width: 80%;
-    border-radius: 2px;
-    opacity: 0.8;
-  }
-
-  /* Sections de papier */
-  .paper-section {
-    background: white;
-    border-radius: 8px;
-    padding: 1.5rem;
-    margin-bottom: 2rem;
-  }
-
-  /* Description */
-  .description-text {
+  /* === CONFIGURAÇÃO GERAL DA PÁGINA === */
+  .solve-activity {
     font-family: 'Inter', sans-serif;
+    background: linear-gradient(135deg, #E8F4FD 0%, #F7FAFC 50%, #FDF2F8 100%);
+    min-height: 100vh;
+    position: relative;
+  }
+
+  /* Adicionar partículas flutuantes para dinamismo */
+  .solve-activity::before {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: 
+      radial-gradient(circle at 20% 30%, rgba(74, 144, 226, 0.1) 0%, transparent 50%),
+      radial-gradient(circle at 80% 70%, rgba(236, 72, 153, 0.1) 0%, transparent 50%),
+      radial-gradient(circle at 50% 20%, rgba(124, 58, 237, 0.05) 0%, transparent 50%);
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  /* === HERO SECTION APRIMORADO === */
+  .hero-section {
+    position: relative;
+    z-index: 1;
+    padding: 2rem 1rem;
+  }
+
+  .activity-header-card {
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 24px;
+    padding: 2rem;
+    box-shadow: 
+      0 8px 32px rgba(30, 61, 89, 0.1),
+      0 1px 2px rgba(0, 0, 0, 0.05);
+    text-align: center;
+    max-width: 800px;
+    margin: 0 auto;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .activity-header-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: linear-gradient(90deg, 
+      var(--primary-blue) 0%, 
+      var(--success-green) 25%, 
+      var(--warning-orange) 50%, 
+      var(--info-purple) 75%, 
+      var(--accent-teal) 100%);
+  }
+
+  .level-badge {
+    display: inline-block;
+    padding: 0.5rem 1rem;
+    border-radius: 25px;
+    font-size: 0.9rem;
+    font-weight: 700;
+    color: white;
+    margin-bottom: 1rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  }
+
+  /* Cores dos níveis consistentes com o dashboard */
+  .level-badge.level-a1 { 
+    background: linear-gradient(135deg, #68D391 0%, #48BB78 100%); 
+  }
+  .level-badge.level-a2 { 
+    background: linear-gradient(135deg, #4FD1C7 0%, #38B2AC 100%); 
+  }
+  .level-badge.level-b1 { 
+    background: linear-gradient(135deg, #63B3ED 0%, #4299E1 100%); 
+  }
+  .level-badge.level-b2 { 
+    background: linear-gradient(135deg, #7C3AED 0%, #6B46C1 100%); 
+  }
+  .level-badge.level-c1 { 
+    background: linear-gradient(135deg, #F56565 0%, #E53E3E 100%); 
+  }
+  .level-badge.level-c2 { 
+    background: linear-gradient(135deg, #F6AD55 0%, #ED8936 100%); 
+  }
+
+  .activity-title {
+    font-family: 'Lora', serif;
+    color: var(--primary-dark);
+    font-size: 2.5rem;
+    font-weight: 600;
+    margin: 0 0 1rem;
+    text-shadow: 0 2px 4px rgba(30, 61, 89, 0.1);
+  }
+
+  .activity-description {
+    color: #4A5568;
     font-size: 1.1rem;
     line-height: 1.6;
-    color: #2D3748;
+    margin: 0;
+    max-width: 600px;
+    margin: 0 auto;
   }
 
-  /* Cards */
-  .enunciado-card {
-    border: none;
-    border-left: 4px solid #1E3D59;
-    border-radius: 8px;
-    background-color: #F8F9FA;
+  /* === CONTAINER DE CONTEÚDO === */
+  .content-section {
+    position: relative;
+    z-index: 1;
+    padding: 2rem 1rem;
   }
 
-  .question-card {
-    border: none;
-    border-radius: 8px;
-    box-shadow: 0 2px 4px rgba(30, 61, 89, 0.05);
-    margin-bottom: 1.5rem;
+  .activity-container {
+    max-width: 1000px;
+    margin: 0 auto;
   }
 
-  .question-card .card-header {
-    background-color: #1E3D59;
+  /* === CARDS DE CONTEÚDO COM CORES ESPECÍFICAS === */
+  .content-card {
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 20px;
+    margin-bottom: 2rem;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+    transition: all 0.3s ease;
+    position: relative;
+  }
+
+  .content-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15);
+  }
+
+  /* === CABEÇALHOS DOS CARDS COM CORES ESPECÍFICAS === */
+  .card-header {
+    padding: 1.25rem 1.5rem;
+    font-weight: 600;
+    font-size: 1.1rem;
     color: white;
-    border-radius: 8px 8px 0 0;
-    padding: 1rem 1.5rem;
-    font-family: 'Inter', sans-serif;
-    font-weight: 500;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    position: relative;
+    overflow: hidden;
   }
 
-  .suggestion-card {
-    border: none;
-    border-left: 4px solid #4A90E2;
-    border-radius: 8px;
-    background-color: #F8F9FA;
+  .card-header::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+    transition: left 0.5s ease;
+  }
+
+  .content-card:hover .card-header::before {
+    left: 100%;
+  }
+
+  .card-header i {
+    font-size: 1.3rem;
+    filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.2));
+  }
+
+  /* Cores específicas por tipo de exercício */
+  .question-card .card-header {
+    background: linear-gradient(135deg, var(--question-color) 0%, #357ABD 100%);
+  }
+
+  .fill-blank-card .card-header {
+    background: linear-gradient(135deg, var(--fill-blank-color) 0%, #48BB78 100%);
+  }
+
+  .sentence-ordering-card .card-header {
+    background: linear-gradient(135deg, var(--sentence-ordering-color) 0%, #ED8936 100%);
+  }
+
+  .paragraph-ordering-card .card-header {
+    background: linear-gradient(135deg, var(--paragraph-ordering-color) 0%, #6B46C1 100%);
+  }
+
+  .column-association-card .card-header {
+    background: linear-gradient(135deg, var(--column-association-color) 0%, #0F766E 100%);
   }
 
   .suggestion-card .card-header {
-    background-color: #4A90E2;
-    color: white;
-    border-radius: 8px 8px 0 0;
+    background: linear-gradient(135deg, var(--suggestion-color) 0%, #BE185D 100%);
   }
 
-  /* Alternatives */
-  .alternatives {
+  .statement-card .card-header {
+    background: linear-gradient(135deg, var(--statement-color) 0%, #4338CA 100%);
+  }
+
+  /* === CORPO DOS CARDS === */
+  .card-body {
+    padding: 2rem;
+    position: relative;
+  }
+
+  /* === ALTERNATIVAS COM DESIGN MODERNO === */
+  .alternatives-container {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
     margin-top: 1.5rem;
   }
 
-  .form-check {
-    background: white;
-    border: 1px solid #E2E8F0;
-    border-radius: 8px;
-    padding: 1rem;
-    margin-bottom: 0.8rem;
-    transition: all 0.2s ease;
+  .alternative-option {
+    position: relative;
   }
 
-  .form-check:hover {
-    background-color: #F8F9FA;
-    border-color: #1E3D59;
-    transform: translateY(-1px);
+  .alternative-input {
+    position: absolute;
+    opacity: 0;
+    pointer-events: none;
   }
 
-  .form-check-input {
-    margin-top: 0.3rem;
+  .alternative-label {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 1rem 1.5rem;
+    background: rgba(74, 144, 226, 0.05);
+    border: 2px solid rgba(74, 144, 226, 0.1);
+    border-radius: 16px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
   }
 
-  .form-check-label {
-    font-family: 'Inter', sans-serif;
-    font-size: 1rem;
-    color: #2D3748;
-    margin-left: 0.5rem;
+  .alternative-label::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(74, 144, 226, 0.1), transparent);
+    transition: left 0.5s ease;
+  }
+
+  .alternative-label:hover::before {
+    left: 100%;
+  }
+
+  .alternative-label:hover {
+    transform: translateX(8px);
+    border-color: var(--question-color);
+    background: rgba(74, 144, 226, 0.1);
+  }
+
+  .alternative-input:checked + .alternative-label {
+    background: linear-gradient(135deg, var(--question-color) 0%, #357ABD 100%);
+    border-color: var(--question-color);
+    color: white;
+    transform: translateX(8px);
+    box-shadow: 0 8px 24px rgba(74, 144, 226, 0.3);
   }
 
   .alternative-letter {
-    color: #1E3D59;
-    font-weight: 600;
-    margin-right: 0.5rem;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: rgba(74, 144, 226, 0.2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 0.9rem;
+    transition: all 0.3s ease;
   }
 
-  /* Boutons */
-  .btn-primary {
-    background-color: #1E3D59;
+  .alternative-input:checked + .alternative-label .alternative-letter {
+    background: rgba(255, 255, 255, 0.2);
+    color: white;
+  }
+
+  /* === EXERCÍCIOS DE ARRASTAR COM CORES ESPECÍFICAS === */
+  .draggable-word {
+    background: linear-gradient(135deg, var(--sentence-ordering-color) 0%, #ED8936 100%);
+    color: white;
+    padding: 0.75rem 1rem;
+    border-radius: 12px;
+    cursor: grab;
+    user-select: none;
+    font-weight: 500;
+    box-shadow: 0 4px 12px rgba(246, 173, 85, 0.25);
+    transition: all 0.3s ease;
+    display: inline-block;
+    margin: 0.25rem;
+  }
+
+  .draggable-word:hover {
+    transform: translateY(-2px) scale(1.05);
+    box-shadow: 0 6px 16px rgba(246, 173, 85, 0.35);
+  }
+
+  .draggable-sentence {
+    background: linear-gradient(135deg, var(--paragraph-ordering-color) 0%, #6B46C1 100%);
+    color: white;
+    padding: 1rem 1.5rem;
+    border-radius: 16px;
+    cursor: grab;
+    user-select: none;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 12px rgba(124, 58, 237, 0.25);
+    margin-bottom: 0.75rem;
+  }
+
+  .draggable-sentence:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 20px rgba(124, 58, 237, 0.35);
+  }
+
+  /* === ASSOCIAÇÃO DE COLUNAS COM CORES ESPECÍFICAS === */
+  .association-item {
+    background: rgba(20, 184, 166, 0.05);
+    border: 2px solid rgba(20, 184, 166, 0.2);
+    border-radius: 12px;
+    padding: 1rem;
+    margin-bottom: 0.75rem;
+    transition: all 0.3s ease;
+    position: relative;
+  }
+
+  .association-item:hover {
+    background: rgba(20, 184, 166, 0.1);
+    border-color: var(--column-association-color);
+    transform: translateX(4px);
+  }
+
+  .connection-point {
+    width: 16px;
+    height: 16px;
+    border: 3px solid var(--column-association-color);
+    border-radius: 50%;
+    background: white;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    position: relative;
+  }
+
+  .connection-point:hover {
+    transform: scale(1.3);
+    background: var(--column-association-color);
+    box-shadow: 0 0 12px rgba(20, 184, 166, 0.5);
+  }
+
+  .connection-point.connected {
+    background: var(--column-association-color);
+    box-shadow: 0 0 8px rgba(20, 184, 166, 0.4);
+  }
+
+  /* === BOTÕES COM DESIGN MODERNO === */
+  .btn-submit {
+    background: linear-gradient(135deg, var(--success-green) 0%, #48BB78 100%);
+    color: white;
     border: none;
-    color: white;
-    font-family: 'Inter', sans-serif;
-    font-weight: 500;
-    padding: 0.75rem 1.5rem;
-    border-radius: 8px;
-    transition: all 0.2s ease;
-  }
-
-  .btn-primary:hover {
-    background-color: #15304D;
-    transform: translateY(-1px);
-    box-shadow: 0 4px 12px rgba(30, 61, 89, 0.15);
-  }
-
-  .btn-outline-primary {
-    border: 2px solid #1E3D59;
-    color: #1E3D59;
-    font-family: 'Inter', sans-serif;
-    font-weight: 500;
-    padding: 0.75rem 1.5rem;
-    border-radius: 8px;
-    transition: all 0.2s ease;
-  }
-
-  .btn-outline-primary:hover {
-    background-color: #1E3D59;
-    color: white;
-    transform: translateY(-1px);
-  }
-
-  .btn-outline-secondary {
-    border: 2px solid #4A90E2;
-    color: #4A90E2;
-    font-family: 'Inter', sans-serif;
-    font-weight: 500;
-    padding: 0.75rem 1.5rem;
-    border-radius: 8px;
-    transition: all 0.2s ease;
-  }
-
-  .btn-outline-secondary:hover {
-    background-color: #4A90E2;
-    color: white;
-    transform: translateY(-1px);
-  }
-
-  /* Résultats */
-  #results-container {
-    margin-top: 2rem;
-  }
-
-  .alert-success {
-    background-color: #F0FDF4;
-    border: none;
-    border-radius: 8px;
-    color: #166534;
-    padding: 1.5rem;
-  }
-
-  .alert-success .alert-heading {
-    font-family: 'Inter', sans-serif;
+    border-radius: 16px;
+    padding: 1rem 2rem;
+    font-size: 1.1rem;
     font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.75rem;
+    margin: 2rem auto;
+    min-width: 200px;
+    box-shadow: 0 8px 24px rgba(104, 211, 145, 0.3);
+  }
+
+  .btn-submit:hover {
+    transform: translateY(-3px) scale(1.05);
+    box-shadow: 0 12px 32px rgba(104, 211, 145, 0.4);
+  }
+
+  .btn-back {
+    background: rgba(255, 255, 255, 0.9);
+    color: var(--primary-dark);
+    border: 2px solid rgba(30, 61, 89, 0.2);
+    border-radius: 12px;
+    padding: 0.75rem 1.5rem;
+    text-decoration: none;
+    font-weight: 500;
+    transition: all 0.3s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    backdrop-filter: blur(10px);
+  }
+
+  .btn-back:hover {
+    background: var(--primary-dark);
+    color: white;
+    text-decoration: none;
+    transform: translateX(-4px);
+    box-shadow: 0 8px 24px rgba(30, 61, 89, 0.3);
+  }
+
+  /* === EFEITOS DE FEEDBACK === */
+  .success-header {
+    background: linear-gradient(135deg, var(--success-green) 0%, #48BB78 100%) !important;
+  }
+
+  .score-circle {
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--success-green) 0%, #48BB78 100%);
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+    font-weight: 700;
+    box-shadow: 0 8px 24px rgba(104, 211, 145, 0.4);
+    animation: scoreReveal 0.8s ease-out;
+  }
+
+  @keyframes scoreReveal {
+    0% {
+      transform: scale(0) rotate(180deg);
+      opacity: 0;
+    }
+    50% {
+      transform: scale(1.2) rotate(90deg);
+    }
+    100% {
+      transform: scale(1) rotate(0deg);
+      opacity: 1;
+    }
+  }
+
+  /* === ANIMAÇÕES DINÂMICAS === */
+  @keyframes fadeInUp {
+    0% {
+      opacity: 0;
+      transform: translateY(30px);
+    }
+    100% {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  .content-card {
+    animation: fadeInUp 0.6s ease-out;
+  }
+
+  .content-card:nth-child(1) { animation-delay: 0.1s; }
+  .content-card:nth-child(2) { animation-delay: 0.2s; }
+  .content-card:nth-child(3) { animation-delay: 0.3s; }
+  .content-card:nth-child(4) { animation-delay: 0.4s; }
+  .content-card:nth-child(5) { animation-delay: 0.5s; }
+
+  /* === RESPONSIVIDADE === */
+  @media (max-width: 768px) {
+    .activity-title {
+      font-size: 2rem;
+    }
+    
+    .card-body {
+      padding: 1.5rem;
+    }
+    
+    .alternative-label {
+      padding: 0.75rem 1rem;
+    }
+    
+    .btn-submit {
+      width: 100%;
+      margin: 1.5rem 0;
+    }
+  }
+
+  /* === PERSONALIZAÇÃO POR TIPO DE CARD === */
+  
+  /* Cartões de texto/statement com borda lateral colorida */
+  .text-card,
+  .statement-card {
+    border-left: 6px solid var(--accent-indigo);
+  }
+
+  /* Cartões de sugestão com design especial */
+  .suggestion-card {
+    border-left: 6px solid var(--suggestion-color);
+    background: linear-gradient(135deg, rgba(236, 72, 153, 0.02) 0%, rgba(255, 255, 255, 0.95) 100%);
+  }
+
+  /* Cartões de vídeo e imagem com bordas arredondadas especiais */
+  .video-card,
+  .image-card {
+    border: 2px solid transparent;
+    background: linear-gradient(white, white) padding-box,
+                linear-gradient(45deg, var(--primary-blue), var(--accent-teal)) border-box;
+  }
+
+     /* === MELHORIAS NOS INPUTS === */
+     .fill-blank-input {
+    border: 2px solid rgba(104, 211, 145, 0.3);
+    border-radius: 8px;
+    padding: 0.5rem;
+    font-size: 1rem;
+    transition: all 0.3s ease;
+    background: rgba(104, 211, 145, 0.05);
+  }
+
+  .fill-blank-input:focus {
+    border-color: var(--fill-blank-color);
+    box-shadow: 0 0 12px rgba(104, 211, 145, 0.3);
+    background: white;
+  }
+
+   /* === ESTILOS PARA EXERCÍCIOS DE DRAG AND DROP === */
+   
+   /* Estados de arrasto */
+   .draggable-word.dragging,
+   .draggable-sentence.dragging {
+     opacity: 0.5;
+     transform: rotate(2deg);
+     cursor: grabbing;
+     z-index: 1000;
+   }
+
+   /* Pools de elementos */
+  .words-pool {
+     background: rgba(246, 173, 85, 0.08);
+     border: 2px solid rgba(246, 173, 85, 0.15);
+     border-radius: 16px;
+     padding: 1.5rem;
+    margin-bottom: 1.5rem;
+     min-height: 100px;
+    display: flex;
+    flex-wrap: wrap;
+     gap: 0.5rem;
+    align-items: flex-start;
+  }
+  
+  .words-pool:empty::before {
+     content: "Tous les mots ont été placés! 🎉";
+     color: var(--warning-orange);
+     font-weight: 600;
+    font-style: italic;
+    width: 100%;
+    text-align: center;
+    padding: 1rem 0;
+  }
+  
+   .sentences-pool {
+     background: rgba(124, 58, 237, 0.08);
+     border: 2px solid rgba(124, 58, 237, 0.15);
+     border-radius: 16px;
+     padding: 1.5rem;
+     margin-bottom: 1.5rem;
+     min-height: 120px;
+     display: flex;
+     flex-direction: column;
+     gap: 0.75rem;
+   }
+
+   .sentences-pool:empty::before {
+     content: "Toutes les phrases ont été placées! 🎉";
+     color: var(--info-purple);
+    font-weight: 600;
+     font-style: italic;
+     text-align: center;
+     padding: 2rem 0;
+   }
+
+   /* Construtores */
+   .sentence-builder {
+     background: rgba(255, 255, 255, 0.8);
+     border: 2px solid rgba(246, 173, 85, 0.2);
+     border-radius: 16px;
+     padding: 1.5rem;
+     backdrop-filter: blur(10px);
+   }
+
+   .paragraph-builder {
+     background: rgba(255, 255, 255, 0.8);
+     border: 2px solid rgba(124, 58, 237, 0.2);
+     border-radius: 16px;
+     padding: 1.5rem;
+     backdrop-filter: blur(10px);
+   }
+
+   .builder-instruction {
+     text-align: center;
+     color: var(--primary-dark);
+     font-weight: 600;
+     margin-bottom: 1rem;
+     font-size: 1.1rem;
+   }
+
+   /* Zonas de drop */
+  .drop-zones {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
     margin-bottom: 1rem;
+    min-height: 60px;
+    align-items: flex-start;
+  }
+  
+  .drop-zone {
+     background: rgba(246, 173, 85, 0.08);
+     border: 2px dashed rgba(246, 173, 85, 0.3);
+     border-radius: 12px;
+    min-width: 80px;
+    min-height: 50px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    transition: all 0.3s ease;
+    padding: 0.25rem;
+  }
+  
+  .drop-zone.drag-over {
+     background: rgba(246, 173, 85, 0.2);
+     border-color: var(--warning-orange);
+    transform: scale(1.05);
+     box-shadow: 0 4px 12px rgba(246, 173, 85, 0.3);
+  }
+  
+  .drop-zone .position-number {
+    position: absolute;
+    top: -8px;
+    left: -8px;
+     background: var(--warning-orange);
+    color: white;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.75rem;
+    font-weight: 600;
+  }
+  
+  .drop-zone:has(.draggable-word) {
+    background: transparent;
+    border: 2px solid transparent;
+  }
+  
+   /* Zonas de drop para parágrafos */
+  .paragraph-drop-zones {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+    margin-bottom: 0.5rem;
+  }
+  
+  .paragraph-drop-zone {
+     background: rgba(124, 58, 237, 0.08);
+     border: 2px dashed rgba(124, 58, 237, 0.3);
+    border-radius: 12px;
+    min-height: 45px;
+    display: flex;
+    align-items: center;
+    position: relative;
+    transition: all 0.3s ease;
+    padding: 0.5rem;
+  }
+  
+  .paragraph-drop-zone.drag-over {
+     background: rgba(124, 58, 237, 0.2);
+     border-color: var(--info-purple);
+    transform: scale(1.02);
+     box-shadow: 0 4px 12px rgba(124, 58, 237, 0.3);
+  }
+  
+  .paragraph-drop-zone .position-number {
+    position: absolute;
+    top: -10px;
+    left: 0.75rem;
+     background: var(--info-purple);
+    color: white;
+    padding: 0.2rem 0.4rem;
+    border-radius: 10px;
+    font-size: 0.7rem;
+    font-weight: 600;
+  }
+  
+  .paragraph-drop-zone .drop-content {
+    width: 100%;
+  }
+  
+  .paragraph-drop-zone:has(.draggable-sentence) {
+    background: transparent;
+    border: 2px solid transparent;
+    min-height: auto;
+    padding: 0.25rem;
+  }
+  
+  .paragraph-drop-zone:not(:has(.draggable-sentence)) .drop-content::before {
+    content: "Glissez une phrase ici";
+    color: #9CA3AF;
+    font-style: italic;
+    text-align: center;
+    display: block;
+    padding: 0;
+    margin: 0;
+    line-height: 1;
+    font-size: 0.85rem;
+  }
+  
+   /* Resultados */
+   .sentence-result {
+     margin-top: 1rem;
+     padding: 1rem;
+     background: linear-gradient(135deg, rgba(246, 173, 85, 0.08) 0%, rgba(255, 255, 255, 0.8) 100%);
+     border-radius: 12px;
+     border-left: 4px solid var(--warning-orange);
+     backdrop-filter: blur(10px);
+   }
+
+  .paragraph-result {
+    margin-top: 1rem;
+    padding: 1rem;
+     background: linear-gradient(135deg, rgba(124, 58, 237, 0.08) 0%, rgba(255, 255, 255, 0.8) 100%);
+     border-radius: 12px;
+     border-left: 4px solid var(--info-purple);
+     backdrop-filter: blur(10px);
+   }
+
+   .result-text {
+     font-size: 1.1rem;
+     font-weight: 500;
+     color: var(--primary-dark);
+     margin-bottom: 0.5rem;
+     display: block;
+   }
+
+   .result-feedback {
+     font-weight: 600;
+   }
+
+   /* === ASSOCIAÇÃO DE COLUNAS APRIMORADA === */
+   .association-container {
+     display: flex;
+     align-items: flex-start;
+     gap: 2rem;
+     margin: 1.5rem 0;
+     position: relative;
+   }
+
+   .association-column {
+     flex: 1;
+     min-width: 0;
+   }
+
+   .column-items {
+     display: flex;
+     flex-direction: column;
+     gap: 0.75rem;
+   }
+
+   .association-column.column-a .association-item {
+     padding-right: 2rem;
+   }
+
+   .association-column.column-b .association-item {
+     padding-left: 2rem;
+   }
+
+   .association-column.column-a .connection-point {
+     position: absolute;
+     right: -8px;
+     top: 50%;
+     transform: translateY(-50%);
+   }
+
+   .association-column.column-b .connection-point {
+     position: absolute;
+     left: -8px;
+     top: 50%;
+     transform: translateY(-50%);
+   }
+
+   .connection-zone {
+     position: absolute;
+     top: 0;
+     left: 50%;
+     transform: translateX(-50%);
+     width: 2rem;
+     height: 100%;
+     pointer-events: none;
+   }
+
+   .connection-svg {
+     position: absolute;
+     top: 0;
+     left: 0;
+   }
+
+   .connection-line {
+     stroke: var(--column-association-color);
+     stroke-width: 3;
+     fill: none;
+     stroke-linecap: round;
+     transition: all 0.3s ease;
+     filter: drop-shadow(0 2px 4px rgba(20, 184, 166, 0.3));
+   }
+
+   .connection-line.correct {
+         stroke: var(--success-green);
+    stroke-width: 4;
+    filter: drop-shadow(0 2px 8px rgba(104, 211, 145, 0.4));
+   }
+
+   .connection-line.incorrect {
+     stroke: #EF4444;
+     stroke-width: 4;
+     stroke-dasharray: 5,5;
+     filter: drop-shadow(0 2px 8px rgba(239, 68, 68, 0.4));
+   }
+
+   /* === FEEDBACK DE CORES === */
+   .text-success {
+     color: var(--success-green) !important;
+   }
+
+   .text-danger {
+     color: #EF4444 !important;
+   }
+
+   .text-warning {
+     color: var(--warning-orange) !important;
+   }
+
+   .bg-success {
+     background-color: rgba(104, 211, 145, 0.1) !important;
+     border-color: var(--success-green) !important;
+   }
+
+   .bg-danger {
+     background-color: rgba(239, 68, 68, 0.1) !important;
+     border-color: #EF4444 !important;
+   }
+
+   /* === INSTRUÇÕES E TEXTOS === */
+   .instruction-text {
+     color: var(--primary-dark);
+     font-size: 1.1rem;
+     font-weight: 500;
+     margin-bottom: 1.5rem;
+     text-align: center;
+     line-height: 1.6;
+   }
+
+   .exercise-title {
+     color: var(--primary-dark);
+     font-family: 'Lora', serif;
+     font-size: 1.3rem;
+     font-weight: 600;
+     margin-bottom: 1rem;
+     text-align: center;
+   }
+
+   .question-text {
+     font-size: 1.1rem;
+     line-height: 1.6;
+     color: var(--primary-dark);
+     margin-bottom: 1.5rem;
+     font-weight: 500;
+   }
+
+   /* === MEDIA CONTENT === */
+   .video-container {
+     position: relative;
+     width: 100%;
+     height: 0;
+     padding-bottom: 56.25%; /* 16:9 aspect ratio */
+     border-radius: 16px;
+     overflow: hidden;
+     box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15);
+   }
+
+   .video-container iframe {
+     position: absolute;
+     top: 0;
+     left: 0;
+     width: 100%;
+     height: 100%;
+     border: none;
+   }
+
+   .image-container {
+     text-align: center;
+   }
+
+   .activity-image {
+     max-width: 100%;
+     height: auto;
+     border-radius: 16px;
+     box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15);
+   }
+
+   .text-content {
+     font-size: 1.1rem;
+     line-height: 1.7;
+     color: var(--primary-dark);
+   }
+
+   /* === SUBMIT E RESULTS === */
+   .submit-section {
+     text-align: center;
+     margin: 2rem 0;
+   }
+
+     .results-card .card-header.success-header {
+    background: linear-gradient(135deg, var(--success-green) 0%, #48BB78 100%) !important;
   }
 
-  /* Feedback détaillé */
+   .score-display {
+     display: flex;
+     align-items: center;
+     gap: 1.5rem;
+     margin-bottom: 2rem;
+   }
+
+   .score-details {
+     flex: 1;
+   }
+
+   .score-details p {
+     margin: 0 0 0.5rem;
+     font-size: 1.1rem;
+     color: var(--primary-dark);
+     font-weight: 600;
+   }
+
+   .score-details p:last-child {
+     color: #718096;
+     font-weight: 400;
+     font-size: 1rem;
+   }
+
+   /* === ACTION BUTTONS === */
+   .action-buttons {
+     display: flex;
+     gap: 1rem;
+     justify-content: center;
+     flex-wrap: wrap;
+     margin-top: 1.5rem;
+   }
+
+   .btn-secondary {
+     background: linear-gradient(135deg, var(--primary-blue) 0%, #357ABD 100%);
+     color: white;
+     border: none;
+     padding: 0.75rem 1.5rem;
+     border-radius: 12px;
+     font-weight: 600;
+     display: inline-flex;
+     align-items: center;
+     gap: 0.5rem;
+     transition: all 0.3s ease;
+     text-decoration: none;
+   }
+
+   .btn-secondary:hover {
+     transform: translateY(-2px);
+     box-shadow: 0 8px 24px rgba(74, 144, 226, 0.4);
+     color: white;
+     text-decoration: none;
+   }
+
+   .btn-outline {
+     background: transparent;
+     color: var(--primary-blue);
+     border: 2px solid var(--primary-blue);
+     padding: 0.75rem 1.5rem;
+     border-radius: 12px;
+     font-weight: 600;
+     display: inline-flex;
+     align-items: center;
+     gap: 0.5rem;
+     transition: all 0.3s ease;
+     text-decoration: none;
+   }
+
+   .btn-outline:hover {
+     background: var(--primary-blue);
+     color: white;
+     transform: translateY(-2px);
+     text-decoration: none;
+   }
+
+   /* === NAVIGATION === */
+   .navigation-section {
+     text-align: center;
+     margin-top: 2rem;
+     padding-top: 2rem;
+     border-top: 1px solid rgba(255, 255, 255, 0.3);
+   }
+
+   /* === PRESERVE FORMATTING === */
+   .preserve-format {
+     white-space: pre-line;
+   }
+
+  /* === DRAG AND DROP EXERCISES === */
+  
+  /* Headers já definidos nos novos estilos - removendo duplicação */
+  
+  /* Estilos de instruções já definidos nos novos estilos */
+  
+  /* Estilos de drag-drop-exercise definidos nos novos estilos */
+  
+  /* === EXERCÍCIO DE PALAVRAS === */
+  
+  /* Estilos de words-pool já definidos nos novos estilos */
+  
+  /* Estilos de draggable-word já definidos nos novos estilos */
+  
+  /* Estilos duplicados removidos - usando novos estilos coloridos */
+  
+  /* Estilos de draggable-sentence já definidos nos novos estilos */
+  
+  .sentence-content {
+    font-weight: 500;
+    line-height: 1.4;
+  }
+  
+  /* Estilos de paragraph builder e drop zones já definidos nos novos estilos */
+  
+  /* === FEEDBACK COLORS === */
+  .text-success {
+    color: #68D391 !important;
+  }
+  
+  .text-warning {
+    color: #F6AD55 !important;
+  }
+  
+  .text-danger {
+    color: #DC2626 !important;
+  }
+  
+  /* === RESPONSIVE === */
+  @media (max-width: 768px) {
+    .drop-zones {
+      justify-content: center;
+    }
+    
+    .drop-zone {
+      min-width: 70px;
+      min-height: 45px;
+    }
+    
+    .draggable-word {
+      font-size: 0.9rem;
+      padding: 0.4rem 0.8rem;
+    }
+    
+    .draggable-sentence {
+      padding: 0.8rem;
+      font-size: 0.9rem;
+    }
+    
+    .paragraph-drop-zone {
+      min-height: 70px;
+      padding: 0.8rem;
+    }
+    
+    .drag-drop-exercise {
+      padding: 1rem;
+    }
+  }
+  
+  @media (max-width: 480px) {
+    .words-pool,
+    .sentences-pool {
+      padding: 0.75rem;
+    }
+    
+    .sentence-builder,
+    .paragraph-builder {
+      padding: 0.75rem;
+    }
+    
+    .drop-zone {
+      min-width: 60px;
+      min-height: 40px;
+    }
+    
+    .draggable-word {
+      font-size: 0.8rem;
+      padding: 0.3rem 0.6rem;
+    }
+  }
+
+  /* === FEEDBACK DETAILED === */
   #question-feedback .card {
     border: none;
-    border-radius: 8px;
+    border-radius: 12px;
     margin-bottom: 1rem;
+    overflow: hidden;
   }
 
   #question-feedback .card.border-success {
-    border-left: 4px solid #166534;
+    border-left: 4px solid #68D391;
+  }
+  
+  /* === EXERCÍCIOS DE ASSOCIAÇÃO === */
+  .column-association-card .card-header {
+    background: linear-gradient(135deg, #7C3AED 0%, #8B5CF6 100%);
+  }
+  
+  .association-exercise {
+    margin-top: 1rem;
+  }
+  
+  .association-help {
+    background: #F8FAFC;
+    border: 1px solid #E2E8F0;
+    border-radius: 8px;
+    padding: 0.75rem;
+    margin-bottom: 1rem;
+  }
+  
+  .association-help small {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: #64748B;
+    font-size: 0.85rem;
+  }
+  
+  .association-help i {
+    color: #7C3AED;
+  }
+  
+  .association-container {
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
+    gap: 2rem;
+    align-items: start;
+    margin-bottom: 1.5rem;
+  }
+  
+  .association-column {
+    background: #F8FAFC;
+    border: 2px solid #E2E8F0;
+    border-radius: 12px;
+    padding: 1.5rem;
+    min-height: 300px;
+  }
+  
+  .column-title {
+    color: #1E3D59;
+    font-size: 1.1rem;
+    font-weight: 600;
+    margin-bottom: 1rem;
+    text-align: center;
+    padding-bottom: 0.5rem;
+    border-bottom: 2px solid #E2E8F0;
+  }
+  
+  .column-items {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
+  
+  .association-item {
+    background: white;
+    border: 2px solid #E2E8F0;
+    border-radius: 10px;
+    padding: 1rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    transition: all 0.3s ease;
+    position: relative;
+  }
+  
+  .association-item:hover {
+    border-color: #7C3AED;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(124, 58, 237, 0.12);
+  }
+  
+  .association-item[data-item-type="b"] {
+    flex-direction: row-reverse;
+  }
+  
+  .item-text {
+    font-weight: 500;
+    color: #2D3748;
+    flex: 1;
+    text-align: center;
+  }
+  
+  .connection-point {
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    position: relative;
+    flex-shrink: 0;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  }
+  
+  .connection-point:hover {
+    transform: scale(1.3);
+    opacity: 1 !important;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+  }
+  
+  .connection-point.selected {
+    animation: pulse 1s infinite;
+    box-shadow: 0 0 0 4px rgba(246, 173, 85, 0.3);
+  }
+  
+  .connection-point.connected {
+    box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+  }
+  
+  @keyframes pulse {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.1); }
+  }
+  
+  .connection-zone {
+    position: relative;
+    width: 60px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  
+  .connection-svg {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 1;
+  }
+  
+  .connection-line {
+    transition: all 0.3s ease;
+  }
+  
+  .association-result {
+    margin-top: 1rem;
+  }
+  
+
+  
+  .association-exercise.disabled {
+    opacity: 0.7;
+    pointer-events: none;
+  }
+  
+  .association-exercise.disabled .connection-point {
+    cursor: not-allowed;
+  }
+  
+  /* Responsive para exercícios de associação */
+  @media (max-width: 768px) {
+    .association-container {
+      grid-template-columns: 1fr;
+      gap: 1rem;
+    }
+    
+    .connection-zone {
+      display: none;
+    }
+    
+    .association-column {
+      padding: 1rem;
+      min-height: auto;
+    }
+    
+    .association-item {
+      padding: 0.75rem;
+    }
+    
+    .item-text {
+      font-size: 0.9rem;
+    }
+    
+    .connection-point {
+      width: 16px;
+      height: 16px;
+    }
   }
 
   #question-feedback .card.border-danger {
-    border-left: 4px solid #991B1B;
+    border-left: 4px solid #F87171;
   }
 
   #question-feedback .card-header {
-    border-radius: 8px 8px 0 0;
-    font-family: 'Inter', sans-serif;
-    font-weight: 500;
+    border-radius: 0;
+    font-weight: 600;
   }
 
   #question-feedback .bg-success {
-    background-color: #166534 !important;
+    background: linear-gradient(135deg, #68D391 0%, #48BB78 100%) !important;
   }
 
   #question-feedback .bg-danger {
-    background-color: #991B1B !important;
+    background: linear-gradient(135deg, #F87171 0%, #EF4444 100%) !important;
   }
 
-  /* Bouton de retour */
-  .btn-retour {
-    background-color: #4A90E2;
-    border: none;
-    color: white;
-    font-family: 'Inter', sans-serif;
+  /* Estilos removidos - usando novos estilos coloridos */
+
+  .fill-blank-text {
+    font-size: 1.1rem;
+    line-height: 1.8;
+    color: #2D3748;
     font-weight: 500;
-    padding: 0.75rem 1.5rem;
+  }
+
+  .blank-input,
+  .fill-blank-input {
+    border: 2px solid rgba(104, 211, 145, 0.3);
     border-radius: 8px;
-    transition: all 0.2s ease;
+    padding: 0.5rem;
+    background: rgba(104, 211, 145, 0.05);
+    color: var(--primary-dark);
+    font-weight: 500;
+    transition: all 0.3s ease;
+    min-width: 60px;
+    max-width: 120px;
+    width: auto;
+    display: inline-block;
+    margin: 0 0.1rem;
+    text-align: center;
+    font-size: 1rem;
+    vertical-align: baseline;
   }
 
-  .btn-retour:hover {
-    background-color: #357ABD;
-    transform: translateY(-1px);
-    box-shadow: 0 4px 12px rgba(74, 144, 226, 0.15);
+  .blank-input:focus,
+  .fill-blank-input:focus {
+    border-color: var(--fill-blank-color);
+    box-shadow: 0 0 12px rgba(104, 211, 145, 0.3);
+    background: white;
+    outline: none;
+    transform: scale(1.02);
   }
 
-  /* Responsivité */
+  .blank-input::placeholder {
+    color: #A0ADB8;
+    font-style: italic;
+    font-weight: 400;
+  }
+
+  .blank-input:disabled {
+    background-color: #F7FAFC;
+    border-color: #E2E8F0;
+    color: #718096;
+    cursor: not-allowed;
+  }
+
+  /* === PRESERVE FORMAT === */
+  .preserve-format {
+    white-space: pre-wrap;
+    word-wrap: break-word;
+  }
+
+  /* === RESPONSIVIDADE === */
   @media (max-width: 768px) {
-    .paper-effect {
+    .solve-activity {
+      padding: 1rem 0.5rem;
+    }
+
+    .activity-header-card {
       padding: 1.5rem;
     }
 
-    .main-title {
+    .activity-title {
       font-size: 2rem;
     }
 
-    .btn {
+    .content-section {
+      padding: 1.5rem;
+    }
+
+    .content-card .card-body {
+      padding: 1rem;
+    }
+
+    .score-display {
+      flex-direction: column;
+      text-align: center;
+      gap: 1rem;
+    }
+
+    .action-buttons {
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .btn-secondary,
+    .btn-outline,
+    .btn-submit,
+    .btn-back {
       width: 100%;
-      margin-bottom: 0.5rem;
+      max-width: 300px;
+    }
+
+    .alternative-label {
+      font-size: 0.95rem;
+    }
+
+    .alternative-letter {
+      width: 24px;
+      height: 24px;
+      font-size: 0.8rem;
+    }
+
+    .blank-input {
+      min-width: 50px;
+      max-width: 100px;
+      font-size: 0.85rem;
+      padding: 0.2rem 0.3rem;
+      margin: 0 0.05rem;
+    }
+
+    .fill-blank-text {
+      font-size: 1rem;
+      line-height: 1.6;
+    }
+  }
+
+  @media (max-width: 480px) {
+    .activity-title {
+      font-size: 1.75rem;
+    }
+
+    .content-card .card-header {
+      padding: 0.75rem 1rem;
+      font-size: 0.9rem;
+    }
+
+    .alternative-option {
+      padding: 0.75rem;
     }
   }
 </style> 

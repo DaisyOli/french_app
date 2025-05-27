@@ -28,5 +28,18 @@ module FrenchApp
     #
     # config.time_zone = "Central Time (US & Canada)"
     # config.eager_load_paths << Rails.root.join("extras")
+    
+    # Security middleware
+    config.middleware.use Rack::Attack
+    
+    # Force SSL in production
+    config.force_ssl = Rails.env.production?
+    
+    # Configure session security
+    config.session_store :cookie_store, 
+      key: '_french_app_session',
+      secure: Rails.env.production?,
+      httponly: true,
+      same_site: :lax
   end
 end

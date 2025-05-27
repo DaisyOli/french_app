@@ -25,71 +25,157 @@
   </head>
 
   <body>
-    <!-- Navbar Moderna -->
-    <nav class="navbar navbar-expand-lg navbar-dark modern-navbar fixed-top">
-      <div class="container">
-        <!-- Brand com logo francês mais lúdico -->
-        <a class="navbar-brand modern-brand" href="/">
-          <div class="french-logo">
-            <!-- Opção 6: Círculo Elegante -->
-            <div class="logo-circle">
-              <span class="logo-letters">FR</span>
+
+    <!-- Navbar da Daisy - Estilo Simples e Funcional -->
+    <% if user_signed_in? && !student_signed_in? %>
+      <nav class="navbar navbar-expand-lg navbar-dark modern-navbar fixed-top">
+        <div class="container">
+          <!-- Logo especial da Daisy -->
+          <a class="navbar-brand modern-brand" href="/">
+            <div class="french-logo">
+              <div class="logo-circle" style="background: linear-gradient(135deg, #FF69B4 0%, #FFB6C1 100%);">
+                <span class="logo-letters" style="color: white;">D</span>
+              </div>
+              <span class="brand-text">Mon Atelier Créatif</span>
             </div>
-            <span class="brand-text">Practice-FR</span>
-          </div>
-        </a>
-        
-        <!-- Mobile toggle -->
-        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
-          <span class="navbar-toggler-icon"></span>
-        </button>
-        
-        <!-- Navigation -->
-        <div class="collapse navbar-collapse" id="navbarNav">
-          <ul class="navbar-nav ms-auto align-items-center">
-            <% if user_signed_in? %>
+          </a>
+          
+          <!-- Mobile toggle -->
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+            <span class="navbar-toggler-icon"></span>
+          </button>
+          
+          <!-- Navigation -->
+          <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav ms-auto align-items-center">
               <li class="nav-item">
                 <%= link_to activities_path, class: "nav-link modern-nav-link" do %>
-                  <i class="bi bi-collection-fill"></i>
-                  <%= t('common.my_activities') %>
+                  <i class="bi bi-palette-fill"></i>
+                  Mes créations
                 <% end %>
               </li>
               <li class="nav-item">
                 <%= link_to new_activity_path, class: "nav-link modern-nav-link" do %>
-                  <i class="bi bi-plus-circle-fill"></i>
-                  <%= t('common.new_activity') %>
+                  <i class="bi bi-magic"></i>
+                  Nouvelle idée
                 <% end %>
               </li>
-              <!-- Dropdown do usuário -->
-              <li class="nav-item dropdown">
-                <a class="nav-link dropdown-toggle user-dropdown" href="#" id="userDropdown" role="button" data-bs-toggle="dropdown">
-                  <div class="user-avatar">
-                    <i class="bi bi-person-circle"></i>
+              
+              <!-- Saudação da Daisy -->
+              <li class="nav-item">
+                <div class="daisy-greeting" style="margin-right: 1rem;">
+                  <div class="greeting-card" style="background: rgba(255, 105, 180, 0.2); border-radius: 20px; padding: 0.5rem 1rem; backdrop-filter: blur(10px); border: 1px solid rgba(255, 105, 180, 0.3);">
+                    <span style="color: white; font-weight: 600;">Salut Daisy! 🌼</span>
                   </div>
-                  <span class="user-email d-none d-md-inline"><%= current_user.email %></span>
+                </div>
+              </li>
+              
+              <!-- Dropdown da Daisy -->
+              <li class="nav-item dropdown">
+                <a class="nav-link dropdown-toggle user-dropdown" href="#" id="daisyDropdown" role="button" data-bs-toggle="dropdown">
+                  <div class="user-avatar" style="background: linear-gradient(135deg, #FF69B4 0%, #FFB6C1 100%);">
+                    <span style="color: white; font-weight: 700;">D</span>
+                  </div>
+                  <span class="user-email d-none d-md-inline">Daisy</span>
                 </a>
                 <ul class="dropdown-menu dropdown-menu-end user-menu">
                   <li>
                     <div class="dropdown-header">
                       <div class="user-info">
-                        <i class="bi bi-mortarboard-fill text-primary"></i>
+                        <i class="bi bi-palette-fill" style="color: #FF69B4;"></i>
                         <div>
-                          <strong>Professeur</strong>
-                          <small class="text-muted d-block"><%= current_user.email %></small>
+                          <strong>Créatrice</strong>
+                          <small class="text-muted d-block">Daisy 🌼</small>
                         </div>
                       </div>
                     </div>
                   </li>
                   <li><hr class="dropdown-divider"></li>
                   <li>
-                    <a class="dropdown-item" href="#" data-bs-toggle="modal" data-bs-target="#logoutModal">
-                      <i class="bi bi-box-arrow-right text-danger"></i>
-                      <%= t('common.logout') %>
+                    <div style="padding: 0.5rem 1.5rem;">
+                      <small class="text-muted">
+                        <i class="bi bi-heart-fill text-danger"></i>
+                        <%= Activity.count %> créations magiques
+                      </small>
+                    </div>
+                  </li>
+                  <li><hr class="dropdown-divider"></li>
+                  <li>
+                    <a class="dropdown-item" href="#" data-bs-toggle="modal" data-bs-target="#logoutModalDaisy">
+                      <i class="bi bi-moon-stars text-primary"></i>
+                      À bientôt, belle âme! 🌙
                     </a>
                   </li>
                 </ul>
               </li>
-            <% elsif student_signed_in? %>
+            </ul>
+          </div>
+        </div>
+              </nav>
+        <% elsif !user_signed_in? && !student_signed_in? %>
+      <!-- Navbar padrão para visitantes -->
+      <nav class="navbar navbar-expand-lg navbar-dark modern-navbar fixed-top">
+        <div class="container">
+          <!-- Brand com logo francês mais lúdico -->
+          <a class="navbar-brand modern-brand" href="/">
+            <div class="french-logo">
+              <!-- Opção 6: Círculo Elegante -->
+              <div class="logo-circle">
+                <span class="logo-letters">FR</span>
+              </div>
+              <span class="brand-text">Practice-FR</span>
+            </div>
+          </a>
+          
+          <!-- Mobile toggle -->
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+            <span class="navbar-toggler-icon"></span>
+          </button>
+          
+          <!-- Navigation -->
+          <div class="collapse navbar-collapse" id="navbarNav">
+                         <ul class="navbar-nav ms-auto align-items-center">
+               <li class="nav-item">
+                 <%= link_to new_user_session_path, class: "nav-link modern-nav-link" do %>
+                   <i class="bi bi-mortarboard"></i>
+                   <%= t('devise.shared.links.sign_in_teacher') %>
+                 <% end %>
+               </li>
+               <li class="nav-item">
+                 <%= link_to new_student_session_path, class: "nav-link modern-nav-link" do %>
+                   <i class="bi bi-person-badge"></i>
+                   <%= t('devise.shared.links.sign_in_student') %>
+                 <% end %>
+               </li>
+             </ul>
+           </div>
+         </div>
+       </nav>
+     <% end %>
+
+     <!-- Navbar para estudantes -->
+     <% if student_signed_in? %>
+       <nav class="navbar navbar-expand-lg navbar-dark modern-navbar fixed-top">
+         <div class="container">
+           <!-- Brand com logo francês mais lúdico -->
+           <a class="navbar-brand modern-brand" href="/">
+             <div class="french-logo">
+               <!-- Opção 6: Círculo Elegante -->
+               <div class="logo-circle">
+                 <span class="logo-letters">FR</span>
+               </div>
+               <span class="brand-text">Practice-FR</span>
+             </div>
+           </a>
+           
+           <!-- Mobile toggle -->
+           <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+             <span class="navbar-toggler-icon"></span>
+           </button>
+           
+           <!-- Navigation -->
+           <div class="collapse navbar-collapse" id="navbarNav">
+             <ul class="navbar-nav ms-auto align-items-center">
               <!-- Troféus na navbar para estudantes -->
               <li class="nav-item navbar-trophy-stats">
                 <div class="trophy-mini-cards">
@@ -134,7 +220,7 @@
               <li class="nav-item dropdown">
                 <a class="nav-link dropdown-toggle user-dropdown" href="#" id="studentDropdown" role="button" data-bs-toggle="dropdown">
                   <div class="user-avatar student-avatar-nav">
-                    <span class="student-initials">É</span>
+                    <span class="student-initials"><%= current_student.email.first.upcase %></span>
                   </div>
                   <span class="user-email d-none d-md-inline"><%= current_student.email %></span>
                 </a>
@@ -159,52 +245,13 @@
                   </li>
                 </ul>
               </li>
-            <% else %>
-              <li class="nav-item">
-                <%= link_to new_user_session_path, class: "nav-link modern-nav-link" do %>
-                  <i class="bi bi-mortarboard"></i>
-                  <%= t('devise.shared.links.sign_in_teacher') %>
-                <% end %>
-              </li>
-              <li class="nav-item">
-                <%= link_to new_student_session_path, class: "nav-link modern-nav-link" do %>
-                  <i class="bi bi-person-badge"></i>
-                  <%= t('devise.shared.links.sign_in_student') %>
-                <% end %>
-              </li>
-            <% end %>
-          </ul>
-        </div>
-      </div>
-    </nav>
-
-    <!-- Modal de logout para professores -->
-    <% if user_signed_in? %>
-      <div class="modal fade" id="logoutModal" tabindex="-1" aria-labelledby="logoutModalLabel" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered">
-          <div class="modal-content modern-modal">
-            <div class="modal-header border-0">
-              <h5 class="modal-title" id="logoutModalLabel">
-                <i class="bi bi-box-arrow-right text-danger me-2"></i>
-                <%= t('common.logout_confirm_title') %>
-              </h5>
-            </div>
-            <div class="modal-body text-center py-4">
-              <p class="mb-0"><%= t('common.logout_confirm_message') %></p>
-            </div>
-            <div class="modal-footer border-0 justify-content-center">
-              <%= button_to t('common.logout_confirm_yes'), destroy_user_session_path, 
-                    method: :delete, 
-                    class: "btn btn-danger",
-                    form: { class: "d-inline-block" } %>
-              <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">
-                <%= t('common.logout_confirm_no') %>
-              </button>
-            </div>
+            </ul>
           </div>
         </div>
-      </div>
+      </nav>
     <% end %>
+
+
 
     <!-- Modal de logout para estudantes -->
     <% if student_signed_in? %>
@@ -234,6 +281,37 @@
       </div>
     <% end %>
 
+    <!-- Modal de logout para Daisy -->
+    <% if user_signed_in? && !student_signed_in? %>
+      <div class="modal fade" id="logoutModalDaisy" tabindex="-1" aria-labelledby="logoutModalDaisyLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+          <div class="modal-content modern-modal">
+            <div class="modal-header border-0" style="background: linear-gradient(135deg, #FFE4E1 0%, #FFC0CB 100%);">
+              <h5 class="modal-title" id="logoutModalDaisyLabel" style="color: #1E3D59;">
+                <i class="bi bi-moon-stars text-primary me-2"></i>
+                Au revoir Daisy!
+              </h5>
+            </div>
+            <div class="modal-body text-center py-4">
+              <div style="font-size: 3rem; margin-bottom: 1rem;">🌙</div>
+              <p class="mb-2" style="color: #FF69B4; font-weight: 600;">Tu as fait du super travail aujourd'hui 🌼</p>
+              <p class="mb-0" style="color: #4A5568;">Prends soin de toi et à très bientôt pour de nouvelles créations!</p>
+            </div>
+            <div class="modal-footer border-0 justify-content-center">
+              <%= button_to "Oui, à bientôt! 👋", destroy_user_session_path, 
+                    method: :delete, 
+                    class: "btn text-white",
+                    style: "background: linear-gradient(135deg, #FF69B4 0%, #FFB6C1 100%); border: none;",
+                    form: { class: "d-inline-block" } %>
+              <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">
+                Non, je reste encore 💪
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    <% end %>
+
     <!-- Main content with navbar spacing -->
     <div class="main-content">
       <% if notice %>
@@ -255,6 +333,20 @@
     </div>
     
     <style>
+      /* === NAVBAR DA DAISY - ESTILO SIMPLES === */
+
+      /* Navbar da Daisy usa os estilos padrão do modern-navbar */
+
+
+
+
+
+
+
+
+
+
+
       /* === NAVBAR MODERNA === */
       .modern-navbar {
         background: linear-gradient(135deg, #1E3D59 0%, #2B4F76 100%) !important;
@@ -397,6 +489,10 @@
         font-size: 0.8rem;
         filter: drop-shadow(0 1px 2px rgba(0,0,0,0.2));
       }
+
+
+
+
 
       .trophy-mini-number {
         font-size: 0.9rem;
@@ -591,7 +687,12 @@
         padding-top: 80px; /* Espaço para navbar fixed */
         min-height: 100vh;
         background: linear-gradient(to bottom, #F7FAFC 0%, #FFFFFF 100%);
+        position: relative;
+        z-index: 1;
+        /* isolation: isolate removido para não interferir com modais */
       }
+
+
 
       /* === ALERTS MODERNOS === */
       .modern-alert {
@@ -730,5 +831,9 @@
         }
       }
     </style>
+
+
+
+
   </body>
 </html>

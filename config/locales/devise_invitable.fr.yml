@@ -1,0 +1,22 @@
+fr:
+  devise:
+    invitations:
+      send_instructions: "Une invitation a été envoyée à %{email} avec succès ! ✨"
+      invitation_token_invalid: "Le token d'invitation fourni n'est pas valide !"
+      updated: "Votre mot de passe a été défini avec succès. Vous êtes maintenant connecté."
+      updated_not_active: "Votre mot de passe a été défini avec succès."
+      no_invitations_remaining: "Aucune invitation restante"
+      invitation_removed: "Votre invitation a été supprimée."
+      new:
+        header: "Inviter un nouvel étudiant"
+        submit_button: "Envoyer l'invitation"
+      edit:
+        header: "Définir votre mot de passe"
+        submit_button: "Définir mon mot de passe"
+    mailer:
+      invitation_instructions:
+        subject: "Invitation à rejoindre Practice-FR !"
+        hello: "Bonjour !"
+        someone_invited_you: "Vous avez été invité(e) à rejoindre Practice-FR, votre nouvelle plateforme d'apprentissage du français !"
+        accept_invitation: "Accepter l'invitation"
+        ignore: "Si vous ne souhaitez pas accepter cette invitation, ignorez simplement cet e-mail." 

@@ -1,4 +1,5 @@
 class SuggestionsController < ApplicationController
+  before_action :authenticate_user!
   before_action :set_activity
   before_action :set_suggestion, only: [:edit, :update, :destroy]
 

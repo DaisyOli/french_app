@@ -1,5 +1,5 @@
 Rails.application.routes.draw do
-  devise_for :students
+  devise_for :students, controllers: { invitations: 'students/invitations' }
   devise_for :users
   
   # Rota específica para estudantes
@@ -38,6 +38,33 @@ Rails.application.routes.draw do
       member do
         patch :update_order
       end
+    end
+    
+    resources :fill_blanks, only: [:create, :update, :destroy] do
+      member do
+        patch :update_order
+      end
+      resources :blanks, only: [:update]
+    end
+    
+    resources :sentence_orderings, only: [:create, :update, :destroy] do
+      member do
+        patch :update_order
+      end
+    end
+    
+    resources :paragraph_orderings, only: [:create, :update, :destroy] do
+      member do
+        patch :update_order
+      end
+      resources :paragraph_sentences, only: [:create, :update, :destroy]
+    end
+    
+    resources :column_associations, only: [:create, :update, :destroy] do
+      member do
+        patch :update_order
+      end
+      resources :association_pairs, only: [:create, :update, :destroy]
     end
   end
 

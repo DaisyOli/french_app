@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <style>
+      body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }
+      .container { max-width: 600px; margin: 0 auto; padding: 20px; }
+      .header { background-color: #dc3545; color: white; padding: 20px; text-align: center; }
+      .content { padding: 20px; background-color: #f8f9fa; }
+      .button { display: inline-block; padding: 10px 20px; background-color: #007bff; color: white; text-decoration: none; border-radius: 5px; }
+      .error-box { background-color: #f8d7da; border: 1px solid #f5c6cb; color: #721c24; padding: 15px; border-radius: 5px; margin: 15px 0; }
+      .footer { text-align: center; padding: 20px; color: #666; font-size: 12px; }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <div class="header">
+        <h1>⚠️ Erreur de Traitement</h1>
+      </div>
+      
+      <div class="content">
+        <p>Bonjour <%= @user.email %>,</p>
+        
+        <p>Nous avons rencontré une erreur lors du traitement de votre activité <strong>"<%= @activity.título %>"</strong>.</p>
+        
+        <div class="error-box">
+          <strong>Détails de l'erreur:</strong><br>
+          <%= @error_message %>
+        </div>
+        
+        <p><strong>Que faire maintenant?</strong></p>
+        <ul>
+          <li>Vérifiez que votre activité ne dépasse pas 25 questions</li>
+          <li>Assurez-vous que tous les champs sont correctement remplis</li>
+          <li>Essayez de créer l'activité à nouveau</li>
+          <li>Si le problème persiste, contactez notre support</li>
+        </ul>
+        
+        <p style="text-align: center;">
+          <a href="<%= @url %>" class="button">Retourner à l'Activité</a>
+        </p>
+        
+        <p><strong>Détails de l'activité:</strong></p>
+        <ul>
+          <li><strong>Titre:</strong> <%= @activity.título %></li>
+          <li><strong>Niveau:</strong> <%= @activity.nível %></li>
+          <li><strong>Tentative le:</strong> <%= Time.current.strftime("%d/%m/%Y à %H:%M") %></li>
+        </ul>
+        
+        <p>Nous nous excusons pour ce désagrément et travaillons à résoudre le problème.</p>
+      </div>
+      
+      <div class="footer">
+        <p>Cet email a été envoyé automatiquement. Pour obtenir de l'aide, contactez notre support.</p>
+      </div>
+    </div>
+  </body>
+</html> 

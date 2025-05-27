@@ -1,6 +1,14 @@
-<div class="card shadow-sm">
-  <div class="card-header text-center" style="background-color: #1E3D59; color: white;">
-    <h2 class="form-title my-2"><%= activity.new_record? ? t('common.new_activity') : t('common.edit_activity') %></h2>
+<div class="card shadow-sm daisy-form-card">
+  <div class="card-header text-center daisy-form-header">
+    <div class="daisy-avatar-small">D</div>
+    <h2 class="form-title my-2">
+      <% if activity.new_record? %>
+        <i class="bi bi-sparkles"></i> Nouvelle création
+      <% else %>
+        <i class="bi bi-palette"></i> Retoucher ma création
+      <% end %>
+    </h2>
+    <p class="daisy-subtitle">Laisse libre cours à ta créativité! 🌼</p>
   </div>
   <div class="card-body p-4">
     <%= form_with(model: activity) do |form| %>
@@ -33,125 +41,245 @@
       </div>
       
       <div class="d-grid gap-3 mt-5">
-        <%= form.submit activity.new_record? ? t('common.create_activity') : t('common.update_activity'), 
-                  class: "btn btn-lg btn-primary" %>
-        <%= link_to t('helpers.actions.back'), activities_path, class: "btn btn-lg btn-outline-secondary" %>
+        <%= form.submit activity.new_record? ? "Créer ma petite merveille" : "Mettre à jour l'Activité", 
+                  class: "btn btn-lg btn-primary daisy-btn-primary" %>
+        <%= link_to "Retour", activities_path, class: "btn btn-lg btn-outline-secondary daisy-btn-secondary" %>
       </div>
     <% end %>
   </div>
 </div>
 
 <style>
-  /* Estilos do formulário */
+  /* === ESTILO DAISY PARA FORMULÁRIOS === */
+  body {
+    background: linear-gradient(135deg, rgba(253, 244, 255, 0.3) 0%, rgba(250, 232, 255, 0.3) 100%);
+    min-height: 100vh;
+  }
+
+  .daisy-form-card {
+    border: none !important;
+    border-radius: 20px !important;
+    box-shadow: 0 12px 40px rgba(139, 92, 246, 0.15), 0 4px 16px rgba(236, 72, 153, 0.1) !important;
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.95) 0%, rgba(253, 244, 255, 0.95) 100%) !important;
+    backdrop-filter: blur(10px);
+    border: 2px solid rgba(236, 72, 153, 0.1) !important;
+  }
+
+  .daisy-form-header {
+    background: linear-gradient(135deg, #8B5CF6 0%, #EC4899 100%) !important;
+    border-radius: 20px 20px 0 0 !important;
+    border-bottom: none !important;
+    padding: 2rem 1.5rem !important;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .daisy-form-header::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="20" cy="20" r="2" fill="rgba(255,255,255,0.1)"/><circle cx="80" cy="40" r="1.5" fill="rgba(255,255,255,0.1)"/><circle cx="40" cy="80" r="1" fill="rgba(255,255,255,0.1)"/></svg>');
+    pointer-events: none;
+  }
+
+  .daisy-avatar-small {
+    width: 50px;
+    height: 50px;
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.9) 0%, rgba(255, 240, 245, 0.9) 100%);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 1.5rem;
+    color: #EC4899;
+    margin: 0 auto 1rem;
+    border: 3px solid rgba(255, 255, 255, 0.3);
+    box-shadow: 0 4px 16px rgba(236, 72, 153, 0.2);
+  }
+
   .form-title {
-    font-family: 'Lora', serif;
-    font-size: 2rem;
-    font-weight: 600;
+    font-family: 'Inter', sans-serif !important;
+    font-size: 1.8rem !important;
+    font-weight: 600 !important;
+    color: white !important;
+    margin: 0 !important;
+    text-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  }
+
+  .daisy-subtitle {
+    color: rgba(255, 255, 255, 0.9) !important;
+    font-size: 1rem !important;
+    margin: 0.5rem 0 0 0 !important;
+    font-weight: 400 !important;
   }
 
   .form-label {
-    font-family: 'Inter', sans-serif;
-    font-size: 1rem;
-    font-weight: 500;
-    color: #2D3748;
-    margin-bottom: 0.5rem;
+    font-family: 'Inter', sans-serif !important;
+    font-size: 1rem !important;
+    font-weight: 600 !important;
+    color: #6B46C1 !important;
+    margin-bottom: 0.75rem !important;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .form-label::before {
+    content: '🌸';
+    font-size: 0.9rem;
   }
 
   .form-control, .form-select {
-    font-family: 'Inter', sans-serif;
-    border: 1px solid #E2E8F0;
-    border-radius: 8px;
-    padding: 0.75rem 1rem;
-    font-size: 1rem;
-    transition: all 0.2s ease;
+    font-family: 'Inter', sans-serif !important;
+    border: 2px solid rgba(139, 92, 246, 0.2) !important;
+    border-radius: 12px !important;
+    padding: 1rem 1.25rem !important;
+    font-size: 1rem !important;
+    transition: all 0.3s ease !important;
+    background: rgba(255, 255, 255, 0.9) !important;
+    color: #374151 !important;
   }
 
   .form-control:focus, .form-select:focus {
-    border-color: #1E3D59;
-    box-shadow: 0 0 0 3px rgba(30, 61, 89, 0.1);
+    border-color: #8B5CF6 !important;
+    box-shadow: 0 0 0 0.25rem rgba(139, 92, 246, 0.15) !important;
+    background: rgba(255, 255, 255, 1) !important;
+    transform: translateY(-1px);
   }
 
   .form-control-lg {
-    font-size: 1.1rem;
-    padding: 0.875rem 1.25rem;
+    font-size: 1.1rem !important;
+    padding: 1.125rem 1.5rem !important;
   }
 
-  /* Botões */
-  .btn-primary {
-    background-color: #1E3D59;
-    border: none;
-    color: white;
-    font-family: 'Inter', sans-serif;
-    font-weight: 500;
-    padding: 0.875rem 1.5rem;
-    border-radius: 8px;
-    transition: all 0.2s ease;
+  .form-select-lg {
+    font-size: 1.1rem !important;
+    padding: 1.125rem 1.5rem !important;
   }
 
-  .btn-primary:hover {
-    background-color: #15304D;
-    transform: translateY(-1px);
-    box-shadow: 0 4px 12px rgba(30, 61, 89, 0.15);
+  /* Botões Daisy */
+  .daisy-btn-primary {
+    background: linear-gradient(135deg, #EC4899 0%, #F472B6 100%) !important;
+    border: none !important;
+    color: white !important;
+    font-family: 'Inter', sans-serif !important;
+    font-weight: 600 !important;
+    padding: 1rem 2rem !important;
+    border-radius: 12px !important;
+    transition: all 0.3s ease !important;
+    box-shadow: 0 6px 20px rgba(236, 72, 153, 0.3) !important;
+    position: relative;
+    overflow: hidden;
   }
 
-  .btn-outline-secondary {
-    border: 2px solid #1E3D59;
-    color: #1E3D59;
-    font-family: 'Inter', sans-serif;
-    font-weight: 500;
-    padding: 0.875rem 1.5rem;
-    border-radius: 8px;
-    transition: all 0.2s ease;
+  .daisy-btn-primary::before {
+    content: '✨';
+    margin-right: 0.5rem;
   }
 
-  .btn-outline-secondary:hover {
-    background-color: #1E3D59;
-    color: white;
-    transform: translateY(-1px);
+  .daisy-btn-primary:hover {
+    background: linear-gradient(135deg, #DB2777 0%, #EC4899 100%) !important;
+    transform: translateY(-2px) !important;
+    box-shadow: 0 8px 25px rgba(236, 72, 153, 0.4) !important;
+    color: white !important;
   }
 
-  /* Card */
-  .card {
-    border: none;
-    border-radius: 12px;
-    box-shadow: 0 4px 12px rgba(30, 61, 89, 0.08),
-                0 2px 4px rgba(30, 61, 89, 0.04);
+  .daisy-btn-secondary {
+    background: rgba(255, 255, 255, 0.9) !important;
+    border: 2px solid #8B5CF6 !important;
+    color: #6B46C1 !important;
+    font-family: 'Inter', sans-serif !important;
+    font-weight: 600 !important;
+    padding: 1rem 2rem !important;
+    border-radius: 12px !important;
+    transition: all 0.3s ease !important;
+    text-decoration: none !important;
   }
 
-  .card-header {
-    border-radius: 12px 12px 0 0 !important;
-    border-bottom: none;
-    padding: 1.5rem;
+  .daisy-btn-secondary::before {
+    content: '🏠';
+    margin-right: 0.5rem;
+  }
+
+  .daisy-btn-secondary:hover {
+    background: linear-gradient(135deg, #8B5CF6 0%, #7C3AED 100%) !important;
+    color: white !important;
+    transform: translateY(-2px) !important;
+    box-shadow: 0 6px 20px rgba(139, 92, 246, 0.3) !important;
   }
 
   .card-body {
-    padding: 2rem;
+    padding: 2.5rem !important;
+    background: transparent !important;
   }
 
-  /* Alerta de erro */
+  /* Alerta de erro estilo Daisy */
   .alert-danger {
-    background-color: #FEE2E2;
-    border: none;
-    border-radius: 8px;
-    color: #991B1B;
-    padding: 1rem 1.5rem;
-    margin-bottom: 2rem;
+    background: linear-gradient(135deg, rgba(254, 226, 226, 0.9) 0%, rgba(252, 165, 165, 0.1) 100%) !important;
+    border: 2px solid rgba(239, 68, 68, 0.2) !important;
+    border-radius: 12px !important;
+    color: #DC2626 !important;
+    padding: 1.5rem 2rem !important;
+    margin-bottom: 2rem !important;
+    backdrop-filter: blur(10px);
   }
 
   .alert-danger h5 {
-    font-family: 'Inter', sans-serif;
-    font-weight: 600;
-    margin-bottom: 1rem;
+    font-family: 'Inter', sans-serif !important;
+    font-weight: 600 !important;
+    margin-bottom: 1rem !important;
+    color: #DC2626 !important;
+  }
+
+  .alert-danger h5::before {
+    content: '⚠️ ';
+    margin-right: 0.5rem;
   }
 
   .alert-danger ul {
-    margin-bottom: 0;
-    padding-left: 1.5rem;
+    margin-bottom: 0 !important;
+    padding-left: 1.5rem !important;
   }
 
   .alert-danger li {
-    font-family: 'Inter', sans-serif;
-    font-size: 0.95rem;
-    margin-bottom: 0.5rem;
+    font-family: 'Inter', sans-serif !important;
+    font-size: 0.95rem !important;
+    margin-bottom: 0.5rem !important;
+    color: #DC2626 !important;
+  }
+
+  /* Animações suaves */
+  .daisy-form-card {
+    animation: slideInUp 0.6s ease-out;
+  }
+
+  @keyframes slideInUp {
+    from {
+      opacity: 0;
+      transform: translateY(30px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  /* Responsividade */
+  @media (max-width: 768px) {
+    .daisy-form-header {
+      padding: 1.5rem 1rem !important;
+    }
+    
+    .form-title {
+      font-size: 1.5rem !important;
+    }
+    
+    .card-body {
+      padding: 1.5rem !important;
+    }
   }
 </style> 

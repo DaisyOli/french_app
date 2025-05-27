@@ -110,7 +110,8 @@
                   </div>
                   <div class="stat">
                     <i class="bi bi-clock"></i>
-                    <span>~<%= [5, activity.questions.count * 2].max %> min</span>
+                    <% total_exercises = activity.questions.count + activity.fill_blanks.count + activity.sentence_orderings.count + activity.paragraph_orderings.count %>
+                    <span>~<%= [5, total_exercises * 2].max %> min</span>
                   </div>
                 </div>
               </div>

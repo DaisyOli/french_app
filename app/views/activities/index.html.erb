@@ -1,681 +1,1155 @@
-<div class="activities-container">
-  <div class="header-section">
-    <div></div>
-    <h1 class="main-title"><%= t('common.my_activities') %></h1>
-    <%= link_to t('common.new_activity'), new_activity_path, class: "btn nouvelle-activite-btn" %>
+<div class="daisy-dashboard">
+  <!-- Hero Section Personalizado -->
+  <div class="hero-section">
+    <div class="hero-content">
+      <div class="daisy-welcome-card">
+        <div class="avatar-section">
+          <div class="daisy-avatar-hero">
+            <span class="daisy-initial-hero">D</span>
+            <div class="daisy-sparkles">*</div>
+          </div>
+          <div class="welcome-text">
+            <h1>Mes petites créations</h1>
+            <p>Tes activités pédagogiques avec amour</p>
+            <div class="daisy-mood-indicator">
+              <span class="mood-emoji">♥</span>
+              <span class="mood-text">Mode créatif activé!</span>
+            </div>
+          </div>
+        </div>
+        <div class="header-actions">
+          <div class="action-buttons">
+            <%= link_to new_activity_path, class: "btn-new-activity-daisy" do %>
+              <i class="bi bi-magic"></i>
+              <span>Nouvelle idée magique</span>
+              <div class="btn-sparkle">*</div>
+            <% end %>
+            <%= link_to new_student_invitation_path, class: "btn-invite-student-daisy" do %>
+              <i class="bi bi-envelope-heart-fill"></i>
+              <span>Inviter un étudiant</span>
+              <div class="btn-sparkle">✨</div>
+            <% end %>
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
 
-  <!-- Filtros por nível -->
+  <!-- Statistiques mignonnes -->
+  <div class="daisy-stats-section">
+    <div class="stats-container">
+      <div class="stat-card">
+        <div class="stat-icon"><i class="bi bi-palette-fill"></i></div>
+        <div class="stat-content">
+          <span class="stat-number"><%= @activities.count %></span>
+          <span class="stat-label">créations</span>
+        </div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon"><i class="bi bi-book-fill"></i></div>
+        <div class="stat-content">
+          <span class="stat-number"><%= @activities.sum { |a| a.questions.count + a.fill_blanks.count + a.sentence_orderings.count + a.paragraph_orderings.count } %></span>
+          <span class="stat-label">questions</span>
+        </div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon"><i class="bi bi-star-fill"></i></div>
+        <div class="stat-content">
+          <span class="stat-number"><%= Date.current.strftime("%d") %></span>
+          <span class="stat-label">jour du mois</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Filtros por nível com estilo fofo -->
+  <div class="filters-section">
+    <div class="filter-header">
+      <h3><i class="bi bi-funnel-fill"></i> Filtrer par niveau</h3>
+      <p>Trouve tes créations par difficulté</p>
+    </div>
   <div class="niveau-filters">
-    <button class="filter-btn active" data-niveau="tous">Tous les niveaux</button>
-    <button class="filter-btn" data-niveau="A1">A1</button>
-    <button class="filter-btn" data-niveau="A2">A2</button>
-    <button class="filter-btn" data-niveau="B1">B1</button>
-    <button class="filter-btn" data-niveau="B2">B2</button>
-    <button class="filter-btn" data-niveau="C1">C1</button>
-    <button class="filter-btn" data-niveau="C2">C2</button>
+      <button class="filter-btn active" data-niveau="tous">
+        <i class="bi bi-rainbow"></i>
+        Tous mes niveaux
+      </button>
+      <button class="filter-btn filter-a1" data-niveau="A1">
+        <i class="bi bi-circle-fill"></i>
+        A1
+      </button>
+      <button class="filter-btn filter-a2" data-niveau="A2">
+        <i class="bi bi-circle-fill"></i>
+        A2
+      </button>
+      <button class="filter-btn filter-b1" data-niveau="B1">
+        <i class="bi bi-circle-fill"></i>
+        B1
+      </button>
+      <button class="filter-btn filter-b2" data-niveau="B2">
+        <i class="bi bi-circle-fill"></i>
+        B2
+      </button>
+      <button class="filter-btn filter-c1" data-niveau="C1">
+        <i class="bi bi-circle-fill"></i>
+        C1
+      </button>
+      <button class="filter-btn filter-c2" data-niveau="C2">
+        <i class="bi bi-circle-fill"></i>
+        C2
+      </button>
+    </div>
   </div>
 
+  <!-- Activities Section -->
+  <div class="activities-section">
   <% if @activities.any? %>
-    <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4 activities-grid">
+      <div class="section-header">
+        <h2><i class="bi bi-heart-fill text-danger"></i> Tes créations avec amour</h2>
+        <p>Chaque activité est une petite œuvre d'art pédagogique</p>
+      </div>
+      <div class="activities-grid">
       <% @activities.each do |activity| %>
-        <div class="col activity-card" data-niveau="<%= activity.nível %>">
-          <div class="card h-100">
+          <div class="activity-card-daisy" data-niveau="<%= activity.nível %>">
             <div class="card-header">
-              <h2 class="card-title">
-                <%= activity.título %>
-                <span class="badge nivel-badge" data-nivel="<%= activity.nível %>"><%= activity.nível %></span>
-              </h2>
+              <div class="level-badge level-<%= activity.nível.downcase %>">
+                <i class="bi bi-circle-fill level-icon"></i>
+                <%= activity.nível %>
+              </div>
+              <div class="activity-meta">
+                <i class="bi bi-heart-fill"></i>
+                <%= activity.created_at.strftime("%d/%m") %>
+              </div>
             </div>
+            
             <div class="card-body">
+              <h3 class="activity-title"><%= activity.título %></h3>
               <% if activity.texto.present? %>
-                <p class="card-text"><%= truncate(activity.texto, length: 100) %></p>
+                <p class="activity-description">
+                  <%= truncate(activity.texto, length: 100) %>
+                </p>
               <% end %>
+              
+              <div class="activity-stats">
+                <div class="stat">
+                  <i class="bi bi-question-circle-fill"></i>
+                  <% total_exercises = activity.questions.count + activity.fill_blanks.count + activity.sentence_orderings.count + activity.paragraph_orderings.count %>
+                  <span><%= total_exercises %> questions</span>
+                </div>
+                <div class="stat">
+                  <i class="bi bi-clock-fill"></i>
+                  <span>~<%= [5, total_exercises * 2].max %> min</span>
+                </div>
+              </div>
             </div>
+            
             <div class="card-footer">
-              <%= link_to "Voir", activity, class: "action-btn btn-voir" %>
-              <%= link_to "Modifier", edit_activity_path(activity), class: "action-btn btn-modifier" %>
-              <%= button_to "Supprimer", activity_path(activity), 
+              <%= link_to activity, class: "btn-action btn-voir-daisy" do %>
+                <i class="bi bi-eye-fill"></i>
+                Admirer
+              <% end %>
+              <%= link_to edit_activity_path(activity), class: "btn-action btn-modifier-daisy" do %>
+                <i class="bi bi-palette-fill"></i>
+                Retoucher
+              <% end %>
+              <%= button_to activity_path(activity), 
                     method: :delete, 
-                    data: { confirm: t('common.confirm_delete_activity') },
-                    class: "action-btn btn-supprimer" %>
-            </div>
+                                         data: { confirm: "Es-tu sûre de vouloir supprimer cette création?" },
+                    class: "btn-action btn-supprimer-daisy" do %>
+                <i class="bi bi-archive-fill"></i>
+                Archiver
+              <% end %>
           </div>
         </div>
       <% end %>
     </div>
   <% else %>
-    <div class="alert alert-info">
-      <p><%= t('common.no_activities') %></p>
-      <p><%= link_to t('common.create_activity'), new_activity_path, class: "btn nouvelle-activite-btn" %></p>
+      <div class="empty-state-daisy">
+        <div class="empty-icon">
+          <i class="bi bi-palette-fill"></i>
+        </div>
+        <h3>Ton atelier créatif t'attend!</h3>
+        <p>C'est le moment parfait pour créer ta première activité magique.</p>
+        <div class="empty-encouragement">
+                      <span>* Laisse libre cours à ton imagination *</span>
+        </div>
+        <%= link_to new_activity_path, class: "btn-create-first-daisy" do %>
+          <i class="bi bi-magic"></i>
+          Créer ma première œuvre
+                      <span class="btn-heart">♥</span>
+        <% end %>
     </div>
   <% end %>
+  </div>
 </div>
 
 <link href="https://fonts.googleapis.com/css2?family=Lora:wght@400;500;600&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css" rel="stylesheet">
 
 <style>
-  /* Reset e especificidade aumentada para títulos */
-  .activities-container {
-    padding: 2rem 0.5rem !important;
-    max-width: 100% !important;
-    margin: 0 auto !important;
-  }
-
-  .header-section {
-    display: grid !important;
-    grid-template-columns: 1fr auto 1fr !important;
-    align-items: center !important;
-    margin-bottom: 2rem !important;
-    padding: 0 1rem !important;
-  }
-
-  .activities-container .main-title {
-    font-family: 'Lora', serif !important;
-    font-size: 2.2rem !important;
-    font-weight: 600 !important;
-    color: #1E3D59 !important;
-    line-height: 1.2 !important;
-    margin: 0 !important;
-    text-align: center !important;
-  }
-
-  /* Filtros por nível */
-  .niveau-filters {
-    display: flex !important;
-    justify-content: center !important;
-    flex-wrap: wrap !important;
-    gap: 1rem !important;
-    margin-bottom: 3rem !important;
-    padding: 0 1rem !important;
-  }
-
-  .filter-btn {
-    font-family: 'Inter', sans-serif !important;
-    font-size: 0.95rem !important;
-    font-weight: 600 !important;
-    padding: 0.6rem 1.2rem !important;
-    border: 2px solid transparent !important;
-    border-radius: 25px !important;
-    background-color: #f8f9fa !important;
-    color: #6c757d !important;
-    cursor: pointer !important;
-    transition: all 0.3s ease !important;
-    letter-spacing: 0.5px !important;
-  }
-
-  .filter-btn:hover {
-    transform: translateY(-2px) !important;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1) !important;
-  }
-
-  .filter-btn.active {
-    color: white !important;
-    transform: translateY(-2px) !important;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15) !important;
-  }
-
-  /* Cores específicas dos filtros */
-  .filter-btn[data-niveau="tous"].active {
-    background-color: #1E3D59 !important;
-    border-color: #1E3D59 !important;
-  }
-
-  .filter-btn[data-niveau="A1"].active {
-    background-color: #4CAF50 !important;
-    border-color: #4CAF50 !important;
-  }
-
-  .filter-btn[data-niveau="A2"].active {
-    background-color: #2196F3 !important;
-    border-color: #2196F3 !important;
-  }
-
-  .filter-btn[data-niveau="B1"].active {
-    background-color: #FF9800 !important;
-    border-color: #FF9800 !important;
-  }
-
-  .filter-btn[data-niveau="B2"].active {
-    background-color: #9C27B0 !important;
-    border-color: #9C27B0 !important;
-  }
-
-  .filter-btn[data-niveau="C1"].active {
-    background-color: #F44336 !important;
-    border-color: #F44336 !important;
-  }
-
-  .filter-btn[data-niveau="C2"].active {
-    background-color: #607D8B !important;
-    border-color: #607D8B !important;
-  }
-
-  /* Animações para os cards */
-  .activity-card {
-    transition: all 0.4s ease !important;
-    opacity: 1 !important;
-    transform: scale(1) !important;
-  }
-
-  .activity-card.hidden {
-    opacity: 0 !important;
-    transform: scale(0.8) !important;
-    pointer-events: none !important;
-  }
-
-  .activities-grid {
-    transition: all 0.3s ease !important;
-  }
-
-  /* Botão Nova Atividade */
-  .activities-container .nouvelle-activite-btn {
-    font-size: 1rem !important;
-    padding: 0.6rem 1.5rem !important;
-    background-color: #1E3D59 !important;
-    border: none !important;
-    color: white !important;
-    border-radius: 6px !important;
-    text-decoration: none !important;
-    justify-self: end !important;
-    margin-right: 8rem !important;
-  }
-
-  .activities-container .nouvelle-activite-btn:hover {
-    background-color: #15304D !important;
-    text-decoration: none !important;
-  }
-
-  .activities-container .card .card-header {
-    background: none;
-    border-bottom: 1px solid rgba(30, 61, 89, 0.1);
-    padding: 1.5rem;
-  }
-
-  .activities-container .card .card-title {
-    font-family: 'Lora', serif !important;
-    font-size: 1.5rem !important;
-    font-weight: 600 !important;
-    color: #1E3D59 !important;
-    margin: 0 !important;
-    line-height: 1.3 !important;
-    display: flex;
-    align-items: center;
-  }
-
-  /* Texto do card */
-  .activities-container .card-text {
-    font-family: 'Inter', sans-serif !important;
-    font-size: 1rem !important;
-    line-height: 1.6 !important;
-    color: #2D3748 !important;
-    margin: 1rem 0 !important;
-  }
-
-  /* Badge de nível */
-  .activities-container .nivel-badge {
-    font-family: 'Inter', sans-serif !important;
-    font-size: 0.85rem !important;
-    font-weight: 500 !important;
-    padding: 0.35em 0.7em !important;
-    margin-left: 0.8rem !important;
-    border-radius: 4px !important;
-    color: white !important;
-    display: inline-flex !important;
-    align-items: center !important;
-  }
-
-  /* Botões de ação */
-  .activities-container .action-btn {
-    font-family: 'Inter', sans-serif !important;
-    font-size: 0.875rem !important;
-    padding: 0.4rem 0.8rem !important;
-    border-radius: 4px !important;
-    transition: all 0.2s ease !important;
-    margin: 0 !important;
-  }
-
-  .activities-container .card-footer {
-    background: none;
-    border-top: 1px solid rgba(30, 61, 89, 0.1);
-    padding: 1rem 1.5rem;
-    display: flex;
-    gap: 0.5rem;
-  }
-
-  /* Estilos específicos dos botões */
-  .activities-container .btn-voir {
-    background-color: #4A90E2 !important;
-    border: none !important;
-    color: white !important;
-    text-decoration: none !important;
-  }
-
-  .activities-container .btn-modifier {
-    background-color: #1E3D59 !important;
-    border: none !important;
-    color: white !important;
-    text-decoration: none !important;
-  }
-
-  .activities-container .btn-supprimer {
-    background-color: #CF4F5C !important;
-    border: none !important;
-    color: white !important;
-    text-decoration: none !important;
-  }
-
-  /* Hover states */
-  .activities-container .btn-voir:hover {
-    background-color: #357ABD !important;
-    text-decoration: none !important;
-  }
-
-  .activities-container .btn-modifier:hover {
-    background-color: #15304D !important;
-    text-decoration: none !important;
-  }
-
-  .activities-container .btn-supprimer:hover {
-    background-color: #B94450 !important;
-    text-decoration: none !important;
-  }
-
-  /* Card styles */
-  .activities-container .card {
-    border: none !important;
-    border-radius: 8px !important;
-    box-shadow: 0 4px 12px rgba(30, 61, 89, 0.08),
-                0 2px 4px rgba(30, 61, 89, 0.04) !important;
-    transition: all 0.3s ease !important;
-  }
-
-  .activities-container .card:hover {
-    transform: translateY(-3px);
-    box-shadow: 0 8px 24px rgba(30, 61, 89, 0.12),
-                0 4px 8px rgba(30, 61, 89, 0.08) !important;
-  }
-
-  /* Navbar styling com maior especificidade */
-  body .navbar.navbar-expand-lg {
-    background-color: #2B4F76 !important;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  }
-
-  body .navbar .navbar-brand {
-    color: white !important;
-    font-weight: 500;
-    font-size: 1.4rem;
-  }
-
-  body .navbar .nav-link {
-    color: rgba(255, 255, 255, 0.9) !important;
-    transition: all 0.2s ease;
-    margin: 0 10px;
-  }
-
-  body .navbar .nav-link:hover {
-    color: white !important;
-    transform: translateY(-1px);
-  }
-
-  body .navbar .nav-item.active .nav-link {
-    color: white !important;
-    font-weight: 500;
-  }
-
-  /* Estilo para o botão Nouvelle Activité */
-  .nouvelle-activite-btn {
-    background-color: #1E3D59;
-    border-color: #1E3D59;
-    color: white;
-    padding: 10px 30px;
-    font-size: 1.1rem;
-    transition: all 0.3s ease;
-  }
-  
-  .nouvelle-activite-btn:hover, 
-  .nouvelle-activite-btn:focus {
-    background-color: #2C5282;
-    border-color: #2C5282;
-    color: white;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    transform: translateY(-2px);
-  }
-  
-  /* Estilos para os botões de ação do card */
-  .btn-voir {
-    background-color: #4A90E2;
-    border-color: #4A90E2;
-    color: white;
-    transition: all 0.2s ease;
-  }
-  
-  .btn-voir:hover {
-    background-color: #357ABD;
-    border-color: #357ABD;
-    color: white;
-  }
-  
-  .btn-modifier {
-    background-color: white;
-    border: 2px solid #1E3D59;
-    color: #1E3D59;
-    transition: all 0.2s ease;
-  }
-  
-  .btn-modifier:hover {
-    background-color: #1E3D59;
-    color: white;
-  }
-  
-  .btn-supprimer {
-    background-color: #CF4F5C;
-    border-color: #CF4F5C;
-    color: white;
-    transition: all 0.2s ease;
-  }
-  
-  .btn-supprimer:hover {
-    background-color: #B94450;
-    border-color: #B94450;
-    color: white;
-  }
-
-  .card {
-    border: 1px solid #E9ECEF;
-    box-shadow: 0 2px 4px rgba(30, 61, 89, 0.05);
-    transition: all 0.3s ease;
-  }
-
-  .card:hover {
-    box-shadow: 0 4px 8px rgba(30, 61, 89, 0.1);
-  }
-
-  .card-header {
-    background-color: #F8F9FA;
-    border-bottom: 1px solid #E9ECEF;
-    color: #1E3D59;
-    font-weight: 500;
-  }
-
-  /* Fontes personalizadas */
-  .activity-title {
-    font-family: 'Lora', serif;
-    color: #1E3D59;
-    font-size: 2.8rem;
-    font-weight: 600;
-    margin-bottom: 1.5rem;
-    line-height: 1.2;
-  }
-
-  .card-header .activity-title {
-    font-size: 2.2rem;
-    margin-bottom: 0;
-    letter-spacing: -0.02em;
-    line-height: 1.3;
-  }
-
-  .card-text {
+  /* === DASHBOARD DA DAISY === */
+  .daisy-dashboard {
     font-family: 'Inter', sans-serif;
-    color: #2D3748;
-    font-size: 1.1rem;
-    line-height: 1.6;
-    margin-bottom: 1.2rem;
+    background: linear-gradient(135deg, #FFE4E1 0%, #FFF0F5 50%, #E8F4FD 100%);
+    min-height: 100vh;
+    padding: 2rem 1rem;
+    position: relative;
   }
 
-  /* Estilo papel para cards com sombra mais pronunciada */
-  .card {
-    background: #ffffff;
-    border: none;
-    border-radius: 12px;
-    box-shadow: 0 4px 12px rgba(30, 61, 89, 0.08),
-                0 2px 4px rgba(30, 61, 89, 0.04);
-    transition: all 0.3s ease;
-    margin-bottom: 0;
+  .daisy-dashboard::before {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-image: 
+      radial-gradient(circle at 20% 80%, rgba(255, 192, 203, 0.1) 0%, transparent 50%),
+      radial-gradient(circle at 80% 20%, rgba(255, 182, 193, 0.1) 0%, transparent 50%),
+      radial-gradient(circle at 40% 40%, rgba(255, 228, 225, 0.1) 0%, transparent 50%);
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .daisy-dashboard > * {
+    position: relative;
+    z-index: 1;
+  }
+
+  /* Solução simples: colocar dashboard para trás quando modal aberto */
+  body.modal-open .daisy-dashboard {
+    z-index: -1 !important;
+    position: relative !important;
+  }
+
+  /* SOLUÇÃO ESPECÍFICA PARA DESKTOP - onde o problema ocorre */
+  @media (min-width: 992px) {
+    /* Forçar dashboard para trás no desktop quando modal aberto */
+    body.modal-open .daisy-dashboard {
+      z-index: -100 !important;
+      position: relative !important;
+      transform: translateZ(-1px) !important;
+    }
+    
+    /* Forçar todos os elementos filhos da dashboard para trás também */
+    body.modal-open .daisy-dashboard * {
+      z-index: inherit !important;
+    }
+    
+    /* Garantir que nenhum elemento da dashboard interfira */
+    body.modal-open .hero-section,
+    body.modal-open .daisy-stats-section,
+    body.modal-open .filters-section,
+    body.modal-open .activities-section {
+      z-index: -100 !important;
+      position: relative !important;
+    }
+  }
+
+  /* Remover qualquer isolamento que possa interferir */
+  .daisy-dashboard {
+    isolation: auto !important;
+  }
+
+  /* === HERO SECTION PERSONALIZADO === */
+  .hero-section {
+    margin-bottom: 2rem;
+  }
+
+  .daisy-welcome-card {
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.95) 0%, rgba(255, 240, 245, 0.95) 100%);
+    border-radius: 24px;
+    padding: 2.5rem;
+    box-shadow: 0 12px 40px rgba(255, 105, 180, 0.15);
+    border: 2px solid rgba(255, 192, 203, 0.3);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 2rem;
+    backdrop-filter: blur(10px);
     position: relative;
     overflow: hidden;
   }
 
-  .card:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 8px 24px rgba(30, 61, 89, 0.12),
-                0 4px 8px rgba(30, 61, 89, 0.08);
+  .daisy-welcome-card::before {
+    content: '✿';
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    font-size: 2rem;
+    opacity: 0.3;
+    animation: float 3s ease-in-out infinite;
+    color: #FF69B4;
   }
 
-  .card::before {
+  .daisy-welcome-card::after {
+    content: '*';
+    position: absolute;
+    bottom: 1rem;
+    left: 1rem;
+    font-size: 1.5rem;
+    opacity: 0.4;
+    animation: float 3s ease-in-out infinite reverse;
+    color: #FFB6C1;
+  }
+
+  @keyframes float {
+    0%, 100% { transform: translateY(0px); }
+    50% { transform: translateY(-10px); }
+  }
+
+  .avatar-section {
+    display: flex;
+    align-items: center;
+    gap: 2rem;
+  }
+
+  .daisy-avatar-hero {
+    width: 90px;
+    height: 90px;
+    background: linear-gradient(135deg, #FF69B4 0%, #FFB6C1 100%);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    box-shadow: 0 8px 24px rgba(255, 105, 180, 0.4);
+    border: 4px solid rgba(255, 255, 255, 0.8);
+  }
+
+  .daisy-initial-hero {
+    font-family: 'Lora', serif;
+    font-weight: 700;
+    color: white;
+    font-size: 2rem;
+    text-shadow: 0 2px 4px rgba(0,0,0,0.2);
+  }
+
+  .daisy-sparkles {
+    position: absolute;
+    top: -5px;
+    right: -5px;
+    font-size: 1.2rem;
+    animation: sparkle 2s ease-in-out infinite;
+  }
+
+  @keyframes sparkle {
+    0%, 100% { transform: scale(1) rotate(0deg); opacity: 1; }
+    50% { transform: scale(1.2) rotate(180deg); opacity: 0.8; }
+  }
+
+  .welcome-text h1 {
+    font-family: 'Lora', serif;
+    color: #1E3D59;
+    margin: 0 0 0.5rem;
+    font-size: 2.2rem;
+    font-weight: 600;
+    background: linear-gradient(135deg, #1E3D59 0%, #FF69B4 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .welcome-text p {
+    color: #718096;
+    margin: 0 0 1rem;
+    font-size: 1.1rem;
+    font-style: italic;
+  }
+
+  .daisy-mood-indicator {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    background: rgba(255, 105, 180, 0.1);
+    padding: 0.5rem 1rem;
+    border-radius: 20px;
+    border: 1px solid rgba(255, 105, 180, 0.2);
+  }
+
+  .mood-emoji {
+    font-size: 1.2rem;
+    animation: pulse 2s ease-in-out infinite;
+  }
+
+  @keyframes pulse {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.1); }
+  }
+
+  .mood-text {
+    font-size: 0.9rem;
+    color: #FF69B4;
+    font-weight: 600;
+  }
+
+  .btn-new-activity-daisy {
+    background: linear-gradient(135deg, #FF69B4 0%, #FFB6C1 100%);
+    color: white;
+    padding: 1rem 2rem;
+    border-radius: 20px;
+    text-decoration: none;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    transition: all 0.3s ease;
+    box-shadow: 0 6px 20px rgba(255, 105, 180, 0.4);
+    position: relative;
+    overflow: hidden;
+    border: 2px solid rgba(255, 255, 255, 0.3);
+  }
+
+  .btn-new-activity-daisy:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 10px 30px rgba(255, 105, 180, 0.5);
+    color: white;
+    text-decoration: none;
+  }
+
+  .action-buttons {
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+    align-items: center;
+  }
+
+  .btn-invite-student-daisy {
+    background: linear-gradient(135deg, #9F7AEA 0%, #B794F6 100%);
+    color: white;
+    padding: 1rem 2rem;
+    border-radius: 20px;
+    text-decoration: none;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    transition: all 0.3s ease;
+    box-shadow: 0 6px 20px rgba(159, 122, 234, 0.4);
+    position: relative;
+    overflow: hidden;
+    border: 2px solid rgba(255, 255, 255, 0.3);
+  }
+
+  .btn-invite-student-daisy:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 10px 30px rgba(159, 122, 234, 0.5);
+    color: white;
+    text-decoration: none;
+  }
+
+  .btn-sparkle {
+    position: absolute;
+    top: 5px;
+    right: 10px;
+    font-size: 0.8rem;
+    animation: sparkle 1.5s ease-in-out infinite;
+  }
+
+  /* === ESTATÍSTICAS FOFAS === */
+  .daisy-stats-section {
+    margin-bottom: 2rem;
+  }
+
+  .stats-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1.5rem;
+  }
+
+  .stat-card {
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.9) 0%, rgba(255, 240, 245, 0.9) 100%);
+    border-radius: 20px;
+    padding: 1.5rem;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    box-shadow: 0 8px 24px rgba(255, 105, 180, 0.1);
+    border: 2px solid rgba(255, 192, 203, 0.2);
+    transition: all 0.3s ease;
+    backdrop-filter: blur(10px);
+  }
+
+  .stat-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 12px 32px rgba(255, 105, 180, 0.2);
+  }
+
+  .stat-icon {
+    font-size: 2rem;
+    width: 60px;
+    height: 60px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg, #FFE4E1 0%, #FFC0CB 100%);
+    border-radius: 50%;
+    box-shadow: 0 4px 12px rgba(255, 105, 180, 0.2);
+    color: #FF69B4;
+  }
+
+  .stat-content {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .stat-number {
+    font-family: 'Lora', serif;
+    font-size: 2rem;
+    font-weight: 700;
+    color: #1E3D59;
+    line-height: 1;
+  }
+
+  .stat-label {
+    font-size: 0.9rem;
+    color: #718096;
+    font-weight: 500;
+    text-transform: lowercase;
+  }
+
+  /* === FILTROS FOFOS === */
+  .filters-section {
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.95) 0%, rgba(255, 240, 245, 0.95) 100%);
+    border-radius: 20px;
+    padding: 2rem;
+    margin-bottom: 2rem;
+    box-shadow: 0 8px 24px rgba(255, 105, 180, 0.1);
+    border: 2px solid rgba(255, 192, 203, 0.2);
+    backdrop-filter: blur(10px);
+  }
+
+  .filter-header {
+    text-align: center;
+    margin-bottom: 1.5rem;
+  }
+
+  .filter-header h3 {
+    font-family: 'Lora', serif;
+    color: #1E3D59;
+    font-size: 1.5rem;
+    margin: 0 0 0.5rem;
+    font-weight: 600;
+  }
+
+  .filter-header p {
+    color: #718096;
+    margin: 0;
+    font-style: italic;
+  }
+
+  .niveau-filters {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 1rem;
+  }
+
+  .filter-btn {
+    font-family: 'Inter', sans-serif;
+    font-size: 0.9rem;
+    font-weight: 600;
+    padding: 0.75rem 1.5rem;
+    border: 2px solid rgba(255, 192, 203, 0.3);
+    border-radius: 25px;
+    background: rgba(255, 255, 255, 0.8);
+    color: #718096;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    backdrop-filter: blur(5px);
+  }
+
+  .filter-btn:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 6px 16px rgba(255, 105, 180, 0.2);
+    border-color: rgba(255, 105, 180, 0.5);
+  }
+
+  .filter-btn i {
+    font-size: 1rem;
+  }
+
+  .filter-btn.active {
+    transform: translateY(-3px);
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2);
+    color: white;
+  }
+
+  /* === CORES DOS FILTROS POR NÍVEL (CONSISTENTES COM STUDENT_ACTIVITIES) === */
+  .filter-a1 {
+    border-color: rgba(104, 211, 145, 0.3) !important;
+  }
+  .filter-a1 i {
+    color: #68D391 !important;
+  }
+  .filter-a1:hover {
+    background: linear-gradient(135deg, #68D391 0%, #48BB78 100%) !important;
+    color: white !important;
+    border-color: #68D391 !important;
+  }
+  .filter-a1:hover i {
+    color: white !important;
+  }
+
+  .filter-a2 {
+    border-color: rgba(79, 209, 199, 0.3) !important;
+  }
+  .filter-a2 i {
+    color: #4FD1C7 !important;
+  }
+  .filter-a2:hover {
+    background: linear-gradient(135deg, #4FD1C7 0%, #38B2AC 100%) !important;
+    color: white !important;
+    border-color: #4FD1C7 !important;
+  }
+  .filter-a2:hover i {
+    color: white !important;
+  }
+
+  .filter-b1 {
+    border-color: rgba(99, 179, 237, 0.3) !important;
+  }
+  .filter-b1 i {
+    color: #63B3ED !important;
+  }
+  .filter-b1:hover {
+    background: linear-gradient(135deg, #63B3ED 0%, #4299E1 100%) !important;
+    color: white !important;
+    border-color: #63B3ED !important;
+  }
+  .filter-b1:hover i {
+    color: white !important;
+  }
+
+  .filter-b2 {
+    border-color: rgba(124, 58, 237, 0.3) !important;
+  }
+  .filter-b2 i {
+    color: #7C3AED !important;
+  }
+  .filter-b2:hover {
+    background: linear-gradient(135deg, #7C3AED 0%, #6B46C1 100%) !important;
+    color: white !important;
+    border-color: #7C3AED !important;
+  }
+  .filter-b2:hover i {
+    color: white !important;
+  }
+
+  .filter-c1 {
+    border-color: rgba(245, 101, 101, 0.3) !important;
+  }
+  .filter-c1 i {
+    color: #F56565 !important;
+  }
+  .filter-c1:hover {
+    background: linear-gradient(135deg, #F56565 0%, #E53E3E 100%) !important;
+    color: white !important;
+    border-color: #F56565 !important;
+  }
+  .filter-c1:hover i {
+    color: white !important;
+  }
+
+  .filter-c2 {
+    border-color: rgba(237, 137, 54, 0.3) !important;
+  }
+  .filter-c2 i {
+    color: #ED8936 !important;
+  }
+  .filter-c2:hover {
+    background: linear-gradient(135deg, #ED8936 0%, #DD6B20 100%) !important;
+    color: white !important;
+    border-color: #ED8936 !important;
+  }
+  .filter-c2:hover i {
+    color: white !important;
+  }
+
+  /* === ESTADOS ATIVOS DOS FILTROS === */
+  .filter-a1.active {
+    background: linear-gradient(135deg, #68D391 0%, #48BB78 100%) !important;
+    border-color: #68D391 !important;
+  }
+  .filter-a1.active i {
+    color: white !important;
+  }
+
+  .filter-a2.active {
+    background: linear-gradient(135deg, #4FD1C7 0%, #38B2AC 100%) !important;
+    border-color: #4FD1C7 !important;
+  }
+  .filter-a2.active i {
+    color: white !important;
+  }
+
+  .filter-b1.active {
+    background: linear-gradient(135deg, #63B3ED 0%, #4299E1 100%) !important;
+    border-color: #63B3ED !important;
+  }
+  .filter-b1.active i {
+    color: white !important;
+  }
+
+  .filter-b2.active {
+    background: linear-gradient(135deg, #7C3AED 0%, #6B46C1 100%) !important;
+    border-color: #7C3AED !important;
+  }
+  .filter-b2.active i {
+    color: white !important;
+  }
+
+  .filter-c1.active {
+    background: linear-gradient(135deg, #F56565 0%, #E53E3E 100%) !important;
+    border-color: #F56565 !important;
+  }
+  .filter-c1.active i {
+    color: white !important;
+  }
+
+  .filter-c2.active {
+    background: linear-gradient(135deg, #ED8936 0%, #DD6B20 100%) !important;
+    border-color: #ED8936 !important;
+  }
+  .filter-c2.active i {
+    color: white !important;
+  }
+
+  /* Botão "Tous mes niveaux" mantém o estilo rosa quando ativo */
+  .filter-btn[data-niveau="tous"].active {
+    background: linear-gradient(135deg, #4A90E2 0%, #357ABD 100%) !important;
+    border-color: #4A90E2 !important;
+    color: white !important;
+  }
+  .filter-btn[data-niveau="tous"].active i {
+    color: white !important;
+  }
+
+  /* === SEÇÃO DE ATIVIDADES === */
+  .activities-section {
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.95) 0%, rgba(255, 240, 245, 0.95) 100%);
+    border-radius: 24px;
+    padding: 2.5rem;
+    box-shadow: 0 12px 40px rgba(255, 105, 180, 0.15);
+    border: 2px solid rgba(255, 192, 203, 0.3);
+    backdrop-filter: blur(10px);
+  }
+
+  .section-header {
+    text-align: center;
+    margin-bottom: 2rem;
+  }
+
+  .section-header h2 {
+    font-family: 'Lora', serif;
+    color: #1E3D59;
+    font-size: 2rem;
+    margin: 0 0 0.5rem;
+    font-weight: 600;
+  }
+
+  .section-header p {
+    color: #718096;
+    font-style: italic;
+    margin: 0;
+  }
+
+  .activities-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+    gap: 2rem;
+  }
+
+  .activity-card-daisy {
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.95) 0%, rgba(255, 248, 250, 0.95) 100%);
+    border: 2px solid rgba(255, 192, 203, 0.2);
+    border-radius: 20px;
+    overflow: hidden;
+    transition: all 0.3s ease;
+    backdrop-filter: blur(5px);
+    position: relative;
+  }
+
+  .activity-card-daisy::before {
     content: '';
     position: absolute;
     top: 0;
     left: 0;
     right: 0;
-    height: 5px;
-    background: linear-gradient(to right, #1E3D59, #4A90E2);
+    height: 4px;
+    background: linear-gradient(90deg, #FF69B4 0%, #FFB6C1 50%, #FFC0CB 100%);
+  }
+
+  .activity-card-daisy:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 16px 40px rgba(255, 105, 180, 0.2);
+    border-color: rgba(255, 105, 180, 0.4);
+  }
+
+  .activity-card-daisy.hidden {
+    display: none !important;
     opacity: 0;
-    transition: opacity 0.3s ease;
+    transform: scale(0.8);
+    pointer-events: none;
   }
 
-  .card:hover::before {
-    opacity: 1;
-  }
-
-  .card-header {
-    background: none;
-    border-bottom: 1px solid rgba(30, 61, 89, 0.1);
-    padding: 1.8rem 2rem 1.5rem;
-  }
-
-  .card-body {
-    padding: 1.8rem 2rem;
-    background: linear-gradient(to bottom, #ffffff, #f8f9fa);
-  }
-
-  /* Badges de nível com fonte maior */
-  .nivel-badge {
-    font-family: 'Inter', sans-serif;
-    font-weight: 600;
-    padding: 0.4em 0.8em;
-    border-radius: 6px;
-    font-size: 1rem;
-    letter-spacing: 0.5px;
-    margin-left: 15px;
-    color: white;
-    display: inline-block;
-    vertical-align: middle;
-    transform: translateY(-4px);
-  }
-
-  .nivel-badge[data-nivel='A1'] { background-color: #4CAF50; }
-  .nivel-badge[data-nivel='A2'] { background-color: #2196F3; }
-  .nivel-badge[data-nivel='B1'] { background-color: #FF9800; }
-  .nivel-badge[data-nivel='B2'] { background-color: #9C27B0; }
-  .nivel-badge[data-nivel='C1'] { background-color: #F44336; }
-  .nivel-badge[data-nivel='C2'] { background-color: #607D8B; }
-
-  /* Botões maiores e mais espaçados */
-  .card-footer {
-    background: none;
-    border-top: 1px solid rgba(30, 61, 89, 0.1);
-    padding: 1.5rem 2rem;
+  .activity-card-daisy .card-header {
+    background: linear-gradient(135deg, rgba(255, 240, 245, 0.8) 0%, rgba(255, 228, 225, 0.8) 100%);
+    padding: 1.25rem;
     display: flex;
-    justify-content: flex-start;
-    gap: 0.8rem;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid rgba(255, 192, 203, 0.2);
   }
 
-  .btn {
-    font-family: 'Inter', sans-serif;
-    font-weight: 500;
-    font-size: 0.95rem;
+  .level-badge {
     padding: 0.5rem 1rem;
-    border-radius: 6px;
-    transition: all 0.2s ease;
-  }
-
-  /* Botão Nova Atividade maior */
-  .nouvelle-activite-btn {
-    background-color: #1E3D59;
-    color: white;
-    padding: 0.8rem 2rem;
-    font-size: 1.1rem;
+    border-radius: 25px;
+    font-size: 0.85rem;
     font-weight: 600;
-    letter-spacing: 0.5px;
-    margin-bottom: 3rem;
-    border-radius: 8px;
+    color: white;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
   }
 
-  .nouvelle-activite-btn:hover {
-    background-color: #15304D;
-    transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(30, 61, 89, 0.15);
+  .level-icon {
+    font-size: 0.8rem;
   }
 
-  /* Ajustar o grid dos cards */
-  .row.row-cols-1.row-cols-md-2.row-cols-lg-3 {
-    margin: 0 !important;
+  /* === CORES DOS BADGES DE NÍVEL (CONSISTENTES COM STUDENT_ACTIVITIES) === */
+  .level-badge.level-a1 { background: linear-gradient(135deg, #68D391 0%, #48BB78 100%); }
+  .level-badge.level-a2 { background: linear-gradient(135deg, #4FD1C7 0%, #38B2AC 100%); }
+  .level-badge.level-b1 { background: linear-gradient(135deg, #63B3ED 0%, #4299E1 100%); }
+  .level-badge.level-b2 { background: linear-gradient(135deg, #7C3AED 0%, #6B46C1 100%); }
+  .level-badge.level-c1 { background: linear-gradient(135deg, #F56565 0%, #E53E3E 100%); }
+  .level-badge.level-c2 { background: linear-gradient(135deg, #ED8936 0%, #DD6B20 100%); }
+
+  .activity-meta {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: #718096;
+    font-size: 0.85rem;
+    font-weight: 500;
   }
 
-  .row.row-cols-1.row-cols-md-2.row-cols-lg-3 .col {
-    padding: 0.75rem !important;
+  .activity-meta i {
+    color: #FF69B4;
+    font-size: 1rem;
   }
 
-  /* Media queries para responsividade */
-  @media (min-width: 768px) {
-    .activities-container {
-      padding: 2rem 1rem !important;
-    }
-    
-    .header-section {
-      padding: 0 2rem !important;
-    }
-
-    .niveau-filters {
-      gap: 1.5rem !important;
-    }
+  .activity-card-daisy .card-body {
+    padding: 2rem;
   }
 
-  @media (min-width: 1200px) {
-    .activities-container {
-      padding: 2rem 2rem !important;
-      max-width: 1400px !important;
-      margin: 0 auto !important;
-    }
-    
-    .header-section {
-      padding: 0 !important;
-    }
-  }
-
-  /* Responsividade dos filtros */
-  @media (max-width: 767px) {
-    .niveau-filters {
-      gap: 0.5rem !important;
-    }
-    
-    .filter-btn {
-      font-size: 0.8rem !important;
-      padding: 0.5rem 0.8rem !important;
-    }
-  }
-
-  /* Mensagem sem atividades */
-  .alert-info {
-    background-color: #EDF2F7;
-    border: none;
-    border-radius: 12px;
+  .activity-title {
+    font-family: 'Lora', serif;
     color: #1E3D59;
-    padding: 2.5rem;
+    font-size: 1.4rem;
+    margin: 0 0 1rem;
+    font-weight: 600;
+    line-height: 1.3;
+  }
+
+  .activity-description {
+    color: #4A5568;
+    line-height: 1.6;
+    margin: 0 0 1.5rem;
+    font-size: 0.95rem;
+  }
+
+  .activity-stats {
+    display: flex;
+    gap: 1.5rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .activity-stats .stat {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: #718096;
+    font-size: 0.85rem;
+    font-weight: 500;
+  }
+
+  .activity-stats .stat i {
+    color: #FF69B4;
+    font-size: 1rem;
+  }
+
+  .activity-card-daisy .card-footer {
+    background: linear-gradient(135deg, rgba(255, 240, 245, 0.6) 0%, rgba(255, 228, 225, 0.6) 100%);
+    padding: 1.25rem 2rem;
+    border-top: 1px solid rgba(255, 192, 203, 0.2);
+    display: flex;
+    gap: 0.75rem;
+  }
+
+  .btn-action {
+    flex: 1;
+    padding: 0.75rem 1rem;
+    border-radius: 12px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    transition: all 0.3s ease;
+    border: none;
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .btn-voir-daisy {
+    background: linear-gradient(135deg, #4A90E2 0%, #357ABD 100%);
+    color: white;
+    box-shadow: 0 4px 12px rgba(74, 144, 226, 0.3);
+  }
+
+  .btn-voir-daisy:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(74, 144, 226, 0.4);
+    color: white;
+    text-decoration: none;
+  }
+
+  .btn-modifier-daisy {
+    background: linear-gradient(135deg, #FF69B4 0%, #FFB6C1 100%);
+    color: white;
+    box-shadow: 0 4px 12px rgba(255, 105, 180, 0.3);
+  }
+
+  .btn-modifier-daisy:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(255, 105, 180, 0.4);
+    color: white;
+    text-decoration: none;
+  }
+
+  .btn-supprimer-daisy {
+    background: linear-gradient(135deg, #A0AEC0 0%, #718096 100%);
+    color: white;
+    box-shadow: 0 4px 12px rgba(160, 174, 192, 0.3);
+  }
+
+  .btn-supprimer-daisy:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(160, 174, 192, 0.4);
+    color: white;
+    text-decoration: none;
+  }
+
+  /* === ESTADO VAZIO FOFO === */
+  .empty-state-daisy {
     text-align: center;
-    font-family: 'Inter', sans-serif;
-    font-size: 1.2rem;
+    padding: 4rem 2rem;
+  }
+
+  .empty-icon {
+    width: 140px;
+    height: 140px;
+    margin: 0 auto 2rem;
+    background: linear-gradient(135deg, #FFE4E1 0%, #FFC0CB 100%);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 4rem;
+    box-shadow: 0 8px 24px rgba(255, 105, 180, 0.2);
+    border: 4px solid rgba(255, 255, 255, 0.8);
+    position: relative;
+  }
+
+  .empty-icon i {
+    animation: bounce 2s ease-in-out infinite;
+    color: #FF69B4;
+    font-size: 4rem;
+  }
+
+  @keyframes bounce {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-10px); }
+  }
+
+  .empty-state-daisy h3 {
+    font-family: 'Lora', serif;
+    color: #1E3D59;
+    font-size: 1.8rem;
+    margin: 0 0 1rem;
+    font-weight: 600;
+  }
+
+  .empty-state-daisy p {
+    color: #718096;
+    margin: 0 0 1.5rem;
+    font-size: 1.1rem;
+    line-height: 1.5;
+  }
+
+  .empty-encouragement {
+    background: linear-gradient(135deg, rgba(255, 105, 180, 0.1) 0%, rgba(255, 182, 193, 0.1) 100%);
+    padding: 1rem 2rem;
+    border-radius: 20px;
+    margin: 0 0 2rem;
+    border: 1px solid rgba(255, 105, 180, 0.2);
+    color: #FF69B4;
+    font-weight: 600;
+    font-style: italic;
+  }
+
+  .btn-create-first-daisy {
+    background: linear-gradient(135deg, #FF69B4 0%, #FFB6C1 100%);
+    color: white;
+    padding: 1rem 2rem;
+    border-radius: 20px;
+    text-decoration: none;
+    font-weight: 600;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.75rem;
+    transition: all 0.3s ease;
+    box-shadow: 0 6px 20px rgba(255, 105, 180, 0.4);
+    position: relative;
+    border: 2px solid rgba(255, 255, 255, 0.3);
+  }
+
+  .btn-create-first-daisy:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 10px 30px rgba(255, 105, 180, 0.5);
+    color: white;
+    text-decoration: none;
+  }
+
+  .btn-heart {
+    position: absolute;
+    top: -5px;
+    right: -5px;
+    font-size: 1rem;
+    animation: pulse 2s ease-in-out infinite;
+  }
+
+  /* === RESPONSIVIDADE === */
+  @media (max-width: 768px) {
+    .daisy-welcome-card {
+      flex-direction: column;
+      text-align: center;
+      padding: 2rem;
+    }
+
+    .avatar-section {
+      flex-direction: column;
+      gap: 1.5rem;
+    }
+
+    .action-buttons {
+      flex-direction: column;
+      width: 100%;
+      gap: 0.75rem;
+    }
+
+    .btn-new-activity-daisy,
+    .btn-invite-student-daisy {
+      width: 100%;
+      justify-content: center;
+    }
+
+    .activities-grid {
+      grid-template-columns: 1fr;
+    }
+
+    .stats-container {
+      grid-template-columns: 1fr;
+    }
+
+    .niveau-filters {
+      justify-content: center;
+    }
+
+    .filter-btn {
+      font-size: 0.8rem;
+      padding: 0.6rem 1.2rem;
+    }
+
+    .welcome-text h1 {
+      font-size: 1.8rem;
+    }
+
+    .daisy-dashboard {
+      padding: 1rem 0.5rem;
+    }
+  }
+
+  @media (max-width: 480px) {
+    .activity-card-daisy .card-footer {
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+
+    .btn-action {
+      padding: 0.6rem 0.8rem;
+      font-size: 0.8rem;
+    }
   }
 </style>
 
 <script>
   document.addEventListener('DOMContentLoaded', function() {
-    // Manipulador dos filtros de nível
     const filterButtons = document.querySelectorAll('.filter-btn');
-    const activityCards = document.querySelectorAll('.activity-card');
+    const activityCards = document.querySelectorAll('.activity-card-daisy');
+
+    console.log('Filter buttons found:', filterButtons.length);
+    console.log('Activity cards found:', activityCards.length);
 
     filterButtons.forEach(button => {
       button.addEventListener('click', function() {
-        const targetNiveau = this.getAttribute('data-niveau');
+        console.log('Filter clicked:', this.getAttribute('data-niveau'));
         
-        // Remove active de todos os botões
+        // Remove active class from all buttons
         filterButtons.forEach(btn => btn.classList.remove('active'));
         
-        // Adiciona active ao botão clicado
+        // Add active class to clicked button
         this.classList.add('active');
         
-        // Filtra as atividades com animação
+        const selectedLevel = this.getAttribute('data-niveau');
+        
+        // Filter activities with smooth animation
         activityCards.forEach(card => {
-          const cardNiveau = card.getAttribute('data-niveau');
+          const cardLevel = card.getAttribute('data-niveau');
+          console.log('Card level:', cardLevel, 'Selected:', selectedLevel);
           
-          if (targetNiveau === 'tous' || cardNiveau === targetNiveau) {
-            // Mostra o card
+          if (selectedLevel === 'tous' || cardLevel === selectedLevel) {
             card.classList.remove('hidden');
-            setTimeout(() => {
               card.style.display = 'block';
-            }, 50);
           } else {
-            // Esconde o card
             card.classList.add('hidden');
-            setTimeout(() => {
-              if (card.classList.contains('hidden')) {
                 card.style.display = 'none';
-              }
-            }, 400);
           }
         });
       });
     });
 
-    // Adiciona manipuladores para botões de exclusão
-    const deleteButtons = document.querySelectorAll('button[data-confirm]');
-    
-    deleteButtons.forEach(button => {
-      button.addEventListener('click', function(event) {
-        const confirmMessage = this.getAttribute('data-confirm');
-        if (!confirmMessage) return true;
-        
-        // Interrompe o clique no botão para mostrar a confirmação
-        event.preventDefault();
-        event.stopPropagation();
-        
-        // Mostra o diálogo de confirmação
-        if (confirm(confirmMessage)) {
-          // Se confirmado, encontra o formulário pai e o submete
-          this.closest('form').submit();
+    // Add hover effects
+    activityCards.forEach(card => {
+      card.addEventListener('mouseenter', function() {
+        if (!this.classList.contains('hidden')) {
+          this.style.transform = 'translateY(-8px) scale(1.02)';
         }
       });
-    });
-    
-    // Aplicar cores aos badges de nível
-    const nivelBadges = document.querySelectorAll('.nivel-badge');
-    
-    // Mapear níveis para cores distintas com bom contraste
-    const nivelColors = {
-      'A1': '#4CAF50',  // Verde
-      'A2': '#2196F3',  // Azul
-      'B1': '#FF9800',  // Laranja
-      'B2': '#9C27B0',  // Roxo
-      'C1': '#F44336',  // Vermelho
-      'C2': '#607D8B'   // Azul acinzentado
-    };
-    
-    nivelBadges.forEach(function(badge) {
-      const nivel = badge.getAttribute('data-nivel');
-      if (nivelColors[nivel]) {
-        badge.style.backgroundColor = nivelColors[nivel];
-        badge.style.color = '#ffffff';
-        badge.style.padding = '0.35em 0.65em';
-        badge.style.fontWeight = '600';
-        badge.style.boxShadow = '0 1px 3px rgba(0,0,0,0.2)';
-        // Adicionar borda sutil para melhorar a definição
-        badge.style.border = '1px solid rgba(255,255,255,0.1)';
-      } else {
-        badge.style.backgroundColor = '#607D8B'; // Cor padrão (azul acinzentado)
-        badge.style.color = '#ffffff';
-      }
+      
+      card.addEventListener('mouseleave', function() {
+        if (!this.classList.contains('hidden')) {
+          this.style.transform = 'translateY(0) scale(1)';
+        }
+      });
     });
   });
 </script>
