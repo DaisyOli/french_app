@@ -2,7 +2,7 @@
 
 one:
   título: "French Basics"
-  nível: "Débutant"
+  nível: "A1"
   texto: "Learn basic French vocabulary"
   video_url: "https://www.youtube.com/watch?v=example1"
   imagem_url: "https://example.com/image1.jpg"
@@ -10,7 +10,7 @@ one:
 
 two:
   título: "Advanced French Grammar"
-  nível: "Avancé"
+  nível: "C2"
   texto: "Master French grammar rules"
   video_url: "https://www.youtube.com/watch?v=example2"
   imagem_url: "https://example.com/image2.jpg"

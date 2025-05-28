@@ -5,7 +5,7 @@ class ActivityTest < ActiveSupport::TestCase
     @user = users(:one)  # Usando fixture existente
     @activity = Activity.new(
       título: "Test Activity",
-      nível: "Débutant",
+      nível: "A1",
       user: @user
     )
   end
@@ -42,6 +42,14 @@ class ActivityTest < ActiveSupport::TestCase
     @activity.nível = "Invalid"
     assert_not @activity.valid?
     assert_includes @activity.errors[:nível], "n'est pas inclus(e) dans la liste"
+  end
+
+  test "should accept all valid níveis" do
+    valid_niveis = %w[A1 A2 B1 B2 C1 C2]
+    valid_niveis.each do |nivel|
+      @activity.nível = nivel
+      assert @activity.valid?, "#{nivel} should be a valid nível"
+    end
   end
 
   test "should require user" do

@@ -39,7 +39,7 @@ class ActivitiesControllerTest < ActionDispatch::IntegrationTest
       post activities_path, params: { 
         activity: { 
           título: "New Test Activity", 
-          nível: "Débutant",
+          nível: "A1",
           texto: "Test content"
         } 
       }
@@ -55,7 +55,7 @@ class ActivitiesControllerTest < ActionDispatch::IntegrationTest
       post activities_path, params: { 
         activity: { 
           título: "", # Invalid: empty title
-          nível: "Débutant"
+          nível: "A1"
         } 
       }
     end
@@ -75,14 +75,14 @@ class ActivitiesControllerTest < ActionDispatch::IntegrationTest
     patch activity_path(@activity), params: { 
       activity: { 
         título: "Updated Title",
-        nível: "Intermédiaire"
+        nível: "B1"
       } 
     }
     
     assert_redirected_to activity_path(@activity)
     @activity.reload
     assert_equal "Updated Title", @activity.título
-    assert_equal "Intermédiaire", @activity.nível
+    assert_equal "B1", @activity.nível
   end
 
   test "should destroy activity when authenticated as user" do

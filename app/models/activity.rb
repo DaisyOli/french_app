@@ -10,7 +10,7 @@ class Activity < ApplicationRecord
   has_many :completed_activities, dependent: :destroy
 
   validates :título, presence: true, length: { minimum: 3, maximum: 100 }
-  validates :nível, presence: true, inclusion: { in: %w[Débutant Intermédiaire Avancé] }
+  validates :nível, presence: true, inclusion: { in: %w[A1 A2 B1 B2 C1 C2] }
   validates :user, presence: true
   
   # Validações condicionais para URLs
