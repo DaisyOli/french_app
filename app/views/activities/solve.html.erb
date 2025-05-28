@@ -128,7 +128,7 @@
               <span>Exercice de lacunes <%= activity_elements.select { |e| e[:type] == 'fill_blank' }.index { |e| e[:content] == fill_blank } + 1 %></span>
             </div>
             <div class="card-body">
-              <div class="fill-blank-text">
+              <div class="fill-blank-text preserve-format">
                 <%= fill_blank.text_with_inputs("fill_blank").html_safe %>
               </div>
             </div>
