@@ -6,6 +6,7 @@ class Student < ApplicationRecord
 
   has_many :completed_activities, dependent: :destroy
   has_many :completed_activity_records, through: :completed_activities, source: :activity
+  has_many :activity_ratings, dependent: :destroy
 
   # Atualizar streak após completar uma atividade
   def update_streak!

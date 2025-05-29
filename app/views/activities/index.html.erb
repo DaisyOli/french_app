@@ -52,12 +52,17 @@
           <span class="stat-label">questions</span>
         </div>
       </div>
-      <div class="stat-card">
+      <div class="stat-card stat-card-clickable" onclick="toggleRatingsModal()" style="cursor: pointer;">
         <div class="stat-icon"><i class="bi bi-star-fill"></i></div>
         <div class="stat-content">
-          <span class="stat-number"><%= Date.current.strftime("%d") %></span>
-          <span class="stat-label">jour du mois</span>
+          <span class="stat-number"><%= @total_ratings %></span>
+          <span class="stat-label">évaluations</span>
         </div>
+        <% if @total_ratings > 0 %>
+          <div class="stat-arrow">
+            <i class="bi bi-chevron-right"></i>
+          </div>
+        <% end %>
       </div>
     </div>
   </div>
@@ -139,6 +144,19 @@
                   <i class="bi bi-clock-fill"></i>
                   <span>~<%= [5, total_exercises * 2].max %> min</span>
                 </div>
+                <% if activity.activity_ratings.any? %>
+                  <div class="stat rating-stat-teacher">
+                    <div class="activity-stars-teacher">
+                      <% avg_rating = activity.average_rating %>
+                      <% (1..5).each do |i| %>
+                        <i class="bi bi-star<%= i <= avg_rating ? '-fill' : '' %> star-teacher <%= i <= avg_rating ? 'filled' : 'empty' %>"></i>
+                      <% end %>
+                    </div>
+                    <span class="rating-text-teacher">
+                      <%= avg_rating %> (<%= activity.ratings_count %>)
+                    </span>
+                  </div>
+                <% end %>
               </div>
             </div>
             
@@ -179,6 +197,102 @@
         <% end %>
     </div>
   <% end %>
+  </div>
+</div>
+
+<!-- Modal de Avaliações -->
+<div id="ratings-modal" class="ratings-modal" style="display: none;">
+  <div class="ratings-modal-content">
+    <div class="ratings-modal-header">
+      <h3><i class="bi bi-star-fill"></i> Retours de tes élèves</h3>
+      <button class="close-modal" onclick="toggleRatingsModal()">
+        <i class="bi bi-x-lg"></i>
+      </button>
+    </div>
+    
+    <div class="ratings-modal-body">
+      <% if @total_ratings > 0 %>
+        <div class="ratings-overview-modal">
+          <div class="overview-card-modal">
+            <div class="overview-icon-modal">
+              <i class="bi bi-heart-eyes-fill"></i>
+            </div>
+            <div class="overview-content-modal">
+              <span class="overview-number-modal"><%= @total_ratings %></span>
+              <span class="overview-label-modal">évaluations reçues</span>
+            </div>
+          </div>
+          
+          <div class="overview-card-modal">
+            <div class="overview-icon-modal">
+              <i class="bi bi-star-fill"></i>
+            </div>
+            <div class="overview-content-modal">
+              <span class="overview-number-modal"><%= @average_rating_overall %></span>
+              <span class="overview-label-modal">moyenne générale</span>
+            </div>
+          </div>
+          
+          <div class="overview-card-modal">
+            <div class="overview-icon-modal">
+              <i class="bi bi-emoji-smile-fill"></i>
+            </div>
+            <div class="overview-content-modal">
+              <span class="overview-number-modal"><%= @activities_with_ratings.count %></span>
+              <span class="overview-label-modal">activités évaluées</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="recent-ratings-modal">
+          <h4><i class="bi bi-clock-history"></i> Dernières évaluations</h4>
+          <div class="ratings-list-modal">
+            <% @recent_ratings.each do |rating| %>
+              <div class="rating-item-modal">
+                <div class="rating-activity-modal">
+                  <div class="activity-title-small-modal">
+                    <i class="bi bi-book-fill"></i>
+                    <%= truncate(rating.activity.título, length: 40) %>
+                  </div>
+                  <div class="activity-level-modal">
+                    <span class="level-badge-small level-<%= rating.activity.nível.downcase %>">
+                      <%= rating.activity.nível %>
+                    </span>
+                  </div>
+                </div>
+                
+                <div class="rating-details-modal">
+                  <div class="rating-stars-small">
+                    <% (1..5).each do |i| %>
+                      <i class="bi bi-star<%= i <= rating.stars ? '-fill' : '' %> star-small <%= i <= rating.stars ? 'filled' : 'empty' %>"></i>
+                    <% end %>
+                  </div>
+                  <div class="rating-meta-modal">
+                    <span class="student-email"><%= rating.student.email.split('@').first %></span>
+                    <span class="rating-date"><%= rating.formatted_date %></span>
+                  </div>
+                </div>
+                
+                <% if rating.comment.present? %>
+                  <div class="rating-comment-modal">
+                    <i class="bi bi-chat-quote-fill"></i>
+                    "<%= rating.comment %>"
+                  </div>
+                <% end %>
+              </div>
+            <% end %>
+          </div>
+        </div>
+      <% else %>
+        <div class="no-ratings-modal">
+          <div class="no-ratings-icon">
+            <i class="bi bi-star"></i>
+          </div>
+          <h4>Aucune évaluation pour le moment</h4>
+          <p>Tes élèves n'ont pas encore évalué tes activités. Encourage-les à donner leur avis !</p>
+        </div>
+      <% end %>
+    </div>
   </div>
 </div>
 
@@ -1037,6 +1151,313 @@
     animation: pulse 2s ease-in-out infinite;
   }
 
+  /* === SEÇÃO DE AVALIAÇÕES === */
+  .daisy-ratings-section {
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.95) 0%, rgba(255, 240, 245, 0.95) 100%);
+    border-radius: 24px;
+    padding: 2rem;
+    margin-bottom: 2rem;
+    box-shadow: 0 12px 40px rgba(255, 105, 180, 0.15);
+    border: 2px solid rgba(255, 192, 203, 0.3);
+    backdrop-filter: blur(10px);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .daisy-ratings-section::before {
+    content: '⭐';
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    font-size: 2rem;
+    opacity: 0.3;
+    animation: float 3s ease-in-out infinite;
+  }
+
+  .ratings-header {
+    text-align: center;
+    margin-bottom: 2rem;
+  }
+
+  .ratings-header h3 {
+    font-family: 'Lora', serif;
+    color: #1E3D59;
+    font-size: 1.8rem;
+    margin: 0 0 0.5rem;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+  }
+
+  .ratings-header h3 i {
+    color: #FFD700;
+  }
+
+  .ratings-header p {
+    color: #718096;
+    margin: 0;
+    font-size: 1.1rem;
+    font-style: italic;
+  }
+
+  .ratings-overview {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+  }
+
+  .overview-card {
+    background: white;
+    border-radius: 16px;
+    padding: 1.5rem;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    box-shadow: 0 4px 16px rgba(255, 105, 180, 0.1);
+    border: 1px solid rgba(255, 192, 203, 0.2);
+    transition: transform 0.2s ease;
+  }
+
+  .overview-card:hover {
+    transform: translateY(-2px);
+  }
+
+  .overview-icon {
+    width: 60px;
+    height: 60px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+    color: white;
+  }
+
+  .overview-card:nth-child(1) .overview-icon {
+    background: linear-gradient(135deg, #FF69B4 0%, #FFB6C1 100%);
+  }
+
+  .overview-card:nth-child(2) .overview-icon {
+    background: linear-gradient(135deg, #FFD700 0%, #FFA500 100%);
+  }
+
+  .overview-card:nth-child(3) .overview-icon {
+    background: linear-gradient(135deg, #68D391 0%, #48BB78 100%);
+  }
+
+  .overview-content {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .overview-number {
+    font-size: 1.8rem;
+    font-weight: 700;
+    color: #1E3D59;
+    line-height: 1;
+  }
+
+  .overview-label {
+    color: #718096;
+    font-size: 0.9rem;
+    margin-top: 0.25rem;
+  }
+
+  .recent-ratings h4 {
+    font-family: 'Lora', serif;
+    color: #1E3D59;
+    font-size: 1.4rem;
+    margin: 0 0 1.5rem;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .recent-ratings h4 i {
+    color: #4A90E2;
+  }
+
+  .ratings-list {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
+
+  .rating-item {
+    background: white;
+    border-radius: 12px;
+    padding: 1.25rem;
+    border: 1px solid rgba(255, 192, 203, 0.2);
+    transition: all 0.2s ease;
+  }
+
+  .rating-item:hover {
+    box-shadow: 0 4px 16px rgba(255, 105, 180, 0.1);
+    transform: translateY(-1px);
+  }
+
+  .rating-activity {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.75rem;
+  }
+
+  .activity-title-small {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: #1E3D59;
+    font-weight: 600;
+    font-size: 0.95rem;
+  }
+
+  .activity-title-small i {
+    color: #4A90E2;
+  }
+
+  .level-badge-small {
+    padding: 0.2rem 0.6rem;
+    border-radius: 12px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: white;
+  }
+
+  .level-badge-small.level-a1 { background: #68D391; }
+  .level-badge-small.level-a2 { background: #4FD1C7; }
+  .level-badge-small.level-b1 { background: #63B3ED; }
+  .level-badge-small.level-b2 { background: #7C3AED; }
+  .level-badge-small.level-c1 { background: #F56565; }
+  .level-badge-small.level-c2 { background: #ED8936; }
+
+  .rating-details {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.5rem;
+  }
+
+  .rating-stars-small {
+    display: flex;
+    gap: 0.2rem;
+  }
+
+  .star-small {
+    font-size: 0.9rem;
+    transition: color 0.2s ease;
+  }
+
+  .star-small.filled {
+    color: #FFD700;
+  }
+
+  .star-small.empty {
+    color: #E2E8F0;
+  }
+
+  .rating-meta {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 0.2rem;
+  }
+
+  .student-email {
+    font-size: 0.85rem;
+    color: #4A90E2;
+    font-weight: 500;
+  }
+
+  .rating-date {
+    font-size: 0.75rem;
+    color: #A0AEC0;
+  }
+
+  .rating-comment {
+    background: rgba(255, 105, 180, 0.1);
+    border-left: 3px solid #FFB6C1;
+    padding: 0.75rem;
+    border-radius: 0 8px 8px 0;
+    font-style: italic;
+    color: #4A5568;
+    display: flex;
+    align-items: flex-start;
+    gap: 0.5rem;
+    margin-top: 0.5rem;
+  }
+
+  .rating-comment i {
+    color: #FFB6C1;
+    margin-top: 0.1rem;
+    flex-shrink: 0;
+  }
+
+  .view-all-ratings {
+    text-align: center;
+    margin-top: 1.5rem;
+  }
+
+  .btn-view-all-daisy {
+    background: linear-gradient(135deg, #4A90E2 0%, #357ABD 100%);
+    color: white;
+    padding: 0.75rem 1.5rem;
+    border-radius: 16px;
+    border: none;
+    cursor: pointer;
+    font-weight: 600;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 16px rgba(74, 144, 226, 0.3);
+  }
+
+  .btn-view-all-daisy:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px rgba(74, 144, 226, 0.4);
+  }
+
+  /* === ESTRELAS NOS CARDS DAS ATIVIDADES === */
+  .rating-stat-teacher {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    background: rgba(255, 215, 0, 0.1);
+    padding: 0.4rem 0.6rem;
+    border-radius: 16px;
+    border: 1px solid rgba(255, 215, 0, 0.2);
+  }
+
+  .activity-stars-teacher {
+    display: flex;
+    gap: 0.15rem;
+  }
+
+  .star-teacher {
+    font-size: 0.85rem;
+    transition: color 0.2s ease;
+  }
+
+  .star-teacher.filled {
+    color: #FFD700;
+  }
+
+  .star-teacher.empty {
+    color: #E2E8F0;
+  }
+
+  .rating-text-teacher {
+    font-size: 0.8rem;
+    color: #B45309;
+    font-weight: 500;
+    white-space: nowrap;
+  }
+
   /* === RESPONSIVIDADE === */
   @media (max-width: 768px) {
     .daisy-welcome-card {
@@ -1099,6 +1520,362 @@
       font-size: 0.8rem;
     }
   }
+
+  .daisy-dashboard {
+    padding: 1rem 0.5rem;
+  }
+  
+  .daisy-ratings-section {
+    padding: 1.5rem;
+    margin-bottom: 1.5rem;
+  }
+  
+  .ratings-overview {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+  
+  .ratings-header h3 {
+    font-size: 1.5rem;
+  }
+  
+  .recent-ratings h4 {
+    font-size: 1.2rem;
+  }
+  
+  .rating-activity {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.5rem;
+  }
+  
+  .rating-details {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.5rem;
+  }
+  
+  .rating-meta {
+    align-items: flex-start;
+  }
+
+  /* === CARD CLICÁVEL DE AVALIAÇÕES === */
+  .stat-card-clickable {
+    position: relative;
+    transition: all 0.3s ease !important;
+  }
+
+  .stat-card-clickable:hover {
+    transform: translateY(-8px) !important;
+    box-shadow: 0 16px 40px rgba(255, 105, 180, 0.25) !important;
+    border-color: rgba(255, 105, 180, 0.4) !important;
+  }
+
+  .stat-arrow {
+    position: absolute;
+    right: 1rem;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #FF69B4;
+    font-size: 1.2rem;
+    transition: transform 0.3s ease;
+  }
+
+  .stat-card-clickable:hover .stat-arrow {
+    transform: translateY(-50%) translateX(5px);
+  }
+
+  /* === MODAL DE AVALIAÇÕES === */
+  .ratings-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(5px);
+    z-index: 1000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+  }
+
+  .ratings-modal.show {
+    opacity: 1;
+  }
+
+  .ratings-modal-content {
+    background: white;
+    border-radius: 20px;
+    max-width: 800px;
+    width: 90%;
+    max-height: 80vh;
+    overflow-y: auto;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+    transform: translateY(-30px);
+    transition: transform 0.3s ease;
+    position: relative;
+  }
+
+  .ratings-modal.show .ratings-modal-content {
+    transform: translateY(0);
+  }
+
+  .ratings-modal-header {
+    background: linear-gradient(135deg, #FF69B4 0%, #FFB6C1 100%);
+    color: white;
+    padding: 1.5rem 2rem;
+    border-radius: 20px 20px 0 0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .ratings-modal-header h3 {
+    margin: 0;
+    font-family: 'Lora', serif;
+    font-size: 1.5rem;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .close-modal {
+    background: none;
+    border: none;
+    color: white;
+    font-size: 1.2rem;
+    cursor: pointer;
+    padding: 0.5rem;
+    border-radius: 50%;
+    transition: background 0.2s ease;
+  }
+
+  .close-modal:hover {
+    background: rgba(255, 255, 255, 0.2);
+  }
+
+  .ratings-modal-body {
+    padding: 2rem;
+  }
+
+  .ratings-overview-modal {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1rem;
+    margin-bottom: 2rem;
+  }
+
+  .overview-card-modal {
+    background: linear-gradient(135deg, rgba(255, 240, 245, 0.8) 0%, rgba(255, 228, 225, 0.8) 100%);
+    border-radius: 12px;
+    padding: 1rem;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    border: 1px solid rgba(255, 192, 203, 0.3);
+  }
+
+  .overview-icon-modal {
+    width: 50px;
+    height: 50px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.2rem;
+    color: white;
+  }
+
+  .overview-card-modal:nth-child(1) .overview-icon-modal {
+    background: linear-gradient(135deg, #FF69B4 0%, #FFB6C1 100%);
+  }
+
+  .overview-card-modal:nth-child(2) .overview-icon-modal {
+    background: linear-gradient(135deg, #FFD700 0%, #FFA500 100%);
+  }
+
+  .overview-card-modal:nth-child(3) .overview-icon-modal {
+    background: linear-gradient(135deg, #68D391 0%, #48BB78 100%);
+  }
+
+  .overview-content-modal {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .overview-number-modal {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #1E3D59;
+    line-height: 1;
+  }
+
+  .overview-label-modal {
+    color: #718096;
+    font-size: 0.8rem;
+    margin-top: 0.2rem;
+  }
+
+  .recent-ratings-modal h4 {
+    font-family: 'Lora', serif;
+    color: #1E3D59;
+    font-size: 1.3rem;
+    margin: 0 0 1rem;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .recent-ratings-modal h4 i {
+    color: #4A90E2;
+  }
+
+  .ratings-list-modal {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    max-height: 400px;
+    overflow-y: auto;
+    padding-right: 0.5rem;
+  }
+
+  .rating-item-modal {
+    background: rgba(255, 240, 245, 0.5);
+    border-radius: 12px;
+    padding: 1rem;
+    border: 1px solid rgba(255, 192, 203, 0.2);
+    transition: all 0.2s ease;
+  }
+
+  .rating-item-modal:hover {
+    background: rgba(255, 240, 245, 0.8);
+    transform: translateY(-1px);
+  }
+
+  .rating-activity-modal {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.75rem;
+  }
+
+  .activity-title-small-modal {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: #1E3D59;
+    font-weight: 600;
+    font-size: 0.95rem;
+  }
+
+  .activity-title-small-modal i {
+    color: #4A90E2;
+  }
+
+  .rating-details-modal {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.5rem;
+  }
+
+  .rating-meta-modal {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 0.2rem;
+  }
+
+  .rating-comment-modal {
+    background: rgba(255, 105, 180, 0.1);
+    border-left: 3px solid #FFB6C1;
+    padding: 0.75rem;
+    border-radius: 0 8px 8px 0;
+    font-style: italic;
+    color: #4A5568;
+    display: flex;
+    align-items: flex-start;
+    gap: 0.5rem;
+    margin-top: 0.5rem;
+  }
+
+  .rating-comment-modal i {
+    color: #FFB6C1;
+    margin-top: 0.1rem;
+    flex-shrink: 0;
+  }
+
+  .no-ratings-modal {
+    text-align: center;
+    padding: 3rem 1rem;
+  }
+
+  .no-ratings-icon {
+    width: 80px;
+    height: 80px;
+    margin: 0 auto 1rem;
+    background: linear-gradient(135deg, #FFE4E1 0%, #FFC0CB 100%);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2rem;
+    color: #FF69B4;
+    border: 3px solid rgba(255, 255, 255, 0.8);
+  }
+
+  .no-ratings-modal h4 {
+    color: #1E3D59;
+    margin-bottom: 0.5rem;
+    font-family: 'Lora', serif;
+  }
+
+  .no-ratings-modal p {
+    color: #718096;
+    line-height: 1.5;
+  }
+
+  /* Responsividade do modal */
+  @media (max-width: 768px) {
+    .ratings-modal-content {
+      width: 95%;
+      margin: 1rem;
+    }
+
+    .ratings-modal-header {
+      padding: 1rem 1.5rem;
+    }
+
+    .ratings-modal-body {
+      padding: 1.5rem;
+    }
+
+    .ratings-overview-modal {
+      grid-template-columns: 1fr;
+      gap: 0.75rem;
+    }
+
+    .rating-activity-modal {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 0.5rem;
+    }
+
+    .rating-details-modal {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 0.5rem;
+    }
+
+    .rating-meta-modal {
+      align-items: flex-start;
+    }
+  }
 </style>
 
 <script>
@@ -1151,6 +1928,30 @@
         }
       });
     });
+  });
+
+  // Função para controlar o modal de avaliações
+  function toggleRatingsModal() {
+    const modal = document.getElementById('ratings-modal');
+    if (modal.style.display === 'none' || modal.style.display === '') {
+      modal.style.display = 'flex';
+      setTimeout(() => {
+        modal.classList.add('show');
+      }, 10);
+    } else {
+      modal.classList.remove('show');
+      setTimeout(() => {
+        modal.style.display = 'none';
+      }, 300);
+    }
+  }
+
+  // Fechar modal clicando fora dele
+  document.addEventListener('click', function(e) {
+    const modal = document.getElementById('ratings-modal');
+    if (e.target === modal) {
+      toggleRatingsModal();
+    }
   });
 </script>
 

@@ -107,6 +107,21 @@
                   <i class="bi bi-clock"></i>
                   <span>~<%= [5, total_exercises * 2].max %> min</span>
                 </div>
+                <% if @completed_activity_ids.include?(activity.id) && @student_ratings[activity.id] %>
+                  <div class="stat rating-stat">
+                    <div class="activity-stars">
+                      <% rating = @student_ratings[activity.id] %>
+                      <% if rating %>
+                        <% (1..5).each do |i| %>
+                          <i class="bi bi-star<%= i <= rating.stars ? '-fill' : '' %> star <%= i <= rating.stars ? 'filled' : 'empty' %>"></i>
+                        <% end %>
+                      <% end %>
+                    </div>
+                    <% if rating %>
+                      <span class="rating-text"><%= rating.stars %> étoile<%= rating.stars > 1 ? 's' : '' %></span>
+                    <% end %>
+                  </div>
+                <% end %>
               </div>
             </div>
             
@@ -678,6 +693,57 @@
     text-decoration: none;
     transform: translateY(-2px);
     box-shadow: 0 8px 24px rgba(74, 144, 226, 0.3);
+  }
+
+  /* === ESTILOS DAS ESTRELAS DE AVALIAÇÃO === */
+  .rating-stat {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    background: rgba(255, 215, 0, 0.1);
+    padding: 0.5rem 0.75rem;
+    border-radius: 20px;
+    border: 1px solid rgba(255, 215, 0, 0.2);
+  }
+
+  .activity-stars {
+    display: flex;
+    gap: 0.2rem;
+  }
+
+  .activity-stars .star {
+    font-size: 1rem;
+    transition: color 0.2s ease;
+  }
+
+  .activity-stars .star.filled {
+    color: #FFD700;
+  }
+
+  .activity-stars .star.empty {
+    color: #E2E8F0;
+  }
+
+  .rating-text {
+    font-size: 0.85rem;
+    color: #B45309;
+    font-weight: 500;
+    white-space: nowrap;
+  }
+
+  /* Responsividade das estrelas */
+  @media (max-width: 768px) {
+    .rating-stat {
+      padding: 0.4rem 0.6rem;
+    }
+
+    .activity-stars .star {
+      font-size: 0.9rem;
+    }
+
+    .rating-text {
+      font-size: 0.8rem;
+    }
   }
 </style>
 

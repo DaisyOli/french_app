@@ -21,6 +21,13 @@ Rails.application.routes.draw do
       post :save_result
     end
     
+    # Rotas para avaliações de atividades
+    resources :activity_ratings, only: [:create, :update], path: 'ratings' do
+      collection do
+        patch :update, action: :update_by_student
+      end
+    end
+    
     resources :statements, only: [:create, :update, :destroy] do
       member do
         patch :update_order

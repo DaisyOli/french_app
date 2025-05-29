@@ -357,10 +357,10 @@
 
       <div class="navigation-section">
         <% if student_signed_in? %>
-          <%= link_to student_dashboard_path, class: "btn-back" do %>
+          <a href="#" id="back-to-dashboard-btn" class="btn-back" data-dashboard-url="<%= student_dashboard_path %>">
             <i class="bi bi-arrow-left"></i>
             Retour au tableau de bord
-          <% end %>
+          </a>
         <% else %>
           <%= link_to activities_path, class: "btn-back" do %>
             <i class="bi bi-arrow-left"></i>
@@ -371,6 +371,53 @@
     </div>
   </div>
 </div>
+
+<!-- Modal de Avaliação -->
+<% if student_signed_in? %>
+<div id="rating-modal" class="rating-modal" style="display: none;">
+  <div class="rating-modal-content">
+    <div class="rating-modal-header">
+      <h3><i class="bi bi-star-fill"></i> Évaluez cette activité</h3>
+      <p>Votre avis nous aide à nous améliorer !</p>
+    </div>
+    
+    <div class="rating-modal-body">
+      <div class="stars-container">
+        <div class="stars-label">Combien d'étoiles donneriez-vous ?</div>
+        <div class="stars-rating" id="stars-rating">
+          <i class="bi bi-star" data-value="1"></i>
+          <i class="bi bi-star" data-value="2"></i>
+          <i class="bi bi-star" data-value="3"></i>
+          <i class="bi bi-star" data-value="4"></i>
+          <i class="bi bi-star" data-value="5"></i>
+        </div>
+      </div>
+      
+      <div class="comment-container">
+        <label for="rating-comment" class="comment-label">Commentaire (facultatif)</label>
+        <textarea 
+          id="rating-comment" 
+          class="rating-textarea" 
+          placeholder="Dites-nous ce que vous avez pensé de l'activité..."
+          maxlength="500"></textarea>
+        <div class="character-count">
+          <span id="char-count">0</span>/500
+        </div>
+      </div>
+    </div>
+    
+    <div class="rating-modal-footer">
+      <button type="button" class="btn-modal-skip" id="skip-rating-btn">
+        Passer
+      </button>
+      <button type="button" class="btn-modal-submit" id="submit-rating-btn" disabled>
+        <i class="bi bi-heart-fill"></i>
+        Envoyer l'évaluation
+      </button>
+    </div>
+  </div>
+</div>
+<% end %>
 
 <script type="text/javascript">
   document.addEventListener('DOMContentLoaded', function() {
@@ -1456,6 +1503,349 @@
 
     }
   });
+
+  // === LÓGICA DO MODAL DE AVALIAÇÃO ===
+  
+  <% if student_signed_in? %>
+  // Variáveis do modal
+  const modal = document.getElementById('rating-modal');
+  const backBtn = document.getElementById('back-to-dashboard-btn');
+  const submitBtn = document.getElementById('submit-rating-btn');
+  const skipBtn = document.getElementById('skip-rating-btn');
+  const starsRating = document.getElementById('stars-rating');
+  const commentTextarea = document.getElementById('rating-comment');
+  const charCount = document.getElementById('char-count');
+  
+  let selectedStars = 0;
+  let activityCompleted = false;
+  
+  // Verificar se atividade foi completada observando mudanças no DOM
+  function checkActivityCompletion() {
+    const resultsContainer = document.getElementById('results-container');
+    const scoreMessage = document.getElementById('score-message');
+    
+    // Se o container de resultados está visível e tem conteúdo
+    if (resultsContainer && scoreMessage) {
+      const isVisible = window.getComputedStyle(resultsContainer).display !== 'none';
+      const hasContent = scoreMessage.textContent.trim() !== '';
+      
+      if (isVisible && hasContent) {
+        activityCompleted = true;
+        console.log('Atividade marcada como completada');
+      }
+    }
+  }
+  
+  // Verificar inicialmente
+  setTimeout(checkActivityCompletion, 500);
+  
+  // Observar mudanças no container de resultados
+  const resultsContainer = document.getElementById('results-container');
+  if (resultsContainer) {
+    const observer = new MutationObserver(function(mutations) {
+      mutations.forEach(function(mutation) {
+        if (mutation.type === 'attributes' || mutation.type === 'childList') {
+          setTimeout(checkActivityCompletion, 100);
+        }
+      });
+    });
+    observer.observe(resultsContainer, { 
+      attributes: true, 
+      childList: true, 
+      subtree: true 
+    });
+  }
+  
+  // Interceptar clique no botão "Retour au tableau de bord"
+  if (backBtn) {
+    backBtn.addEventListener('click', function(e) {
+      e.preventDefault();
+      
+      console.log('Botão voltar clicado. Atividade completada:', activityCompleted);
+      
+      // Verificar uma última vez se a atividade foi completada
+      checkActivityCompletion();
+      
+      // Se atividade foi completada, mostrar modal de avaliação
+      if (activityCompleted) {
+        console.log('Mostrando modal de avaliação');
+        showRatingModal();
+      } else {
+        console.log('Indo direto ao dashboard (atividade não completada)');
+        // Se não foi completada, ir direto ao dashboard
+        window.location.href = this.getAttribute('data-dashboard-url');
+      }
+    });
+  }
+  
+  // Lógica das estrelas
+  if (starsRating) {
+    const stars = starsRating.querySelectorAll('i');
+    
+    stars.forEach((star, index) => {
+      star.addEventListener('click', function() {
+        selectedStars = parseInt(this.getAttribute('data-value'));
+        updateStarsDisplay();
+        updateSubmitButton();
+      });
+      
+      star.addEventListener('mouseenter', function() {
+        const hoverValue = parseInt(this.getAttribute('data-value'));
+        updateStarsHover(hoverValue);
+      });
+    });
+    
+    starsRating.addEventListener('mouseleave', function() {
+      updateStarsDisplay();
+    });
+  }
+  
+  // Contador de caracteres
+  if (commentTextarea && charCount) {
+    commentTextarea.addEventListener('input', function() {
+      const count = this.value.length;
+      charCount.textContent = count;
+      
+      // Mudar cor quando próximo do limite
+      if (count > 450) {
+        charCount.style.color = '#F56565';
+      } else if (count > 400) {
+        charCount.style.color = '#ED8936';
+      } else {
+        charCount.style.color = '#A0AEC0';
+      }
+    });
+  }
+  
+  // Botão de enviar avaliação
+  if (submitBtn) {
+    submitBtn.addEventListener('click', function() {
+      if (selectedStars > 0) {
+        submitRating();
+      }
+    });
+  }
+  
+  // Botão de pular avaliação
+  if (skipBtn) {
+    skipBtn.addEventListener('click', function() {
+      closeRatingModal();
+      goToDashboard();
+    });
+  }
+  
+  // Funções do modal
+  function showRatingModal() {
+    if (modal) {
+      modal.style.display = 'flex';
+      setTimeout(() => {
+        modal.classList.add('show');
+      }, 10);
+    }
+  }
+  
+  function closeRatingModal() {
+    if (modal) {
+      modal.classList.remove('show');
+      setTimeout(() => {
+        modal.style.display = 'none';
+      }, 300);
+    }
+  }
+  
+  function updateStarsDisplay() {
+    const stars = starsRating.querySelectorAll('i');
+    stars.forEach((star, index) => {
+      if (index < selectedStars) {
+        star.classList.add('active');
+        star.classList.remove('bi-star');
+        star.classList.add('bi-star-fill');
+      } else {
+        star.classList.remove('active');
+        star.classList.remove('bi-star-fill');
+        star.classList.add('bi-star');
+      }
+    });
+  }
+  
+  function updateStarsHover(hoverValue) {
+    const stars = starsRating.querySelectorAll('i');
+    stars.forEach((star, index) => {
+      if (index < hoverValue) {
+        star.classList.remove('bi-star');
+        star.classList.add('bi-star-fill');
+      } else {
+        star.classList.remove('bi-star-fill');
+        star.classList.add('bi-star');
+      }
+    });
+  }
+  
+  function updateSubmitButton() {
+    if (submitBtn) {
+      submitBtn.disabled = selectedStars === 0;
+    }
+  }
+  
+  function submitRating() {
+    const activityId = window.location.pathname.split('/')[2];
+    const comment = commentTextarea ? commentTextarea.value.trim() : '';
+    
+    const data = {
+      activity_rating: {
+        stars: selectedStars,
+        comment: comment
+      }
+    };
+    
+    // Desabilitar botão durante envio
+    submitBtn.disabled = true;
+    submitBtn.innerHTML = '<i class="bi bi-hourglass-split"></i> Envoi en cours...';
+    
+    fetch(`/activities/${activityId}/ratings`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-CSRF-Token': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+      },
+      body: JSON.stringify(data)
+    })
+    .then(response => response.json())
+    .then(data => {
+      if (data.status === 'success') {
+        showSuccessMessage(data.message);
+        setTimeout(() => {
+          closeRatingModal();
+          goToDashboard();
+        }, 1500);
+      } else if (data.message && data.message.includes('déjà évalué')) {
+        // Se já existe uma avaliação, fazer UPDATE
+        console.log('Avaliação já existe, fazendo update...');
+        updateExistingRating(activityId, selectedStars, comment);
+      } else {
+        showErrorMessage(data.message);
+        // Reabilitar botão em caso de erro
+        submitBtn.disabled = false;
+        submitBtn.innerHTML = '<i class="bi bi-heart-fill"></i> Envoyer l\'évaluation';
+      }
+    })
+    .catch(error => {
+      console.error('Erro ao enviar avaliação:', error);
+      showErrorMessage('Erreur lors de l\'envoi de l\'évaluation. Veuillez réessayer.');
+      // Reabilitar botão em caso de erro
+      submitBtn.disabled = false;
+      submitBtn.innerHTML = '<i class="bi bi-heart-fill"></i> Envoyer l\'évaluation';
+    });
+  }
+  
+  function updateExistingRating(activityId, stars, comment) {
+    // Para UPDATE, usamos a rota collection que busca automaticamente
+    fetch(`/activities/${activityId}/ratings`, {
+      method: 'PATCH',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-CSRF-Token': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+      },
+      body: JSON.stringify({
+        activity_rating: {
+          stars: stars,
+          comment: comment
+        }
+      })
+    })
+    .then(response => response.json())
+    .then(data => {
+      if (data.status === 'success') {
+        showSuccessMessage(data.message);
+        setTimeout(() => {
+          closeRatingModal();
+          goToDashboard();
+        }, 1500);
+      } else {
+        showErrorMessage(data.message);
+        // Reabilitar botão em caso de erro
+        submitBtn.disabled = false;
+        submitBtn.innerHTML = '<i class="bi bi-heart-fill"></i> Envoyer l\'évaluation';
+      }
+    })
+    .catch(error => {
+      console.error('Erro ao atualizar avaliação:', error);
+      showErrorMessage('Erreur lors de la mise à jour de l\'évaluation.');
+      // Reabilitar botão em caso de erro
+      submitBtn.disabled = false;
+      submitBtn.innerHTML = '<i class="bi bi-heart-fill"></i> Envoyer l\'évaluation';
+    });
+  }
+  
+  function goToDashboard() {
+    const dashboardUrl = backBtn.getAttribute('data-dashboard-url');
+    window.location.href = dashboardUrl;
+  }
+  
+  function showSuccessMessage(message) {
+    // Criar notificação de sucesso temporária
+    const notification = document.createElement('div');
+    notification.style.cssText = `
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      background: linear-gradient(135deg, #68D391 0%, #48BB78 100%);
+      color: white;
+      padding: 1rem 1.5rem;
+      border-radius: 12px;
+      box-shadow: 0 8px 24px rgba(104, 211, 145, 0.3);
+      z-index: 1001;
+      font-weight: 500;
+      opacity: 0;
+      transition: opacity 0.3s ease;
+    `;
+    notification.innerHTML = `<i class="bi bi-check-circle-fill"></i> ${message}`;
+    document.body.appendChild(notification);
+    
+    setTimeout(() => notification.style.opacity = '1', 10);
+    setTimeout(() => {
+      notification.style.opacity = '0';
+      setTimeout(() => document.body.removeChild(notification), 300);
+    }, 1200);
+  }
+  
+  function showErrorMessage(message) {
+    // Criar notificação de erro temporária
+    const notification = document.createElement('div');
+    notification.style.cssText = `
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      background: linear-gradient(135deg, #F87171 0%, #EF4444 100%);
+      color: white;
+      padding: 1rem 1.5rem;
+      border-radius: 12px;
+      box-shadow: 0 8px 24px rgba(248, 113, 113, 0.3);
+      z-index: 1001;
+      font-weight: 500;
+      opacity: 0;
+      transition: opacity 0.3s ease;
+    `;
+    notification.innerHTML = `<i class="bi bi-exclamation-triangle-fill"></i> ${message}`;
+    document.body.appendChild(notification);
+    
+    setTimeout(() => notification.style.opacity = '1', 10);
+    setTimeout(() => {
+      notification.style.opacity = '0';
+      setTimeout(() => document.body.removeChild(notification), 300);
+    }, 3000);
+  }
+  
+  // Fechar modal clicando fora dele
+  if (modal) {
+    modal.addEventListener('click', function(e) {
+      if (e.target === modal) {
+        closeRatingModal();
+        goToDashboard();
+      }
+    });
+  }
+  <% end %>
 </script>
 
 <style>
@@ -2942,6 +3332,204 @@
 
     .alternative-option {
       padding: 0.75rem;
+    }
+  }
+
+  /* === ESTILOS DO MODAL DE AVALIAÇÃO === */
+  .rating-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(5px);
+    z-index: 1000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+  }
+
+  .rating-modal.show {
+    opacity: 1;
+  }
+
+  .rating-modal-content {
+    background: white;
+    border-radius: 20px;
+    padding: 2rem;
+    max-width: 500px;
+    width: 90%;
+    max-height: 80vh;
+    overflow-y: auto;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+    transform: translateY(-30px);
+    transition: transform 0.3s ease;
+  }
+
+  .rating-modal.show .rating-modal-content {
+    transform: translateY(0);
+  }
+
+  .rating-modal-header h3 {
+    color: #1E3D59;
+    margin-bottom: 0.5rem;
+    font-size: 1.5rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .rating-modal-header h3 i {
+    color: #FFD700;
+  }
+
+  .rating-modal-header p {
+    color: #718096;
+    margin-bottom: 1.5rem;
+  }
+
+  .stars-container {
+    text-align: center;
+    margin-bottom: 1.5rem;
+  }
+
+  .stars-label {
+    color: #4A5568;
+    font-weight: 500;
+    margin-bottom: 1rem;
+  }
+
+  .stars-rating {
+    display: flex;
+    justify-content: center;
+    gap: 0.5rem;
+    margin-bottom: 0.5rem;
+  }
+
+  .stars-rating i {
+    font-size: 2rem;
+    color: #E2E8F0;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    padding: 0.25rem;
+    border-radius: 50%;
+  }
+
+  .stars-rating i:hover,
+  .stars-rating i.active {
+    color: #FFD700;
+    transform: scale(1.1);
+  }
+
+  .stars-rating i:hover {
+    background: rgba(255, 215, 0, 0.1);
+  }
+
+  .comment-container {
+    margin-bottom: 1.5rem;
+  }
+
+  .comment-label {
+    display: block;
+    color: #4A5568;
+    font-weight: 500;
+    margin-bottom: 0.5rem;
+  }
+
+  .rating-textarea {
+    width: 100%;
+    min-height: 100px;
+    border: 2px solid #E2E8F0;
+    border-radius: 12px;
+    padding: 1rem;
+    font-family: inherit;
+    resize: vertical;
+    transition: border-color 0.2s ease;
+  }
+
+  .rating-textarea:focus {
+    outline: none;
+    border-color: #4A90E2;
+    box-shadow: 0 0 0 3px rgba(74, 144, 226, 0.1);
+  }
+
+  .character-count {
+    text-align: right;
+    font-size: 0.85rem;
+    color: #A0AEC0;
+    margin-top: 0.25rem;
+  }
+
+  .rating-modal-footer {
+    display: flex;
+    gap: 1rem;
+    justify-content: flex-end;
+  }
+
+  .btn-modal-skip {
+    background: transparent;
+    border: 2px solid #E2E8F0;
+    color: #718096;
+    padding: 0.75rem 1.5rem;
+    border-radius: 12px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    font-weight: 500;
+  }
+
+  .btn-modal-skip:hover {
+    border-color: #CBD5E0;
+    background: #F7FAFC;
+  }
+
+  .btn-modal-submit {
+    background: linear-gradient(135deg, #4A90E2 0%, #357ABD 100%);
+    border: none;
+    color: white;
+    padding: 0.75rem 1.5rem;
+    border-radius: 12px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .btn-modal-submit:hover:not(:disabled) {
+    background: linear-gradient(135deg, #357ABD 0%, #2A5F8F 100%);
+    transform: translateY(-1px);
+    box-shadow: 0 5px 15px rgba(74, 144, 226, 0.3);
+  }
+
+  .btn-modal-submit:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    transform: none;
+  }
+
+  /* Responsividade do modal */
+  @media (max-width: 480px) {
+    .rating-modal-content {
+      padding: 1.5rem;
+      margin: 1rem;
+    }
+
+    .rating-modal-footer {
+      flex-direction: column;
+    }
+
+    .btn-modal-skip,
+    .btn-modal-submit {
+      width: 100%;
+      justify-content: center;
+    }
+
+    .stars-rating i {
+      font-size: 1.75rem;
     }
   }
 </style> 

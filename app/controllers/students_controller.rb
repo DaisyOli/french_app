@@ -4,8 +4,10 @@ class StudentsController < ApplicationController
   def dashboard
     @activities = Activity.all.order(:título)
     
-    # Dados de progresso do estudante
-    @completed_activities = current_student.completed_activities.includes(:activity)
+    # Dados de progresso do estudante com otimização
+    @completed_activities = current_student.completed_activities
+                                          .includes(activity: :activity_ratings)
+                                          .order(created_at: :desc)
     @completed_count = @completed_activities.count
     
     # Calcular score médio de forma mais robusta
@@ -19,6 +21,12 @@ class StudentsController < ApplicationController
     # IDs das atividades já completadas
     @completed_activity_ids = @completed_activities.pluck(:activity_id)
 
+    # Pré-carregar avaliações do estudante atual para evitar N+1 queries
+    activity_ids = @completed_activities.limit(6).map(&:activity_id)
+    @student_ratings = current_student.activity_ratings
+                                     .where(activity_id: activity_ids)
+                                     .index_by(&:activity_id)
+
     # Informações do troféu de assiduidade
     @current_trophy = current_student.current_trophy
     @next_trophy = current_student.next_trophy_info
@@ -27,8 +35,8 @@ class StudentsController < ApplicationController
   end
 
   def activities
-    # Buscar todas as atividades
-    all_activities = Activity.all.order(:título)
+    # Buscar todas as atividades com avaliações pré-carregadas
+    all_activities = Activity.includes(:activity_ratings).order(:título)
     
     # Dados de progresso do estudante
     @completed_activities = current_student.completed_activities.includes(:activity)
@@ -42,5 +50,11 @@ class StudentsController < ApplicationController
     
     # IDs das atividades já completadas (para mostrar indicador de conclusão)
     @completed_activity_ids = @completed_activities.pluck(:activity_id)
+    
+    # Pré-carregar avaliações do estudante atual para evitar N+1 queries
+    activity_ids = @activities.pluck(:id)
+    @student_ratings = current_student.activity_ratings
+                                     .where(activity_id: activity_ids)
+                                     .index_by(&:activity_id)
   end
 end 

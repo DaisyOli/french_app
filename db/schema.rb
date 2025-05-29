@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2025_05_26_130830) do
+ActiveRecord::Schema[7.1].define(version: 2025_05_28_144503) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -29,6 +29,19 @@ ActiveRecord::Schema[7.1].define(version: 2025_05_26_130830) do
     t.integer "imagem_order", default: 2
     t.integer "texte_order", default: 3
     t.index ["user_id"], name: "index_activities_on_user_id"
+  end
+
+  create_table "activity_ratings", force: :cascade do |t|
+    t.bigint "student_id", null: false
+    t.bigint "activity_id", null: false
+    t.integer "stars", null: false
+    t.text "comment"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["activity_id"], name: "index_activity_ratings_on_activity_id"
+    t.index ["student_id", "activity_id"], name: "index_activity_ratings_on_student_id_and_activity_id", unique: true
+    t.index ["student_id"], name: "index_activity_ratings_on_student_id"
+    t.check_constraint "stars >= 1 AND stars <= 5", name: "stars_range_check"
   end
 
   create_table "alternatives", force: :cascade do |t|
@@ -216,6 +229,8 @@ ActiveRecord::Schema[7.1].define(version: 2025_05_26_130830) do
   end
 
   add_foreign_key "activities", "users"
+  add_foreign_key "activity_ratings", "activities"
+  add_foreign_key "activity_ratings", "students"
   add_foreign_key "alternatives", "questions"
   add_foreign_key "association_pairs", "column_associations"
   add_foreign_key "blanks", "fill_blanks"

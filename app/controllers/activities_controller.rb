@@ -4,7 +4,17 @@ class ActivitiesController < ApplicationController
   before_action :set_activity, only: [:show, :edit, :update, :destroy, :remove_video, :remove_image, :remove_texte, :solve, :save_result]
 
   def index
-    @activities = Activity.all
+    @activities = Activity.includes(:activity_ratings).all
+    
+    # Dados das avaliações para o dashboard do professor
+    @activities_with_ratings = @activities.select { |activity| activity.activity_ratings.any? }
+    @total_ratings = ActivityRating.count
+    @average_rating_overall = @total_ratings > 0 ? ActivityRating.average(:stars).round(1) : 0
+    
+    # Avaliações recentes (últimas 10)
+    @recent_ratings = ActivityRating.includes(:student, :activity)
+                                   .recent
+                                   .limit(10)
   end
 
   def show
