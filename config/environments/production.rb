@@ -24,10 +24,22 @@ Rails.application.configure do
   # config.public_file_server.enabled = false
 
   # Compress CSS using a preprocessor.
-  # config.assets.css_compressor = :sass
+  config.assets.css_compressor = :sass
 
   # Do not fall back to assets pipeline if a precompiled asset is missed.
   config.assets.compile = false
+  
+  # Precompile additional assets for better performance
+  config.assets.precompile += %w( *.css *.js )
+  
+  # Enable gzip compression
+  config.middleware.use Rack::Deflater
+  
+  # Cache control headers for better asset caching
+  config.public_file_server.headers = {
+    'Cache-Control' => 'public, max-age=31557600', # 1 year
+    'Expires' => 1.year.from_now.to_formatted_s(:rfc822)
+  }
 
   # Enable serving of images, stylesheets, and JavaScripts from an asset server.
   # config.asset_host = "http://assets.example.com"
