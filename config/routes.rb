@@ -12,6 +12,9 @@ Rails.application.routes.draw do
   # Root path redirecionando para login do estudante
   root to: redirect('/students/sign_in')
   
+  # Health check para monitoramento
+  get '/health', to: 'health#show'
+  
   resources :activities do
     member do
       delete :remove_video

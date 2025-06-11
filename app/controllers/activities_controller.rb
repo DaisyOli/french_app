@@ -4,17 +4,38 @@ class ActivitiesController < ApplicationController
   before_action :set_activity, only: [:show, :edit, :update, :destroy, :remove_video, :remove_image, :remove_texte, :solve, :save_result]
 
   def index
-    @activities = Activity.includes(:activity_ratings).all
+    # Otimização: carregar todas as associações necessárias de uma vez
+    @activities = Activity.includes(
+      :activity_ratings,
+      :statements,
+      :questions,
+      :suggestions,
+      :fill_blanks,
+      :sentence_orderings,
+      :paragraph_orderings,
+      :column_associations,
+      :user
+    ).all
     
-    # Dados das avaliações para o dashboard do professor
-    @activities_with_ratings = @activities.select { |activity| activity.activity_ratings.any? }
-    @total_ratings = ActivityRating.count
-    @average_rating_overall = @total_ratings > 0 ? ActivityRating.average(:stars).round(1) : 0
+    # Cache da consulta pesada por 10 minutos para reduzir pressão no Redis
+    @activities_stats = Rails.cache.fetch("activities_dashboard_stats", expires_in: 10.minutes) do
+      {
+        activities_with_ratings: @activities.select { |activity| activity.activity_ratings.any? },
+        total_ratings: ActivityRating.count,
+        average_rating_overall: ActivityRating.count > 0 ? ActivityRating.average(:stars).round(1) : 0
+      }
+    end
     
-    # Avaliações recentes (últimas 10)
-    @recent_ratings = ActivityRating.includes(:student, :activity)
-                                   .recent
-                                   .limit(10)
+    @activities_with_ratings = @activities_stats[:activities_with_ratings]
+    @total_ratings = @activities_stats[:total_ratings]
+    @average_rating_overall = @activities_stats[:average_rating_overall]
+    
+    # Avaliações recentes com limite reduzido para otimizar
+    @recent_ratings = Rails.cache.fetch("recent_ratings", expires_in: 5.minutes) do
+      ActivityRating.includes(:student, :activity)
+                    .recent
+                    .limit(5) # Reduzido de 10 para 5
+    end
   end
 
   def show

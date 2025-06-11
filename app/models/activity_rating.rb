@@ -10,7 +10,7 @@ class ActivityRating < ApplicationRecord
   scope :with_comments, -> { where.not(comment: [nil, '']) }
   scope :by_stars, ->(stars) { where(stars: stars) }
 
-  # Callbacks para invalidar cache
+  # Callbacks para invalidar cache - otimizado
   after_save :invalidate_activity_cache
   after_destroy :invalidate_activity_cache
 
@@ -26,7 +26,14 @@ class ActivityRating < ApplicationRecord
   private
 
   def invalidate_activity_cache
-    Rails.cache.delete("activity_#{activity_id}_average_rating")
-    Rails.cache.delete("activity_#{activity_id}_ratings_count")
+    # Invalidar cache da atividade específica
+    activity.invalidate_all_cache if activity.present?
+    
+    # Invalidar cache do dashboard apenas se necessário
+    Rails.cache.delete("activities_dashboard_stats")
+    Rails.cache.delete("recent_ratings")
+    
+    # Log para monitoramento
+    Rails.logger.info "Cache invalidado para activity_id: #{activity_id}" if Rails.env.production?
   end
 end 
