@@ -1,5 +1,7 @@
 class HealthController < ApplicationController
   skip_before_action :verify_authenticity_token
+  skip_before_action :authenticate_user_or_student!, raise: false
+  skip_before_action :authenticate_user!, raise: false
   
   def show
     health_status = {

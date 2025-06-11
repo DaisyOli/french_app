@@ -48,9 +48,14 @@ class Rack::Attack
     req.user_agent =~ /curl|wget|python-requests|ruby|java|php|bot/i
   end
 
-  # Allow localhost e health checks
+  # Allow localhost e health checks - PRIMEIRA REGRA (mais prioritária)
+  safelist('allow_health_checks') do |req|
+    req.path.start_with?('/health') || req.path.start_with?('/up')
+  end
+
+  # Allow localhost e desenvolvimento
   safelist('allow_localhost_and_health') do |req|
-    req.ip == '127.0.0.1' || req.ip == '::1' || req.path.start_with?('/health') unless Rails.env.production?
+    req.ip == '127.0.0.1' || req.ip == '::1' unless Rails.env.production?
   end
 
   # Custom response for throttled requests - mais eficiente
