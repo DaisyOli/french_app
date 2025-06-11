@@ -4,24 +4,10 @@ class Rack::Attack
   # Enable rack-attack
   Rack::Attack.enabled = Rails.env.production?
 
-  # Configure Redis para rate limiting com pool otimizado
+  # Configure Redis para rate limiting com configuração simplificada
   if Rails.env.production?
-    redis_config = {
-      url: ENV.fetch("REDIS_URL", "redis://localhost:6379/1"),
-      pool_size: 5, # Pool menor para Rack::Attack
-      pool_timeout: 5,
-      reconnect_attempts: 2,
-      connect_timeout: 3,
-      read_timeout: 5,
-      write_timeout: 3
-    }
-    
-    Rack::Attack.cache.store = ActiveSupport::Cache::RedisCacheStore.new(
-      redis_config.merge(
-        namespace: "rack_attack",
-        expires_in: 1.hour
-      )
-    )
+    # Usar a configuração padrão do Rails.cache que já está otimizada
+    Rack::Attack.cache.store = Rails.cache
   end
 
   # Throttle mais inteligente para login - reduzir janela de tempo
