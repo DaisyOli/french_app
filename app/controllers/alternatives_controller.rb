@@ -41,7 +41,7 @@ class AlternativesController < ApplicationController
 
   private
     def set_activity
-      @activity = Activity.find(params[:activity_id])
+      @activity = Activity.find_by_param(params[:activity_id])
     end
 
     def set_question

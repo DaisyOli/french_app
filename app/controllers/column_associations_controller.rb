@@ -2,7 +2,7 @@ class ColumnAssociationsController < ApplicationController
   before_action :authenticate_user!
   
   def create
-    @activity = Activity.find(params[:activity_id])
+    @activity = Activity.find_by_param(params[:activity_id])
     @column_association = @activity.column_associations.build(column_association_params)
     
     if @column_association.save

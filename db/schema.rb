@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2025_05_28_144503) do
+ActiveRecord::Schema[7.1].define(version: 2025_07_04_063420) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -28,6 +28,8 @@ ActiveRecord::Schema[7.1].define(version: 2025_05_28_144503) do
     t.integer "video_order", default: 1
     t.integer "imagem_order", default: 2
     t.integer "texte_order", default: 3
+    t.string "slug"
+    t.index ["slug"], name: "index_activities_on_slug", unique: true
     t.index ["user_id"], name: "index_activities_on_user_id"
   end
 

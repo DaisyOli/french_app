@@ -97,7 +97,7 @@ class ParagraphOrderingsController < ApplicationController
   end
 
   def update_order
-    @activity = Activity.find(params[:activity_id])
+    @activity = Activity.find_by_param(params[:activity_id])
     @paragraph_ordering = ParagraphOrdering.find(params[:id])
     
     if @paragraph_ordering.update(display_order: params[:display_order])
@@ -109,7 +109,7 @@ class ParagraphOrderingsController < ApplicationController
 
   private
     def set_activity
-      @activity = Activity.find(params[:activity_id])
+      @activity = Activity.find_by_param(params[:activity_id])
     end
 
     def set_paragraph_ordering

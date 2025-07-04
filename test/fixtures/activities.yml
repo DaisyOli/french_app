@@ -6,6 +6,7 @@ one:
   texto: "Learn basic French vocabulary"
   video_url: "https://www.youtube.com/watch?v=example1"
   imagem_url: "https://example.com/image1.jpg"
+  slug: "french-basics"
   user: one
 
 two:
@@ -14,4 +15,5 @@ two:
   texto: "Master French grammar rules"
   video_url: "https://www.youtube.com/watch?v=example2"
   imagem_url: "https://example.com/image2.jpg"
+  slug: "advanced-french-grammar"
   user: two

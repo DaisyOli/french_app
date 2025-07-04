@@ -47,7 +47,7 @@ class ActivityRatingsController < ApplicationController
   end
 
   def update_by_student
-    @activity = Activity.find(params[:activity_id])
+    @activity = Activity.find_by_param(params[:activity_id])
     @rating = current_student.activity_ratings.find_by!(activity: @activity)
     
     if @rating.update(rating_params)
@@ -72,7 +72,7 @@ class ActivityRatingsController < ApplicationController
   private
 
   def set_activity
-    @activity = Activity.find(params[:activity_id])
+    @activity = Activity.find_by_param(params[:activity_id])
   end
 
   def set_rating

@@ -103,7 +103,7 @@ class SentenceOrderingsController < ApplicationController
   end
 
   def update_order
-    @activity = Activity.find(params[:activity_id])
+    @activity = Activity.find_by_param(params[:activity_id])
     @sentence_ordering = SentenceOrdering.find(params[:id])
     
     if @sentence_ordering.update(display_order: params[:display_order])
@@ -115,7 +115,7 @@ class SentenceOrderingsController < ApplicationController
 
   private
     def set_activity
-      @activity = Activity.find(params[:activity_id])
+      @activity = Activity.find_by_param(params[:activity_id])
     end
 
     def set_sentence_ordering

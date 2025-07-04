@@ -79,10 +79,11 @@ class ActivitiesControllerTest < ActionDispatch::IntegrationTest
       } 
     }
     
-    assert_redirected_to activity_path(@activity)
     @activity.reload
+    assert_redirected_to activity_path(@activity) # Agora usa o novo slug
     assert_equal "Updated Title", @activity.título
     assert_equal "B1", @activity.nível
+    assert_equal "updated-title", @activity.slug # Verificar se o slug foi atualizado
   end
 
   test "should destroy activity when authenticated as user" do

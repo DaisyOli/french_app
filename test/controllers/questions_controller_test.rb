@@ -19,7 +19,7 @@ class QuestionsControllerTest < ActionDispatch::IntegrationTest
       }
     end
     assert_response :redirect
-    assert_match /activities\/#{@activity.id}/, response.location
+    assert_match /activities\/#{@activity.slug}/, response.location
   end
 
   test "should update question when authenticated" do
@@ -30,7 +30,7 @@ class QuestionsControllerTest < ActionDispatch::IntegrationTest
       }
     }
     assert_response :redirect
-    assert_match /activities\/#{@activity.id}/, response.location
+    assert_match /activities\/#{@activity.slug}/, response.location
   end
 
   test "should destroy question when authenticated" do
@@ -39,7 +39,7 @@ class QuestionsControllerTest < ActionDispatch::IntegrationTest
       delete activity_question_path(@activity, question)
     end
     assert_response :redirect
-    assert_match /activities\/#{@activity.id}/, response.location
+    assert_match /activities\/#{@activity.slug}/, response.location
   end
 
   test "should not allow access without authentication" do

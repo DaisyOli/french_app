@@ -18,7 +18,7 @@ class StatementsControllerTest < ActionDispatch::IntegrationTest
       }
     end
     assert_response :redirect
-    assert_match /activities\/#{@activity.id}/, response.location
+    assert_match /activities\/#{@activity.slug}/, response.location
   end
 
   test "should update statement when authenticated" do
@@ -29,7 +29,7 @@ class StatementsControllerTest < ActionDispatch::IntegrationTest
       }
     }
     assert_response :redirect
-    assert_match /activities\/#{@activity.id}/, response.location
+    assert_match /activities\/#{@activity.slug}/, response.location
   end
 
   test "should destroy statement when authenticated" do
@@ -38,7 +38,7 @@ class StatementsControllerTest < ActionDispatch::IntegrationTest
       delete activity_statement_path(@activity, statement)
     end
     assert_response :redirect
-    assert_match /activities\/#{@activity.id}/, response.location
+    assert_match /activities\/#{@activity.slug}/, response.location
   end
 
   test "should not allow access without authentication" do

@@ -13,6 +13,7 @@ class Activity < ApplicationRecord
   validates :título, presence: true, length: { minimum: 3, maximum: 100 }
   validates :nível, presence: true, inclusion: { in: %w[A1 A2 B1 B2 C1 C2] }
   validates :user, presence: true
+  validates :slug, presence: true, uniqueness: true, format: { with: /\A[a-z0-9-]+\z/, message: "deve conter apenas letras minúsculas, números e hífens" }
   
   # Validações condicionais para URLs
   validates :video_url, format: { with: URI::DEFAULT_PARSER.make_regexp(%w[http https]), message: "doit être une URL valide" }, allow_blank: true
@@ -20,6 +21,24 @@ class Activity < ApplicationRecord
   
   # Validação para prevenir timeout em produção (baseado na experiência do app de português)
   validate :total_questions_limit
+  
+  # Callbacks para geração automática do slug
+  before_validation :generate_slug, if: :should_generate_slug?
+  before_validation :ensure_unique_slug
+  
+  # Método para URLs amigáveis - retorna slug em vez de ID
+  def to_param
+    slug
+  end
+  
+  # Método de classe para buscar por ID ou slug
+  def self.find_by_param(param)
+    # Tenta primeiro por slug, depois por ID para compatibilidade
+    find_by(slug: param) || find(param)
+  rescue ActiveRecord::RecordNotFound
+    # Se não encontrar por ID, tenta por slug novamente (caso o parâmetro tenha caracteres especiais)
+    find_by!(slug: param)
+  end
   
   # Métodos para avaliações - otimizados para reduzir pressão no Redis
   def average_rating
@@ -53,6 +72,49 @@ class Activity < ApplicationRecord
   end
   
   private
+  
+  def should_generate_slug?
+    self[:slug].blank? || título_changed?
+  end
+  
+  def generate_slug
+    return if título.blank?
+    
+    base_slug = título.to_s.downcase
+    
+    # Substituir caracteres acentuados
+    base_slug = base_slug.tr('àáâãäåæçèéêëìíîïðñòóôõöøùúûüýþÿ', 'aaaaaaeceeeeiiiidnoooooouuuuyty')
+    
+    # Remover caracteres que não são letras, números ou espaços
+    base_slug = base_slug.gsub(/[^a-z0-9\s]/, '')
+    
+    # Substituir espaços por hífens
+    base_slug = base_slug.gsub(/\s+/, '-')
+    
+    # Remover hífens duplos
+    base_slug = base_slug.gsub(/-+/, '-')
+    
+    # Remover hífens do início e fim
+    base_slug = base_slug.strip.gsub(/^-|-$/, '')
+    
+    # Garantir que não fique vazio
+    base_slug = 'atividade' if base_slug.blank?
+    
+    self[:slug] = base_slug
+  end
+  
+  def ensure_unique_slug
+    return if self[:slug].blank?
+    
+    original_slug = self[:slug]
+    counter = 1
+    
+    # Verificar se já existe outro registro com o mesmo slug
+    while Activity.where(slug: self[:slug]).where.not(id: id).exists?
+      self[:slug] = "#{original_slug}-#{counter}"
+      counter += 1
+    end
+  end
   
   def total_questions_limit
     total_questions = questions.count + 

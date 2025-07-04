@@ -278,11 +278,11 @@ class ActivitiesController < ApplicationController
 
   private
     def set_activity
-      @activity = Activity.find(params[:id])
+      @activity = Activity.find_by_param(params[:id])
     end
 
     def activity_params
-      params.require(:activity).permit(:título, :nível, :texto, :video_url, :imagem_url, :texte, :video_order, :imagem_order, :texte_order)
+      params.require(:activity).permit(:título, :nível, :texto, :video_url, :imagem_url, :texte, :video_order, :imagem_order, :texte_order, :slug)
     end
 
     def completed_activity_params
