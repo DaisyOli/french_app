@@ -174,28 +174,23 @@
             <div class="card-body">
               <p class="instruction-text">Remettez les mots dans le bon ordre pour former la phrase correcte:</p>
               <div class="drag-drop-exercise" data-exercise-type="sentence" data-exercise-id="<%= sentence_ordering.id %>">
-                <!-- Zone des mots à organiser -->
-                <div class="words-pool">
-                  <% sentence_ordering.sentence_words.shuffle.each do |word| %>
-                    <div class="draggable-word" 
-                         data-word-id="<%= word.id %>" 
-                         data-correct-position="<%= word.correct_position %>">
-                      <%= word.word %>
-                    </div>
-                  <% end %>
-                </div>
-                <!-- Zone de construction de la phrase -->
+                <!-- Zone de construction de la phrase com palavras já embaralhadas -->
                 <div class="sentence-builder">
-                  <p class="builder-instruction">Glissez les mots ici:</p>
+                  <p class="builder-instruction">Réorganisez les mots dans l'ordre correct:</p>
                   <div class="drop-zones" data-word-count="<%= sentence_ordering.sentence_words.count %>">
-                    <% sentence_ordering.sentence_words.count.times do |i| %>
+                    <% shuffled_words = sentence_ordering.sentence_words.shuffle %>
+                    <% shuffled_words.each_with_index do |word, i| %>
                       <div class="drop-zone" data-position="<%= i + 1 %>">
                         <span class="position-number"><%= i + 1 %></span>
+                        <div class="draggable-word" 
+                             data-word-id="<%= word.id %>" 
+                             data-correct-position="<%= word.correct_position %>">
+                          <%= word.word %>
+                        </div>
                       </div>
                     <% end %>
                   </div>
                   <div class="sentence-result">
-                    <span class="result-text"></span>
                     <div class="result-feedback"></div>
                   </div>
                 </div>
@@ -219,24 +214,21 @@
                 <p class="instruction-text">Remettez ces phrases dans le bon ordre pour former un paragraphe cohérent:</p>
               <% end %>
               <div class="drag-drop-exercise" data-exercise-type="paragraph" data-exercise-id="<%= paragraph_ordering.id %>">
-                <!-- Zone des phrases à organiser -->
-                <div class="sentences-pool">
-                  <% paragraph_ordering.paragraph_sentences.shuffle.each do |sentence| %>
-                    <div class="draggable-sentence" 
-                         data-sentence-id="<%= sentence.id %>" 
-                         data-correct-position="<%= sentence.correct_position %>">
-                      <span class="sentence-content"><%= sentence.sentence %></span>
-                    </div>
-                  <% end %>
-                </div>
-                <!-- Zone de construction du paragraphe -->
+                <!-- Zone de construction du paragraphe com frases já embaralhadas -->
                 <div class="paragraph-builder">
-                  <p class="builder-instruction">Glissez les phrases ici dans l'ordre correct:</p>
+                  <p class="builder-instruction">Réorganisez les phrases dans l'ordre correct:</p>
                   <div class="paragraph-drop-zones" data-sentence-count="<%= paragraph_ordering.paragraph_sentences.count %>">
-                    <% paragraph_ordering.paragraph_sentences.count.times do |i| %>
+                    <% shuffled_sentences = paragraph_ordering.paragraph_sentences.shuffle %>
+                    <% shuffled_sentences.each_with_index do |sentence, i| %>
                       <div class="paragraph-drop-zone" data-position="<%= i + 1 %>">
                         <span class="position-number"><%= i + 1 %></span>
-                        <div class="drop-content"></div>
+                        <div class="drop-content">
+                          <div class="draggable-sentence" 
+                               data-sentence-id="<%= sentence.id %>" 
+                               data-correct-position="<%= sentence.correct_position %>">
+                            <span class="sentence-content"><%= sentence.sentence %></span>
+                          </div>
+                        </div>
                       </div>
                     <% end %>
                   </div>
@@ -605,13 +597,32 @@
             correctAnswers++;
           }
           
+          // Construir resposta correta baseada nas palavras ordenadas por posição correta
+          const dropZones = dragDropExercise.querySelectorAll('.drop-zone');
+          const correctWords = [];
+          
+          // Coletar todas as palavras e ordená-las pela posição correta
+          const allWords = [];
+          dropZones.forEach(zone => {
+            const word = zone.querySelector('.draggable-word');
+            if (word) {
+              const correctPosition = parseInt(word.getAttribute('data-correct-position'));
+              const wordText = word.textContent.trim();
+              allWords.push({ position: correctPosition, text: wordText });
+            }
+          });
+          
+          // Ordenar por posição correta e construir frase
+          allWords.sort((a, b) => a.position - b.position);
+          const correctSentenceText = allWords.map(item => item.text).join(' ');
+          
           const feedback = {
             questionNumber: `Org.Mots ${exerciseNumber}`,
             questionText: `Exercice d'organisation de mots ${exerciseNumber}`,
             isCorrect: isCorrect,
             selectedText: isCorrect ? 'Ordre correct' : 'Ordre incorrect',
             selectedLetter: '',
-            correctText: 'Ordre correct des mots',
+            correctText: correctSentenceText || 'Ordre correct des mots',
             correctLetter: '',
             isDragDrop: true
           };
@@ -636,13 +647,32 @@
             correctAnswers++;
           }
           
+          // Construir resposta correta baseada nas frases ordenadas por posição correta
+          const dropZones = dragDropExercise.querySelectorAll('.paragraph-drop-zone');
+          const correctSentences = [];
+          
+          // Coletar todas as frases e ordená-las pela posição correta
+          const allSentences = [];
+          dropZones.forEach(zone => {
+            const sentence = zone.querySelector('.draggable-sentence');
+            if (sentence) {
+              const correctPosition = parseInt(sentence.getAttribute('data-correct-position'));
+              const sentenceText = sentence.textContent.trim();
+              allSentences.push({ position: correctPosition, text: sentenceText });
+            }
+          });
+          
+          // Ordenar por posição correta e construir array de frases
+          allSentences.sort((a, b) => a.position - b.position);
+          const correctOrderText = allSentences.map((item, index) => `${index + 1}) ${item.text}`).join('<br>');
+          
           const feedback = {
             questionNumber: `Org.Phrases ${exerciseNumber}`,
             questionText: `Exercice d'organisation de phrases ${exerciseNumber}`,
             isCorrect: isCorrect,
             selectedText: isCorrect ? 'Ordre correct' : 'Ordre incorrect',
             selectedLetter: '',
-            correctText: 'Ordre correct des phrases',
+            correctText: correctOrderText || 'Ordre correct des phrases',
             correctLetter: '',
             isDragDrop: true
           };
@@ -967,32 +997,59 @@
       const exerciseType = exercise.getAttribute('data-exercise-type');
       
       if (exerciseType === 'sentence') {
-        // Mover todas as palavras de volta para o pool
-        const wordsPool = exercise.querySelector('.words-pool');
+        // Embaralhar as palavras novamente nas zonas
         const dropZones = exercise.querySelectorAll('.drop-zone');
+        const words = [];
         
+        // Coletar todas as palavras
         dropZones.forEach(zone => {
           const word = zone.querySelector('.draggable-word');
           if (word) {
-            wordsPool.appendChild(word);
+            words.push(word);
+          }
+        });
+        
+        // Embaralhar array
+        for (let i = words.length - 1; i > 0; i--) {
+          const j = Math.floor(Math.random() * (i + 1));
+          [words[i], words[j]] = [words[j], words[i]];
+        }
+        
+        // Redistribuir nas zonas
+        dropZones.forEach((zone, index) => {
+          if (words[index]) {
+            zone.appendChild(words[index]);
           }
         });
         
         // Limpar resultado
-        const resultText = exercise.querySelector('.result-text');
         const resultFeedback = exercise.querySelector('.result-feedback');
-        if (resultText) resultText.textContent = '';
         if (resultFeedback) resultFeedback.innerHTML = '';
         
       } else if (exerciseType === 'paragraph') {
-        // Mover todas as frases de volta para o pool
-        const sentencesPool = exercise.querySelector('.sentences-pool');
+        // Embaralhar as frases novamente nas zonas
         const dropZones = exercise.querySelectorAll('.paragraph-drop-zone');
+        const sentences = [];
         
+        // Coletar todas as frases
         dropZones.forEach(zone => {
           const sentence = zone.querySelector('.draggable-sentence');
           if (sentence) {
-            sentencesPool.appendChild(sentence);
+            sentences.push(sentence);
+          }
+        });
+        
+        // Embaralhar array
+        for (let i = sentences.length - 1; i > 0; i--) {
+          const j = Math.floor(Math.random() * (i + 1));
+          [sentences[i], sentences[j]] = [sentences[j], sentences[i]];
+        }
+        
+        // Redistribuir nas zonas
+        dropZones.forEach((zone, index) => {
+          const dropContent = zone.querySelector('.drop-content');
+          if (sentences[index]) {
+            dropContent.appendChild(sentences[index]);
           }
         });
         
@@ -1022,7 +1079,6 @@
     function initializeSentenceOrdering(exercise) {
       const draggableWords = exercise.querySelectorAll('.draggable-word');
       const dropZones = exercise.querySelectorAll('.drop-zone');
-      const resultText = exercise.querySelector('.result-text');
       const resultFeedback = exercise.querySelector('.result-feedback');
       
       // Tornar palavras arrastáveis
@@ -1040,11 +1096,6 @@
         zone.addEventListener('dragleave', handleDragLeave);
       });
       
-      // Configurar pool de palavras para receber de volta
-      const wordsPool = exercise.querySelector('.words-pool');
-      wordsPool.addEventListener('dragover', handleDragOver);
-      wordsPool.addEventListener('drop', handleDropToPool);
-      
       function handleDragStart(e) {
         e.dataTransfer.setData('text/plain', '');
         e.target.classList.add('dragging');
@@ -1052,7 +1103,6 @@
       
       function handleDragEnd(e) {
         e.target.classList.remove('dragging');
-        updateSentenceResult();
       }
       
       function handleDragOver(e) {
@@ -1061,14 +1111,16 @@
       
       function handleDragEnter(e) {
         e.preventDefault();
-        if (e.target.classList.contains('drop-zone')) {
-          e.target.classList.add('drag-over');
+        if (e.target.classList.contains('drop-zone') || e.target.closest('.drop-zone')) {
+          const zone = e.target.classList.contains('drop-zone') ? e.target : e.target.closest('.drop-zone');
+          zone.classList.add('drag-over');
         }
       }
       
       function handleDragLeave(e) {
-        if (e.target.classList.contains('drop-zone')) {
-          e.target.classList.remove('drag-over');
+        const zone = e.target.classList.contains('drop-zone') ? e.target : e.target.closest('.drop-zone');
+        if (zone) {
+          zone.classList.remove('drag-over');
         }
       }
       
@@ -1090,31 +1142,6 @@
         }
         
         dropZone.appendChild(draggingWord);
-      }
-      
-      function handleDropToPool(e) {
-        e.preventDefault();
-        const draggingWord = exercise.querySelector('.dragging');
-        if (!draggingWord) return;
-        
-        wordsPool.appendChild(draggingWord);
-      }
-      
-      function updateSentenceResult() {
-        const words = [];
-        dropZones.forEach(zone => {
-          const word = zone.querySelector('.draggable-word');
-          if (word) {
-            words.push(word.textContent.trim());
-          } else {
-            words.push('___');
-          }
-        });
-        
-        resultText.textContent = words.join(' ');
-        
-        // Não mostrar feedback automático - apenas atualizar o resultado visual
-        // O feedback será mostrado apenas após submissão
       }
     }
     
@@ -1138,11 +1165,6 @@
         zone.addEventListener('dragenter', handleDragEnter);
         zone.addEventListener('dragleave', handleDragLeave);
       });
-      
-      // Configurar pool de frases para receber de volta
-      const sentencesPool = exercise.querySelector('.sentences-pool');
-      sentencesPool.addEventListener('dragover', handleDragOver);
-      sentencesPool.addEventListener('drop', handleDropToPool);
       
       function handleDragStart(e) {
         e.dataTransfer.setData('text/plain', '');
@@ -1194,13 +1216,7 @@
         dropContent.appendChild(draggingSentence);
       }
       
-      function handleDropToPool(e) {
-        e.preventDefault();
-        const draggingSentence = exercise.querySelector('.dragging');
-        if (!draggingSentence) return;
-        
-        sentencesPool.appendChild(draggingSentence);
-      }
+
       
       function updateParagraphResult() {
         const sentences = [];
@@ -2185,18 +2201,20 @@
   .draggable-sentence {
     background: linear-gradient(135deg, var(--paragraph-ordering-color) 0%, #6B46C1 100%);
     color: white;
-    padding: 1rem 1.5rem;
-    border-radius: 16px;
+    padding: 0.75rem 1rem;
+    border-radius: 12px;
     cursor: grab;
     user-select: none;
     transition: all 0.3s ease;
-    box-shadow: 0 4px 12px rgba(124, 58, 237, 0.25);
-    margin-bottom: 0.75rem;
+    box-shadow: 0 3px 8px rgba(124, 58, 237, 0.25);
+    margin-bottom: 0.5rem;
+    font-size: 0.9rem;
+    line-height: 1.3;
   }
 
   .draggable-sentence:hover {
-    transform: translateY(-3px);
-    box-shadow: 0 8px 20px rgba(124, 58, 237, 0.35);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(124, 58, 237, 0.35);
   }
 
   /* === ASSOCIAÇÃO DE COLUNAS COM CORES ESPECÍFICAS === */
@@ -2435,25 +2453,11 @@
     padding: 1rem 0;
   }
   
-   .sentences-pool {
-     background: rgba(124, 58, 237, 0.08);
-     border: 2px solid rgba(124, 58, 237, 0.15);
-     border-radius: 16px;
-     padding: 1.5rem;
-     margin-bottom: 1.5rem;
-     min-height: 120px;
-     display: flex;
-     flex-direction: column;
-     gap: 0.75rem;
-   }
-
-   .sentences-pool:empty::before {
-     content: "Toutes les phrases ont été placées! 🎉";
-     color: var(--info-purple);
-    font-weight: 600;
-     font-style: italic;
-     text-align: center;
-     padding: 2rem 0;
+   /* === LAYOUT SIMPLIFICADO DE UMA COLUNA === */
+   .drag-drop-exercise[data-exercise-type="paragraph"] {
+     display: block;
+     max-width: 800px;
+     margin: 0 auto;
    }
 
    /* Construtores */
@@ -2468,17 +2472,20 @@
    .paragraph-builder {
      background: rgba(255, 255, 255, 0.8);
      border: 2px solid rgba(124, 58, 237, 0.2);
-     border-radius: 16px;
-     padding: 1.5rem;
+     border-radius: 12px;
+     padding: 1rem;
      backdrop-filter: blur(10px);
+     min-height: fit-content;
+     display: flex;
+     flex-direction: column;
    }
 
    .builder-instruction {
      text-align: center;
      color: var(--primary-dark);
      font-weight: 600;
-     margin-bottom: 1rem;
-     font-size: 1.1rem;
+     margin-bottom: 0.75rem;
+     font-size: 0.95rem;
    }
 
    /* Zonas de drop */
@@ -2539,18 +2546,20 @@
     flex-direction: column;
     gap: 0.25rem;
     margin-bottom: 0.5rem;
+    flex: 1;
+    min-height: fit-content;
   }
   
   .paragraph-drop-zone {
      background: rgba(124, 58, 237, 0.08);
      border: 2px dashed rgba(124, 58, 237, 0.3);
-    border-radius: 12px;
-    min-height: 45px;
+    border-radius: 8px;
+    min-height: 40px;
     display: flex;
     align-items: center;
     position: relative;
     transition: all 0.3s ease;
-    padding: 0.5rem;
+    padding: 0.4rem;
   }
   
   .paragraph-drop-zone.drag-over {
@@ -2583,17 +2592,7 @@
     padding: 0.25rem;
   }
   
-  .paragraph-drop-zone:not(:has(.draggable-sentence)) .drop-content::before {
-    content: "Glissez une phrase ici";
-    color: #9CA3AF;
-    font-style: italic;
-    text-align: center;
-    display: block;
-    padding: 0;
-    margin: 0;
-    line-height: 1;
-    font-size: 0.85rem;
-  }
+  /* Zonas sempre têm frases - remover placeholder */
   
    /* Resultados */
    .sentence-result {
@@ -2931,6 +2930,15 @@
   
   /* === RESPONSIVE === */
   @media (max-width: 768px) {
+    .drag-drop-exercise[data-exercise-type="paragraph"] {
+      max-width: 100%;
+      margin: 0;
+    }
+    
+    .paragraph-builder {
+      padding: 0.75rem;
+    }
+    
     .drop-zones {
       justify-content: center;
     }
@@ -2941,34 +2949,35 @@
     }
     
     .draggable-word {
-      font-size: 0.9rem;
+      font-size: 0.85rem;
       padding: 0.4rem 0.8rem;
     }
     
     .draggable-sentence {
-      padding: 0.8rem;
-      font-size: 0.9rem;
+      padding: 0.6rem 0.8rem;
+      font-size: 0.85rem;
     }
     
     .paragraph-drop-zone {
-      min-height: 70px;
-      padding: 0.8rem;
+      min-height: 35px;
+      padding: 0.3rem;
     }
     
     .drag-drop-exercise {
-      padding: 1rem;
+      padding: 0.75rem;
+    }
+    
+    .builder-instruction {
+      font-size: 0.9rem;
     }
   }
   
   @media (max-width: 480px) {
-    .words-pool,
-    .sentences-pool {
-      padding: 0.75rem;
-    }
+    /* Removido: .words-pool não é mais usado */
     
     .sentence-builder,
     .paragraph-builder {
-      padding: 0.75rem;
+      padding: 0.6rem;
     }
     
     .drop-zone {
@@ -2979,6 +2988,27 @@
     .draggable-word {
       font-size: 0.8rem;
       padding: 0.3rem 0.6rem;
+    }
+    
+    .draggable-sentence {
+      padding: 0.5rem 0.6rem;
+      font-size: 0.8rem;
+      margin-bottom: 0.4rem;
+    }
+    
+    .paragraph-drop-zone {
+      min-height: 32px;
+      padding: 0.25rem;
+    }
+    
+    .paragraph-drop-zone .position-number {
+      font-size: 0.65rem;
+      padding: 0.15rem 0.3rem;
+    }
+    
+    .builder-instruction {
+      font-size: 0.85rem;
+      margin-bottom: 0.5rem;
     }
   }
 
