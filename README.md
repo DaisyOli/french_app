@@ -1,6 +1,3 @@
-
-# 🇫🇷 French App — Modern French Learning Platform
-
 French App is a next-generation web application for learning French, featuring interactive activities, gamification, and a robust, scalable architecture. Built with Ruby on Rails, it delivers a seamless experience for both students and teachers.
 
 ---
