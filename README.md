@@ -1,40 +1,49 @@
-# 🇫🇷 French Learning App
 
-An interactive educational platform for learning French, built with Ruby on Rails.
+# 🇫🇷 French App — Modern French Learning Platform
 
-## 📋 Features
+Welcome to French App! This is a next-generation, production-ready web application designed to make learning French engaging, effective, and fun. Built with the latest Ruby on Rails stack, it combines interactive activities, gamification, and robust performance to deliver a seamless experience for both students and teachers.
 
-- **Dual Authentication System**: Teachers and students with different permissions
-- **Multiple Exercise Types**:
+> **Why French App?**
+> - Modern, scalable, and secure architecture
+> - Real-world optimizations for high performance
+> - Gamified learning and personalized dashboards
+> - Built with best practices for code quality, security, and maintainability
+
+---
+
+
+## � Features
+
+- **Dual Authentication System:** Separate flows for teachers and students, with tailored permissions
+- **Multiple Exercise Types:**
   - Fill-in-the-blanks
   - Sentence and paragraph ordering
   - Column associations
   - Multiple choice questions
-- **Gamification System**: Daily streaks and motivational trophies
-- **Personalized Dashboard**: Different interfaces for teachers and students
-- **Invitation System**: Teachers can invite students
-- **Production-Ready Performance**:
+- **Gamification:** Daily streaks, motivational trophies, and progress tracking
+- **Personalized Dashboards:** Custom interfaces for teachers and students
+- **Invitation System:** Teachers can invite students via email
+- **Production-Ready:**
   - Activity size limits (max 25 questions) to prevent timeouts
-  - Asynchronous processing for large activities
+  - Asynchronous and batch processing for large activities
   - Email notifications for processing status
-  - Timeout protection middleware
-  - Batch processing for optimal performance
+  - Timeout protection and robust error handling
+  - Health checks and structured logging
 
-## 🛠️ Technologies
 
-- **Ruby**: 3.3.5
-- **Rails**: 7.1.3
-- **Database**: PostgreSQL
-- **Cache**: Redis
-- **Authentication**: Devise + Devise Invitable
-- **Frontend**: Bootstrap 5.3, Stimulus, Turbo
-- **Security**: Rack::Attack (Rate Limiting), Rack::Timeout, Security Headers
-- **Background Jobs**: Active Job with async processing
-- **Email**: Action Mailer with Gmail SMTP
-- **Containerization**: Docker + Docker Compose
-- **Testing**: Minitest with comprehensive coverage
-- **Monitoring**: Structured logging, Health checks
-- **Performance**: Timeout protection, Activity size limits
+## 🛠️ Tech Stack
+
+- **Backend:** Ruby 3.3.5, Rails 7.1.3
+- **Database:** PostgreSQL
+- **Cache:** Redis
+- **Authentication:** Devise, Devise Invitable
+- **Frontend:** Bootstrap 5.3, Stimulus, Turbo, Importmap
+- **Security:** Rack::Attack, Rack::Timeout, Secure Headers
+- **Background Jobs:** Active Job (async)
+- **Email:** Action Mailer (Gmail SMTP)
+- **Containerization:** Docker, Docker Compose
+- **Testing:** Minitest (comprehensive coverage)
+- **Monitoring:** Health checks, structured logging
 
 ## 🚀 Installation and Setup
 
@@ -220,6 +229,16 @@ rails test test/models/activity_test.rb
 - Use environment-specific configurations
 - Regularly rotate secret keys
 - Monitor application logs for security issues
+
+
+## 👩‍💻 About the Author
+
+Developed by **Daisy Oli** — passionate about education, technology, and building impactful web applications. Always striving for code quality, user experience, and real-world results.
+
+- [LinkedIn](https://www.linkedin.com/in/daisy-oliani-487a6379/)
+- [GitHub](https://github.com/DaisyOli)
+
+---
 
 ## 📦 Deployment
 
