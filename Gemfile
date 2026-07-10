@@ -47,7 +47,6 @@ gem "devise_invitable"
 
 # Forms and UI
 gem "simple_form"
-gem "bootstrap", "~> 5.3"
 gem "sassc-rails"
 
 # Internationalization
