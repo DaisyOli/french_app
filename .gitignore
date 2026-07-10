@@ -37,3 +37,7 @@
 
 # Dependências do JavaScript (reinstaláveis via package.json).
 /node_modules
+
+# CSS gerado pelo Tailwind (reconstruído a cada build).
+/app/assets/builds/*
+!/app/assets/builds/.keep

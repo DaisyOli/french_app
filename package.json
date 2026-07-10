@@ -1,0 +1,6 @@
+{
+  "dependencies": {
+    "daisyui": "4",
+    "postcss": "^8.5.15"
+  }
+}

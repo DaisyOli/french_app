@@ -48,6 +48,7 @@ gem "devise_invitable"
 # Forms and UI
 gem "simple_form"
 gem "sassc-rails"
+gem "tailwindcss-rails", "~> 3.3.1" # mesma versão do practice-br (franquia)
 
 # Internationalization
 gem "rails-i18n"
