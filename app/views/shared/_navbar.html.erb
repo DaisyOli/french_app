@@ -43,13 +43,13 @@
             sign_out_path: destroy_user_session_path %>
 
     <% elsif student_signed_in? %>
-      <%# ---- Aluno: troféus da Daisy em pills da franquia ---- %>
-      <div class="hidden sm:flex items-center gap-1 px-3 py-1 rounded-full"
-           style="background:rgba(255,255,255,0.12); border:1px solid rgba(255,255,255,0.2); font-family:'DM Mono',monospace; font-size:0.8rem; color:var(--action-bright);">
+      <%# ---- Aluno: troféus da Daisy em pills da franquia (visíveis em qualquer largura) ---- %>
+      <div class="flex items-center gap-1 px-2 sm:px-3 py-1 rounded-full"
+           style="background:rgba(255,255,255,0.12); border:1px solid rgba(255,255,255,0.2); font-family:'DM Mono',monospace; font-size:0.75rem; color:var(--action-bright);">
         🏆 <%= current_student.completed_activities.count %>
       </div>
-      <div class="hidden sm:flex items-center gap-1 px-3 py-1 rounded-full"
-           style="background:rgba(255,255,255,0.12); border:1px solid rgba(255,255,255,0.2); font-family:'DM Mono',monospace; font-size:0.8rem; color:var(--action-bright);">
+      <div class="flex items-center gap-1 px-2 sm:px-3 py-1 rounded-full"
+           style="background:rgba(255,255,255,0.12); border:1px solid rgba(255,255,255,0.2); font-family:'DM Mono',monospace; font-size:0.75rem; color:var(--action-bright);">
         <%= current_student.current_trophy[:icon] %> <%= current_student.current_streak %>
       </div>
 

@@ -28,6 +28,81 @@
   text-decoration: none;
 }
 
+/* ==============================================
+   🃏 CARDS DE ATIVIDADE — componente da franquia
+   (portado de exercise_app/components/_cards.scss)
+   ============================================== */
+.activities-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 18px;
+}
+
+.activity-card {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  transition: box-shadow 0.15s ease, transform 0.15s ease;
+}
+
+.activity-card:hover {
+  box-shadow: 0 6px 24px rgba(0, 0, 0, 0.09);
+  transform: translateY(-2px);
+}
+
+.activity-card-cover {
+  height: 140px;
+  overflow: hidden;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.activity-card-cover img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+@media (max-width: 640px) {
+  .activity-card-cover { height: 120px; }
+}
+
+/* Chips de filtro por nível (lista do aluno) */
+.level-filter {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-bottom: 20px;
+}
+
+.level-chip {
+  font-family: 'DM Mono', monospace;
+  font-size: 0.78rem;
+  font-weight: 700;
+  padding: 6px 14px;
+  border-radius: 20px;
+  border: 1.5px solid var(--line);
+  background: var(--surface);
+  color: var(--ink-soft);
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.level-chip:hover { border-color: var(--brand-soft); }
+
+.level-chip.active {
+  background: var(--brand-tint);
+  border-color: var(--brand-bright);
+  color: var(--brand-deep);
+}
+
 /* Base da franquia Practice — o resto vem do Tailwind + tokens */
 * {
   box-sizing: border-box;
