@@ -5,6 +5,7 @@
 # para a paleta local (ver docs/DESIGN_SYSTEM.md).
 
 APPLY = ARGV.include?('--apply')
+ONLY  = ARGV.find { |a| a.start_with?('--only=') }&.delete_prefix('--only=')
 ROOT  = Dir.pwd
 
 # hex (maiúsculo, 6 dígitos) => token
@@ -76,6 +77,43 @@ MAP6 = {
   '#4C1D95' => 'violet-deep',
   '#DDD6FE' => 'violet-border', '#C4B5FD' => 'violet-border', '#E9D5FF' => 'violet-border',
   '#F5F3FF' => 'violet-tint', '#EDE9FE' => 'violet-tint', '#FDF4FF' => 'violet-tint',
+
+  # ---- 🇫🇷 PALETA LOCAL DO FR (Chakra/azuis do app antigo) ----
+  # neutros
+  '#2D3748' => 'ink',
+  '#4A5568' => 'ink-soft', '#607D8B' => 'ink-soft', '#64748B' => 'ink-soft',
+  '#718096' => 'ink-faint', '#A0AEC0' => 'ink-faint', '#A0ADB8' => 'ink-faint',
+  '#CBD5E0' => 'line', '#E2E8F0' => 'line',
+  '#F7FAFC' => 'surface-2', '#F8FAFC' => 'surface-2',
+  '#EDF2F7' => 'paper-2',
+  # azuis da marca velha -> família brand
+  '#1E3D59' => 'brand-deep', '#2B4F76' => 'brand-deep',
+  '#2A5F8F' => 'brand', '#357ABD' => 'brand',
+  '#4A90E2' => 'brand-bright', '#4299E1' => 'brand-bright',
+  '#63B3ED' => 'brand-soft',
+  '#E8F4FD' => 'brand-mist',
+  '#3B82F6' => 'info', '#2196F3' => 'info', '#6366F1' => 'info',
+  # rosas antigos -> brand
+  '#EC4899' => 'brand-bright', '#BE185D' => 'brand', '#FDF2F8' => 'brand-mist',
+  '#FF69B4' => 'brand-bright', '#FFB6C1' => 'brand-soft',
+  # verdes do quiz -> success
+  '#48BB78' => 'success', '#4CAF50' => 'success', '#84CC16' => 'success',
+  '#22C55E' => 'success',
+  '#68D391' => 'success-border',
+  # teals -> sky
+  '#0F766E' => 'sky', '#14B8A6' => 'sky-bright', '#38B2AC' => 'sky-bright',
+  '#06B6D4' => 'sky-bright', '#4FD1C7' => 'sky-border',
+  # vermelhos -> error
+  '#DC2626' => 'error', '#E53E3E' => 'error', '#EF4444' => 'error',
+  '#F44336' => 'error', '#F56565' => 'error', '#C53030' => 'error-deep',
+  '#F87171' => 'error-border',
+  # laranjas -> warning
+  '#ED8936' => 'warning', '#F97316' => 'warning', '#FF9800' => 'warning',
+  '#F59E0B' => 'warning',
+  '#F6AD55' => 'warning-border',
+  '#FFD700' => 'action-bright', '#FFA500' => 'action-bright',
+  # violetas
+  '#6B46C1' => 'violet-deep', '#8B5CF6' => 'violet', '#9C27B0' => 'violet',
 }.freeze
 
 MAP3 = { '#FFF' => 'surface', '#333' => 'ink', '#666' => 'ink-soft', '#777' => 'ink-faint' }.freeze
@@ -95,6 +133,8 @@ files += ["#{ROOT}/app/assets/stylesheets/application.scss",
           "#{ROOT}/app/assets/stylesheets/application.tailwind.css",
           "#{ROOT}/app/assets/stylesheets/_globals.scss"]
 files += Dir.glob("#{ROOT}/app/assets/stylesheets/components/*.scss")
+
+files.select! { |f| f.include?(ONLY) } if ONLY
 
 stats    = Hash.new(0)
 leftover = Hash.new { |h, k| h[k] = [] }

@@ -426,26 +426,26 @@
     
     // Mapper niveaux à couleurs distinctes avec bon contraste
     const nivelColors = {
-      'A1': '#4CAF50',  // Vert
-      'A2': '#2196F3',  // Bleu
-      'B1': '#FF9800',  // Orange
-      'B2': '#9C27B0',  // Violet
-      'C1': '#F44336',  // Rouge
-      'C2': '#607D8B'   // Bleu acinzenté
+      'A1': 'var(--success)',  // Vert
+      'A2': 'var(--info)',  // Bleu
+      'B1': 'var(--warning)',  // Orange
+      'B2': 'var(--violet)',  // Violet
+      'C1': 'var(--error)',  // Rouge
+      'C2': 'var(--ink-soft)'   // Bleu acinzenté
     };
     
     nivelBadges.forEach(function(badge) {
       const nivel = badge.getAttribute('data-nivel');
       if (nivelColors[nivel]) {
         badge.style.backgroundColor = nivelColors[nivel];
-        badge.style.color = '#ffffff';
+        badge.style.color = 'var(--surface)';
         badge.style.padding = '0.35em 0.65em';
         badge.style.fontWeight = '600';
         badge.style.boxShadow = '0 1px 3px rgba(0,0,0,0.2)';
         badge.style.border = '1px solid rgba(255,255,255,0.1)';
       } else {
-        badge.style.backgroundColor = '#607D8B';
-        badge.style.color = '#ffffff';
+        badge.style.backgroundColor = 'var(--ink-soft)';
+        badge.style.color = 'var(--surface)';
       }
     });
     
@@ -1277,8 +1277,8 @@
         point.removeAttribute('data-connection-color');
         
         // Restaurar estado neutro (cinza)
-        point.style.backgroundColor = '#E2E8F0';
-        point.style.border = '3px solid #CBD5E0';
+        point.style.backgroundColor = 'var(--line)';
+        point.style.border = '3px solid var(--line)';
         point.style.opacity = '0.8';
         point.style.transform = 'scale(1)';
         point.style.boxShadow = 'none';
@@ -1318,23 +1318,23 @@
       
       // Cores para diferentes pares
       const pairColors = [
-        '#EF4444', // Vermelho
-        '#3B82F6', // Azul
-        '#68D391', // Verde
-        '#F59E0B', // Amarelo/Laranja
-        '#7C3AED', // Roxo
-        '#EC4899', // Rosa
-        '#06B6D4', // Ciano
-        '#84CC16', // Lima
-        '#F97316', // Laranja
-        '#6366F1'  // Índigo
+        'var(--error)', // Vermelho
+        'var(--info)', // Azul
+        'var(--success-border)', // Verde
+        'var(--warning)', // Amarelo/Laranja
+        'var(--violet)', // Roxo
+        'var(--brand-bright)', // Rosa
+        'var(--sky-bright)', // Ciano
+        'var(--success)', // Lima
+        'var(--warning)', // Laranja
+        'var(--info)'  // Índigo
       ];
       
             // Aplicar estilo inicial neutro aos pontos de conexão
       connectionPoints.forEach(point => {
         // Começar com cor neutra (cinza)
-        point.style.backgroundColor = '#E2E8F0';
-        point.style.border = '3px solid #CBD5E0';
+        point.style.backgroundColor = 'var(--line)';
+        point.style.border = '3px solid var(--line)';
         point.style.opacity = '0.8';
         point.style.cursor = 'pointer';
         
@@ -1447,8 +1447,8 @@
       
       function resetPointToOriginalColor(point) {
         // Restaurar estado neutro (cinza)
-        point.style.backgroundColor = '#E2E8F0';
-        point.style.border = '3px solid #CBD5E0';
+        point.style.backgroundColor = 'var(--line)';
+        point.style.border = '3px solid var(--line)';
         point.style.opacity = '0.8';
         point.style.transform = 'scale(1)';
         point.style.boxShadow = 'none';
@@ -1624,11 +1624,11 @@
       
       // Mudar cor quando próximo do limite
       if (count > 450) {
-        charCount.style.color = '#F56565';
+        charCount.style.color = 'var(--error)';
       } else if (count > 400) {
-        charCount.style.color = '#ED8936';
+        charCount.style.color = 'var(--warning)';
       } else {
-        charCount.style.color = '#A0AEC0';
+        charCount.style.color = 'var(--ink-faint)';
       }
     });
   }
@@ -1805,7 +1805,7 @@
       position: fixed;
       top: 20px;
       right: 20px;
-      background: linear-gradient(135deg, #68D391 0%, #48BB78 100%);
+      background: linear-gradient(135deg, var(--success-border) 0%, var(--success) 100%);
       color: white;
       padding: 1rem 1.5rem;
       border-radius: 12px;
@@ -1832,7 +1832,7 @@
       position: fixed;
       top: 20px;
       right: 20px;
-      background: linear-gradient(135deg, #F87171 0%, #EF4444 100%);
+      background: linear-gradient(135deg, var(--error-border) 0%, var(--error) 100%);
       color: white;
       padding: 1rem 1.5rem;
       border-radius: 12px;
@@ -1869,14 +1869,14 @@
   
   /* Variáveis CSS para consistência */
   :root {
-    --primary-blue: #4A90E2;
-    --primary-dark: #1E3D59;
-    --success-green: #68D391; /* Verde mais suave, harmonizado com student_dashboard */
-    --warning-orange: #F6AD55;
-    --info-purple: #7C3AED; /* Roxo harmonizado com student_dashboard */
-    --accent-pink: #EC4899;
-    --accent-teal: #14B8A6;
-    --accent-indigo: #6366F1;
+    --primary-blue: var(--brand-bright);
+    --primary-dark: var(--brand-deep);
+    --success-green: var(--success-border); /* Verde mais suave, harmonizado com student_dashboard */
+    --warning-orange: var(--warning-border);
+    --info-purple: var(--violet); /* Roxo harmonizado com student_dashboard */
+    --accent-pink: var(--brand-bright);
+    --accent-teal: var(--sky-bright);
+    --accent-indigo: var(--info);
     
     /* Cores específicas por tipo de exercício */
     --question-color: var(--primary-blue);
@@ -1890,8 +1890,8 @@
 
   /* === CONFIGURAÇÃO GERAL DA PÁGINA === */
   .solve-activity {
-    font-family: 'Inter', sans-serif;
-    background: linear-gradient(135deg, #E8F4FD 0%, #F7FAFC 50%, #FDF2F8 100%);
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    background: linear-gradient(135deg, var(--brand-mist) 0%, var(--surface-2) 50%, var(--brand-mist) 100%);
     min-height: 100vh;
     position: relative;
   }
@@ -1965,26 +1965,26 @@
 
   /* Cores dos níveis consistentes com o dashboard */
   .level-badge.level-a1 { 
-    background: linear-gradient(135deg, #68D391 0%, #48BB78 100%); 
+    background: linear-gradient(135deg, var(--success-border) 0%, var(--success) 100%); 
   }
   .level-badge.level-a2 { 
-    background: linear-gradient(135deg, #4FD1C7 0%, #38B2AC 100%); 
+    background: linear-gradient(135deg, var(--sky-border) 0%, var(--sky-bright) 100%); 
   }
   .level-badge.level-b1 { 
-    background: linear-gradient(135deg, #63B3ED 0%, #4299E1 100%); 
+    background: linear-gradient(135deg, var(--brand-soft) 0%, var(--brand-bright) 100%); 
   }
   .level-badge.level-b2 { 
-    background: linear-gradient(135deg, #7C3AED 0%, #6B46C1 100%); 
+    background: linear-gradient(135deg, var(--violet) 0%, var(--violet-deep) 100%); 
   }
   .level-badge.level-c1 { 
-    background: linear-gradient(135deg, #F56565 0%, #E53E3E 100%); 
+    background: linear-gradient(135deg, var(--error) 0%, var(--error) 100%); 
   }
   .level-badge.level-c2 { 
-    background: linear-gradient(135deg, #F6AD55 0%, #ED8936 100%); 
+    background: linear-gradient(135deg, var(--warning-border) 0%, var(--warning) 100%); 
   }
 
   .activity-title {
-    font-family: 'Lora', serif;
+    font-family: 'Raleway', sans-serif;
     color: var(--primary-dark);
     font-size: 2.5rem;
     font-weight: 600;
@@ -1993,7 +1993,7 @@
   }
 
   .activity-description {
-    color: #4A5568;
+    color: var(--ink-soft);
     font-size: 1.1rem;
     line-height: 1.6;
     margin: 0;
@@ -2066,31 +2066,31 @@
 
   /* Cores específicas por tipo de exercício */
   .question-card .card-header {
-    background: linear-gradient(135deg, var(--question-color) 0%, #357ABD 100%);
+    background: linear-gradient(135deg, var(--question-color) 0%, var(--brand) 100%);
   }
 
   .fill-blank-card .card-header {
-    background: linear-gradient(135deg, var(--fill-blank-color) 0%, #48BB78 100%);
+    background: linear-gradient(135deg, var(--fill-blank-color) 0%, var(--success) 100%);
   }
 
   .sentence-ordering-card .card-header {
-    background: linear-gradient(135deg, var(--sentence-ordering-color) 0%, #ED8936 100%);
+    background: linear-gradient(135deg, var(--sentence-ordering-color) 0%, var(--warning) 100%);
   }
 
   .paragraph-ordering-card .card-header {
-    background: linear-gradient(135deg, var(--paragraph-ordering-color) 0%, #6B46C1 100%);
+    background: linear-gradient(135deg, var(--paragraph-ordering-color) 0%, var(--violet-deep) 100%);
   }
 
   .column-association-card .card-header {
-    background: linear-gradient(135deg, var(--column-association-color) 0%, #0F766E 100%);
+    background: linear-gradient(135deg, var(--column-association-color) 0%, var(--sky) 100%);
   }
 
   .suggestion-card .card-header {
-    background: linear-gradient(135deg, var(--suggestion-color) 0%, #BE185D 100%);
+    background: linear-gradient(135deg, var(--suggestion-color) 0%, var(--brand) 100%);
   }
 
   .statement-card .card-header {
-    background: linear-gradient(135deg, var(--statement-color) 0%, #4338CA 100%);
+    background: linear-gradient(135deg, var(--statement-color) 0%, var(--info) 100%);
   }
 
   /* === CORPO DOS CARDS === */
@@ -2153,7 +2153,7 @@
   }
 
   .alternative-input:checked + .alternative-label {
-    background: linear-gradient(135deg, var(--question-color) 0%, #357ABD 100%);
+    background: linear-gradient(135deg, var(--question-color) 0%, var(--brand) 100%);
     border-color: var(--question-color);
     color: white;
     transform: translateX(8px);
@@ -2180,7 +2180,7 @@
 
   /* === EXERCÍCIOS DE ARRASTAR COM CORES ESPECÍFICAS === */
   .draggable-word {
-    background: linear-gradient(135deg, var(--sentence-ordering-color) 0%, #ED8936 100%);
+    background: linear-gradient(135deg, var(--sentence-ordering-color) 0%, var(--warning) 100%);
     color: white;
     padding: 0.75rem 1rem;
     border-radius: 12px;
@@ -2199,7 +2199,7 @@
   }
 
   .draggable-sentence {
-    background: linear-gradient(135deg, var(--paragraph-ordering-color) 0%, #6B46C1 100%);
+    background: linear-gradient(135deg, var(--paragraph-ordering-color) 0%, var(--violet-deep) 100%);
     color: white;
     padding: 0.75rem 1rem;
     border-radius: 12px;
@@ -2258,7 +2258,7 @@
 
   /* === BOTÕES COM DESIGN MODERNO === */
   .btn-submit {
-    background: linear-gradient(135deg, var(--success-green) 0%, #48BB78 100%);
+    background: linear-gradient(135deg, var(--success-green) 0%, var(--success) 100%);
     color: white;
     border: none;
     border-radius: 16px;
@@ -2306,14 +2306,14 @@
 
   /* === EFEITOS DE FEEDBACK === */
   .success-header {
-    background: linear-gradient(135deg, var(--success-green) 0%, #48BB78 100%) !important;
+    background: linear-gradient(135deg, var(--success-green) 0%, var(--success) 100%) !important;
   }
 
   .score-circle {
     width: 100px;
     height: 100px;
     border-radius: 50%;
-    background: linear-gradient(135deg, var(--success-green) 0%, #48BB78 100%);
+    background: linear-gradient(135deg, var(--success-green) 0%, var(--success) 100%);
     color: white;
     display: flex;
     align-items: center;
@@ -2699,7 +2699,7 @@
    }
 
    .connection-line.incorrect {
-     stroke: #EF4444;
+     stroke: var(--error);
      stroke-width: 4;
      stroke-dasharray: 5,5;
      filter: drop-shadow(0 2px 8px rgba(239, 68, 68, 0.4));
@@ -2711,7 +2711,7 @@
    }
 
    .text-danger {
-     color: #EF4444 !important;
+     color: var(--error) !important;
    }
 
    .text-warning {
@@ -2725,7 +2725,7 @@
 
    .bg-danger {
      background-color: rgba(239, 68, 68, 0.1) !important;
-     border-color: #EF4444 !important;
+     border-color: var(--error) !important;
    }
 
    /* === INSTRUÇÕES E TEXTOS === */
@@ -2740,7 +2740,7 @@
 
    .exercise-title {
      color: var(--primary-dark);
-     font-family: 'Lora', serif;
+     font-family: 'Raleway', sans-serif;
      font-size: 1.3rem;
      font-weight: 600;
      margin-bottom: 1rem;
@@ -2799,7 +2799,7 @@
    }
 
      .results-card .card-header.success-header {
-    background: linear-gradient(135deg, var(--success-green) 0%, #48BB78 100%) !important;
+    background: linear-gradient(135deg, var(--success-green) 0%, var(--success) 100%) !important;
   }
 
    .score-display {
@@ -2821,7 +2821,7 @@
    }
 
    .score-details p:last-child {
-     color: #718096;
+     color: var(--ink-faint);
      font-weight: 400;
      font-size: 1rem;
    }
@@ -2836,7 +2836,7 @@
    }
 
    .btn-secondary {
-     background: linear-gradient(135deg, var(--primary-blue) 0%, #357ABD 100%);
+     background: linear-gradient(135deg, var(--primary-blue) 0%, var(--brand) 100%);
      color: white;
      border: none;
      padding: 0.75rem 1.5rem;
@@ -2917,15 +2917,15 @@
   
   /* === FEEDBACK COLORS === */
   .text-success {
-    color: #68D391 !important;
+    color: var(--success-border) !important;
   }
   
   .text-warning {
-    color: #F6AD55 !important;
+    color: var(--warning-border) !important;
   }
   
   .text-danger {
-    color: #DC2626 !important;
+    color: var(--error) !important;
   }
   
   /* === RESPONSIVE === */
@@ -3021,12 +3021,12 @@
   }
 
   #question-feedback .card.border-success {
-    border-left: 4px solid #68D391;
+    border-left: 4px solid var(--success-border);
   }
   
   /* === EXERCÍCIOS DE ASSOCIAÇÃO === */
   .column-association-card .card-header {
-    background: linear-gradient(135deg, #7C3AED 0%, #8B5CF6 100%);
+    background: linear-gradient(135deg, var(--violet) 0%, var(--violet) 100%);
   }
   
   .association-exercise {
@@ -3034,8 +3034,8 @@
   }
   
   .association-help {
-    background: #F8FAFC;
-    border: 1px solid #E2E8F0;
+    background: var(--surface-2);
+    border: 1px solid var(--line);
     border-radius: 8px;
     padding: 0.75rem;
     margin-bottom: 1rem;
@@ -3045,12 +3045,12 @@
     display: flex;
     align-items: center;
     gap: 0.5rem;
-    color: #64748B;
+    color: var(--ink-soft);
     font-size: 0.85rem;
   }
   
   .association-help i {
-    color: #7C3AED;
+    color: var(--violet);
   }
   
   .association-container {
@@ -3062,21 +3062,21 @@
   }
   
   .association-column {
-    background: #F8FAFC;
-    border: 2px solid #E2E8F0;
+    background: var(--surface-2);
+    border: 2px solid var(--line);
     border-radius: 12px;
     padding: 1.5rem;
     min-height: 300px;
   }
   
   .column-title {
-    color: #1E3D59;
+    color: var(--brand-deep);
     font-size: 1.1rem;
     font-weight: 600;
     margin-bottom: 1rem;
     text-align: center;
     padding-bottom: 0.5rem;
-    border-bottom: 2px solid #E2E8F0;
+    border-bottom: 2px solid var(--line);
   }
   
   .column-items {
@@ -3087,7 +3087,7 @@
   
   .association-item {
     background: white;
-    border: 2px solid #E2E8F0;
+    border: 2px solid var(--line);
     border-radius: 10px;
     padding: 1rem;
     display: flex;
@@ -3098,7 +3098,7 @@
   }
   
   .association-item:hover {
-    border-color: #7C3AED;
+    border-color: var(--violet);
     transform: translateY(-1px);
     box-shadow: 0 4px 12px rgba(124, 58, 237, 0.12);
   }
@@ -3109,7 +3109,7 @@
   
   .item-text {
     font-weight: 500;
-    color: #2D3748;
+    color: var(--ink);
     flex: 1;
     text-align: center;
   }
@@ -3213,7 +3213,7 @@
   }
 
   #question-feedback .card.border-danger {
-    border-left: 4px solid #F87171;
+    border-left: 4px solid var(--error-border);
   }
 
   #question-feedback .card-header {
@@ -3222,11 +3222,11 @@
   }
 
   #question-feedback .bg-success {
-    background: linear-gradient(135deg, #68D391 0%, #48BB78 100%) !important;
+    background: linear-gradient(135deg, var(--success-border) 0%, var(--success) 100%) !important;
   }
 
   #question-feedback .bg-danger {
-    background: linear-gradient(135deg, #F87171 0%, #EF4444 100%) !important;
+    background: linear-gradient(135deg, var(--error-border) 0%, var(--error) 100%) !important;
   }
 
   /* Estilos removidos - usando novos estilos coloridos */
@@ -3234,7 +3234,7 @@
   .fill-blank-text {
     font-size: 1.1rem;
     line-height: 1.8;
-    color: #2D3748;
+    color: var(--ink);
     font-weight: 500;
   }
 
@@ -3267,15 +3267,15 @@
   }
 
   .blank-input::placeholder {
-    color: #A0ADB8;
+    color: var(--ink-faint);
     font-style: italic;
     font-weight: 400;
   }
 
   .blank-input:disabled {
-    background-color: #F7FAFC;
-    border-color: #E2E8F0;
-    color: #718096;
+    background-color: var(--surface-2);
+    border-color: var(--line);
+    color: var(--ink-faint);
     cursor: not-allowed;
   }
 
@@ -3404,7 +3404,7 @@
   }
 
   .rating-modal-header h3 {
-    color: #1E3D59;
+    color: var(--brand-deep);
     margin-bottom: 0.5rem;
     font-size: 1.5rem;
     display: flex;
@@ -3413,11 +3413,11 @@
   }
 
   .rating-modal-header h3 i {
-    color: #FFD700;
+    color: var(--action-bright);
   }
 
   .rating-modal-header p {
-    color: #718096;
+    color: var(--ink-faint);
     margin-bottom: 1.5rem;
   }
 
@@ -3427,7 +3427,7 @@
   }
 
   .stars-label {
-    color: #4A5568;
+    color: var(--ink-soft);
     font-weight: 500;
     margin-bottom: 1rem;
   }
@@ -3441,7 +3441,7 @@
 
   .stars-rating i {
     font-size: 2rem;
-    color: #E2E8F0;
+    color: var(--line);
     cursor: pointer;
     transition: all 0.2s ease;
     padding: 0.25rem;
@@ -3450,7 +3450,7 @@
 
   .stars-rating i:hover,
   .stars-rating i.active {
-    color: #FFD700;
+    color: var(--action-bright);
     transform: scale(1.1);
   }
 
@@ -3464,7 +3464,7 @@
 
   .comment-label {
     display: block;
-    color: #4A5568;
+    color: var(--ink-soft);
     font-weight: 500;
     margin-bottom: 0.5rem;
   }
@@ -3472,7 +3472,7 @@
   .rating-textarea {
     width: 100%;
     min-height: 100px;
-    border: 2px solid #E2E8F0;
+    border: 2px solid var(--line);
     border-radius: 12px;
     padding: 1rem;
     font-family: inherit;
@@ -3482,14 +3482,14 @@
 
   .rating-textarea:focus {
     outline: none;
-    border-color: #4A90E2;
+    border-color: var(--brand-bright);
     box-shadow: 0 0 0 3px rgba(74, 144, 226, 0.1);
   }
 
   .character-count {
     text-align: right;
     font-size: 0.85rem;
-    color: #A0AEC0;
+    color: var(--ink-faint);
     margin-top: 0.25rem;
   }
 
@@ -3501,8 +3501,8 @@
 
   .btn-modal-skip {
     background: transparent;
-    border: 2px solid #E2E8F0;
-    color: #718096;
+    border: 2px solid var(--line);
+    color: var(--ink-faint);
     padding: 0.75rem 1.5rem;
     border-radius: 12px;
     cursor: pointer;
@@ -3511,12 +3511,12 @@
   }
 
   .btn-modal-skip:hover {
-    border-color: #CBD5E0;
-    background: #F7FAFC;
+    border-color: var(--line);
+    background: var(--surface-2);
   }
 
   .btn-modal-submit {
-    background: linear-gradient(135deg, #4A90E2 0%, #357ABD 100%);
+    background: linear-gradient(135deg, var(--brand-bright) 0%, var(--brand) 100%);
     border: none;
     color: white;
     padding: 0.75rem 1.5rem;
@@ -3530,7 +3530,7 @@
   }
 
   .btn-modal-submit:hover:not(:disabled) {
-    background: linear-gradient(135deg, #357ABD 0%, #2A5F8F 100%);
+    background: linear-gradient(135deg, var(--brand) 0%, var(--brand) 100%);
     transform: translateY(-1px);
     box-shadow: 0 5px 15px rgba(74, 144, 226, 0.3);
   }
