@@ -29,11 +29,13 @@ module ApplicationHelper
     end
   end
 
-  # Total de exercícios da atividade (mesma conta da view antiga do aluno).
+  # Total de exercícios da atividade (a view antiga esquecia as associações
+  # de colunas — por isso alguns cards mostravam "0 questions").
   def activity_exercise_count(activity)
     activity.questions.count +
       activity.fill_blanks.count +
       activity.sentence_orderings.count +
-      activity.paragraph_orderings.count
+      activity.paragraph_orderings.count +
+      activity.column_associations.count
   end
 end
