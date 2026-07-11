@@ -1,0 +1,14 @@
+<%# Flash messages — alertas DaisyUI pintados pelos tokens da franquia. %>
+<% flash.each do |key, value| %>
+  <% next unless value.is_a?(String) %>
+  <% estilo = { "notice" => "background:var(--success-tint); border:1px solid var(--success-border); color:var(--success-deep);",
+                "alert"  => "background:var(--error-tint); border:1px solid var(--error-border); color:var(--error-deep);" }
+       .fetch(key.to_s, "background:var(--info-tint); border:1px solid var(--info-border); color:var(--info-deep);") %>
+  <% icone = { "notice" => "✓", "alert" => "✗" }.fetch(key.to_s, "ℹ") %>
+  <div class="mx-auto mt-4 px-4" style="max-width:960px;">
+    <div class="rounded-xl px-4 py-3 text-sm font-semibold flex items-center gap-2"
+         style="<%= estilo %> font-family:'Plus Jakarta Sans',sans-serif;">
+      <span><%= icone %></span> <%= value %>
+    </div>
+  </div>
+<% end %>

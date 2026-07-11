@@ -1,0 +1,79 @@
+<%# Navbar da franquia Practice — estrutura portada do practice-br. %>
+<%# FR tem DOIS escopos Devise: user (professora) e student (aluno).   %>
+<nav id="main-navbar"
+     class="navbar px-4"
+     style="position:fixed; top:0; left:0; right:0; z-index:100; background:var(--brand-deep); min-height:56px;">
+
+  <%# Logo — leva à casa de quem está logado %>
+  <div class="navbar-start">
+    <% home_path = if student_signed_in?
+                     student_dashboard_path
+                   elsif user_signed_in?
+                     activities_path
+                   else
+                     root_path
+                   end %>
+    <%= link_to home_path do %>
+      <%= image_tag "practice-fr-logo-horizontal-mono-light.svg",
+            alt: "Practice-FR",
+            class: "hidden sm:block",
+            style: "height:28px;" %>
+      <%= image_tag "practice-fr-logo-mark-mono-light.svg",
+            alt: "Practice-FR",
+            class: "block sm:hidden",
+            style: "height:28px;" %>
+    <% end %>
+  </div>
+
+  <%# Ações — lado direito %>
+  <div class="navbar-end gap-2 sm:gap-4">
+
+    <% if user_signed_in? && !student_signed_in? %>
+      <%# ---- Professora ---- %>
+      <%= link_to "+ Nouvelle activité", new_activity_path,
+            class: "hidden sm:inline-flex items-center whitespace-nowrap px-4 py-1.5 rounded-lg text-sm font-semibold text-white no-underline",
+            style: "background:var(--brand-bright); font-family:'Plus Jakarta Sans',sans-serif; text-decoration:none;" %>
+
+      <%= render "shared/navbar_dropdown",
+            role_label: "PROFESSEURE",
+            display_name: "Daisy 🌼",
+            avatar_letter: "D",
+            avatar_gradient: "var(--action), var(--action-bright)",
+            mobile_links: [["+ Nouvelle activité", new_activity_path, "var(--brand)"]],
+            sign_out_path: destroy_user_session_path %>
+
+    <% elsif student_signed_in? %>
+      <%# ---- Aluno: troféus da Daisy em pills da franquia ---- %>
+      <div class="hidden sm:flex items-center gap-1 px-3 py-1 rounded-full"
+           style="background:rgba(255,255,255,0.12); border:1px solid rgba(255,255,255,0.2); font-family:'DM Mono',monospace; font-size:0.8rem; color:var(--action-bright);">
+        🏆 <%= current_student.completed_activities.count %>
+      </div>
+      <div class="hidden sm:flex items-center gap-1 px-3 py-1 rounded-full"
+           style="background:rgba(255,255,255,0.12); border:1px solid rgba(255,255,255,0.2); font-family:'DM Mono',monospace; font-size:0.8rem; color:var(--action-bright);">
+        <%= current_student.current_trophy[:icon] %> <%= current_student.current_streak %>
+      </div>
+
+      <%= link_to "Activités", student_activities_path,
+            class: "hidden sm:inline-flex items-center whitespace-nowrap px-4 py-1.5 rounded-lg text-sm font-semibold text-white no-underline",
+            style: "background:var(--brand-bright); font-family:'Plus Jakarta Sans',sans-serif; text-decoration:none;" %>
+
+      <%= render "shared/navbar_dropdown",
+            role_label: "ÉLÈVE",
+            display_name: current_student.email,
+            avatar_letter: current_student.email.first.upcase,
+            avatar_gradient: "var(--info), var(--info-deep)",
+            mobile_links: [["Tableau de bord", student_dashboard_path, "var(--brand)"],
+                           ["Activités", student_activities_path, "var(--brand)"]],
+            sign_out_path: destroy_student_session_path %>
+
+    <% else %>
+      <%# ---- Visitante: entradas de professora e aluno ---- %>
+      <%= link_to t('devise.shared.links.sign_in_student'), new_student_session_path,
+            class: "inline-flex items-center whitespace-nowrap px-4 py-1.5 rounded-lg text-sm font-semibold text-white no-underline",
+            style: "background:var(--brand-bright); font-family:'Plus Jakarta Sans',sans-serif; text-decoration:none;" %>
+      <%= link_to t('devise.shared.links.sign_in_teacher'), new_user_session_path,
+            class: "inline-flex items-center whitespace-nowrap px-4 py-1.5 rounded-lg text-sm font-semibold no-underline",
+            style: "color:var(--brand-tint-2); font-family:'Plus Jakarta Sans',sans-serif; text-decoration:none;" %>
+    <% end %>
+  </div>
+</nav>

@@ -1,0 +1,49 @@
+<%# Avatar + dropdown da navbar (padrão da franquia — DaisyUI, sem JS). %>
+<%# locals: role_label, display_name, avatar_letter, avatar_gradient,   %>
+<%#         mobile_links [[texto, path, cor], ...], sign_out_path       %>
+<div class="dropdown dropdown-end">
+  <label tabindex="0" class="btn btn-ghost btn-circle" style="width:36px; height:36px; min-height:0; padding:0;">
+    <div class="rounded-full flex items-center justify-center text-sm font-bold"
+         style="width:32px; height:32px;
+                background: linear-gradient(135deg, <%= avatar_gradient %>);
+                color:var(--surface); font-family:'Plus Jakarta Sans',sans-serif;">
+      <%= avatar_letter %>
+    </div>
+  </label>
+
+  <ul tabindex="0"
+      class="dropdown-content menu menu-sm shadow-lg z-50 mt-2 p-2 rounded-xl"
+      style="background:var(--surface); border:1px solid var(--line); min-width:210px;">
+
+    <li class="px-3 pt-1 pb-0 pointer-events-none">
+      <span style="font-family:'DM Mono',monospace; font-size:0.68rem; color:var(--ink-faint); letter-spacing:0.08em;">
+        <%= role_label %>
+      </span>
+    </li>
+    <li class="px-3 pb-2 pointer-events-none">
+      <span style="font-family:'Plus Jakarta Sans',sans-serif; font-size:0.875rem; font-weight:600; color:var(--ink); overflow:hidden; text-overflow:ellipsis;">
+        <%= display_name %>
+      </span>
+    </li>
+    <div style="height:1px; background:var(--line); margin:2px 8px 6px;"></div>
+
+    <%# Links que só aparecem no mobile (no desktop viram botões na barra) %>
+    <% mobile_links.each do |texto, path, cor| %>
+      <li class="sm:hidden">
+        <%= link_to texto, path,
+              style: "font-family:'Plus Jakarta Sans',sans-serif; font-size:0.875rem; font-weight:600; color:#{cor};" %>
+      </li>
+    <% end %>
+    <% if mobile_links.any? %>
+      <div class="sm:hidden" style="height:1px; background:var(--line); margin:6px 8px;"></div>
+    <% end %>
+
+    <%# Sair — button_to (form) porque o app ainda não carrega Turbo/UJS %>
+    <li>
+      <%= button_to t('common.logout'), sign_out_path,
+            method: :delete,
+            class: "w-full text-left",
+            style: "font-family:'Plus Jakarta Sans',sans-serif; font-size:0.875rem; color:var(--error); background:none; border:none; padding:6px 12px; cursor:pointer;" %>
+    </li>
+  </ul>
+</div>

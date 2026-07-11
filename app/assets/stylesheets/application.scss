@@ -4,32 +4,20 @@
 
 @import "tokens"; // 🎨 Design tokens da franquia Practice (fonte de verdade)
 
-/* ESTILOS CRÍTICOS - CARREGADOS PRIMEIRO PARA EVITAR FOUC */
-
-/* Reset e base otimizada */
+/* Base da franquia Practice — o resto vem do Tailwind + tokens */
 * {
   box-sizing: border-box;
 }
 
 body {
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif !important;
-  color: #2D3748;
+  font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
+  color: var(--ink);
   line-height: 1.6;
   margin: 0;
   padding: 0;
-  background: #f8f9fa;
-  /* Evitar FOUC */
+  background: var(--paper);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-}
-
-/* Garantir que elementos críticos apareçam imediatamente */
-.navbar, .modern-navbar {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
-  backdrop-filter: blur(10px);
-  box-shadow: 0 2px 20px rgba(102, 126, 234, 0.1);
-  border: none !important;
-  transition: all 0.3s ease;
 }
 
 /* Container principal */
