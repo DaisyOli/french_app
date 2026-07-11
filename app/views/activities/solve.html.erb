@@ -518,7 +518,7 @@
             const label = alt.querySelector('label');
             if (input && label) {
               correctIndex = idx;
-              feedback.correctText = label.textContent.trim();
+              feedback.correctText = (label.querySelector('.alternative-text') ? label.querySelector('.alternative-text').textContent : label.textContent).trim();
               feedback.correctLetter = String.fromCharCode('a'.charCodeAt(0) + idx);
             }
           });
@@ -530,7 +530,7 @@
               const selectedIndex = Array.from(alternatives).indexOf(selectedAlternative);
               
               if (selectedLabel) {
-                feedback.selectedText = selectedLabel.textContent.trim();
+                feedback.selectedText = (selectedLabel.querySelector('.alternative-text') ? selectedLabel.querySelector('.alternative-text').textContent : selectedLabel.textContent).trim();
                 feedback.selectedLetter = String.fromCharCode('a'.charCodeAt(0) + selectedIndex);
                 feedback.isCorrect = selectedAnswer.getAttribute('data-correct') === 'true';
                 
@@ -2049,8 +2049,8 @@
   .alternatives-container {
     display: flex;
     flex-direction: column;
-    gap: 1rem;
-    margin-top: 1.5rem;
+    gap: 8px;
+    margin-top: 4px;
   }
 
   .alternative-option {
@@ -2067,30 +2067,15 @@
     display: flex;
     align-items: center;
     font-size: 0.92rem;
-    gap: 0.7rem;
-    padding: 1rem 1.5rem;
-    background: rgba(178, 69, 99, 0.05);
-    border: 2px solid rgba(178, 69, 99, 0.1);
-    border-radius: 16px;
+    gap: 10px;
+    padding: 10px 14px;
+    background: var(--surface);
+    border: 1.5px solid var(--line);
+    border-radius: 8px;
     cursor: pointer;
     transition: all 0.3s ease;
     position: relative;
     overflow: hidden;
-  }
-
-  .alternative-label::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: -100%;
-    width: 100%;
-    height: 100%;
-    background: linear-gradient(90deg, transparent, var(--brand-veil-2), transparent);
-    transition: left 0.5s ease;
-  }
-
-  .alternative-label:hover::before {
-    left: 100%;
   }
 
   .alternative-label:hover {
@@ -2099,17 +2084,16 @@
   }
 
   .alternative-input:checked + .alternative-label {
-    background: var(--brand);
-    border-color: var(--question-color);
-    color: white;
-    transform: translateX(8px);
-    box-shadow: 0 8px 24px rgba(178, 69, 99, 0.3);
+    background: var(--brand-mist);
+    border-color: var(--brand);
+    color: var(--brand-deep);
+    font-weight: 600;
   }
 
   .alternative-letter {
     width: 24px;
     height: 24px;
-    font-size: 0.75rem;
+    font-size: 0.72rem;
     border-radius: 50%;
     background: var(--brand-tint);
     color: var(--brand-deep);
@@ -2117,13 +2101,12 @@
     align-items: center;
     justify-content: center;
     font-weight: 700;
-    font-size: 0.9rem;
     transition: all 0.3s ease;
   }
 
   .alternative-input:checked + .alternative-label .alternative-letter {
-    background: rgba(255, 255, 255, 0.2);
-    color: white;
+    background: var(--brand);
+    color: var(--surface);
   }
 
   /* === EXERCÍCIOS DE ARRASTAR COM CORES ESPECÍFICAS === */
@@ -2137,8 +2120,6 @@
     border-radius: 7px;
     cursor: grab;
     user-select: none;
-    font-weight: 500;
-    box-shadow: 0 4px 12px rgba(192, 138, 40, 0.25);
     transition: all 0.3s ease;
     display: inline-block;
     margin: 0.25rem;
@@ -2701,10 +2682,10 @@
 
    .question-text {
      font-size: 0.92rem;
-     line-height: 1.6;
-     color: var(--primary-dark);
-     margin-bottom: 1.5rem;
-     font-weight: 500;
+     line-height: 1.65;
+     color: var(--ink);
+     margin-bottom: 10px;
+     font-weight: 400;
    }
 
    /* === MEDIA CONTENT === */
@@ -3171,12 +3152,49 @@
     font-weight: 600;
   }
 
-  #question-feedback .bg-success {
-    background: var(--success) !important;
+  #question-feedback .card-header.bg-success {
+    background: var(--success-tint) !important;
+    color: var(--success-deep) !important;
   }
 
-  #question-feedback .bg-danger {
+  #question-feedback .card-header.bg-danger {
+    background: var(--error-tint) !important;
+    color: var(--error-deep) !important;
+  }
+
+  #question-feedback .badge.bg-success {
+    background: var(--success) !important;
+    color: var(--surface) !important;
+  }
+
+  #question-feedback .badge.bg-danger {
     background: var(--error) !important;
+    color: var(--surface) !important;
+  }
+
+  #question-feedback .card-header {
+    font-size: 0.78rem;
+    padding: 9px 16px;
+  }
+
+  #question-feedback .card-body {
+    font-size: 0.88rem;
+    padding: 14px 16px;
+  }
+
+  #question-feedback .card {
+    border: 1px solid var(--line) !important;
+  }
+
+  /* a letrinha no feedback é texto corrido, não bolinha flex */
+  #question-feedback .alternative-letter {
+    display: inline;
+    width: auto;
+    height: auto;
+    background: none;
+    padding: 0;
+    color: inherit;
+    font-weight: 700;
   }
 
   /* Estilos removidos - usando novos estilos coloridos */
@@ -3186,34 +3204,6 @@
     line-height: 1.65;
     color: var(--ink);
     font-weight: 500;
-  }
-
-  .blank-input,
-  .fill-blank-input {
-    border: 2px solid rgba(21, 128, 61, 0.3);
-    border-radius: 8px;
-    padding: 0.5rem;
-    background: rgba(21, 128, 61, 0.05);
-    color: var(--primary-dark);
-    font-weight: 500;
-    transition: all 0.3s ease;
-    min-width: 60px;
-    max-width: 120px;
-    width: auto;
-    display: inline-block;
-    margin: 0 0.1rem;
-    text-align: center;
-    font-size: 1rem;
-    vertical-align: baseline;
-  }
-
-  .blank-input:focus,
-  .fill-blank-input:focus {
-    border-color: var(--fill-blank-color);
-    box-shadow: 0 0 12px rgba(21, 128, 61, 0.3);
-    background: white;
-    outline: none;
-    transform: scale(1.02);
   }
 
   .blank-input::placeholder {
