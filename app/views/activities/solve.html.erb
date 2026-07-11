@@ -1,131 +1,97 @@
 <div class="solve-activity">
-  <!-- Hero Section -->
-  <div class="hero-section">
-    <div class="hero-content">
-      <div class="activity-header-card">
-        <div class="activity-info">
-          <div class="level-badge level-<%= @activity.nível.downcase %>">
-            <%= @activity.nível %>
-          </div>
-          <h1 class="activity-title"><%= @activity.título %></h1>
-          <% if @activity.texto.present? %>
-            <p class="activity-description preserve-format"><%= @activity.texto %></p>
-          <% end %>
-        </div>
-      </div>
-    </div>
+<div class="quiz-outer">
+
+  <%# Cabeçalho compacto — padrão do practice-br %>
+  <div class="quiz-page-header">
+    <h1 class="quiz-title"><%= @activity.título %></h1>
+    <span class="level-badge level-<%= @activity.nível.downcase %>"
+          style="font-family:'Plus Jakarta Sans',sans-serif; font-size:0.75rem; font-weight:700; padding:3px 12px; border-radius:20px; letter-spacing:0.05em; color:var(--surface);">
+      <%= @activity.nível %>
+    </span>
   </div>
 
-  <!-- Content Section -->
-  <div class="content-section">
-    <div class="activity-container">
-      <% # Ordenar elements pour affichage %>
-      <% activity_elements = [] %>
-      
-      <% # Collecter tous les elements avec leurs ordres %>
-      <% if @activity.video_url.present? %>
-        <% activity_elements << {type: 'video', order: @activity.video_order || 1, content: @activity.video_url} %>
+  <%
+    # Coleta os elementos na ordem explícita (lógica original preservada)
+    activity_elements = []
+    activity_elements << {type: 'video', order: @activity.video_order || 1, content: @activity.video_url} if @activity.video_url.present?
+    activity_elements << {type: 'image', order: @activity.imagem_order || 2, content: @activity.imagem_url} if @activity.imagem_url.present?
+    activity_elements << {type: 'texte', order: @activity.texte_order || 3, content: @activity.texte} if @activity.texte.present?
+    @activity.statements.each { |s| activity_elements << {type: 'statement', order: s.display_order || s.id, content: s.conteúdo} }
+    @activity.questions.each { |q| activity_elements << {type: 'question', order: q.display_order || q.id, content: q} }
+    @activity.suggestions.each { |s| activity_elements << {type: 'suggestion', order: s.display_order || s.id, content: s.conteúdo} }
+    @activity.fill_blanks.each { |f| activity_elements << {type: 'fill_blank', order: f.display_order || f.id, content: f} }
+    @activity.sentence_orderings.each { |s| activity_elements << {type: 'sentence_ordering', order: s.display_order || s.id, content: s} }
+    @activity.paragraph_orderings.each { |o| activity_elements << {type: 'paragraph_ordering', order: o.display_order || o.id, content: o} }
+    @activity.column_associations.each { |c| activity_elements << {type: 'column_association', order: c.display_order || c.id, content: c} }
+    activity_elements.sort_by! { |e| e[:order] }
+
+    # Anatomia da franquia: material à esquerda, exercícios à direita
+    material_types    = %w[video image texte statement suggestion]
+    material_elements = activity_elements.select { |e| material_types.include?(e[:type]) }
+    exercise_elements = activity_elements - material_elements
+    has_material      = material_elements.any?
+    has_exercises     = exercise_elements.any?
+  %>
+
+  <%# ---- Material de apoio (capturado pra encaixar no layout certo) ---- %>
+  <% material_html = capture do %>
+    <% material_elements.each do |element| %>
+      <% case element[:type] %>
+      <% when 'video' %>
+        <%
+          video_id = nil
+          if @activity.video_url.include?('youtube.com/watch?v=')
+            video_id = @activity.video_url.split('watch?v=').last.split('&').first
+          elsif @activity.video_url.include?('youtu.be/')
+            video_id = @activity.video_url.split('youtu.be/').last
+          end
+          embed_url = video_id ? "https://www.youtube.com/embed/#{video_id}" : @activity.video_url
+        %>
+        <div class="video-container" id="video-section" style="margin-bottom:1rem;">
+          <iframe src="<%= embed_url %>" allowfullscreen></iframe>
+        </div>
+      <% when 'image' %>
+        <div id="image-section" style="text-align:center; margin-bottom:1rem;">
+          <img src="<%= @activity.imagem_url %>" alt="Image de l'activité" class="activity-image"
+               style="max-width:100%; border-radius:10px; display:inline-block;">
+        </div>
+      <% when 'texte' %>
+        <div class="quiz-statement-block preserve-format" id="texte-section"><%= @activity.texte %></div>
+      <% when 'statement' %>
+        <div class="quiz-statement-block preserve-format"><%= element[:content] %></div>
+      <% when 'suggestion' %>
+        <div class="quiz-suggestion-block">
+          <span class="dica-label"><i class="bi bi-lightbulb-fill"></i> Astuce</span>
+          <div class="preserve-format"><%= element[:content] %></div>
+        </div>
       <% end %>
-      
-      <% if @activity.imagem_url.present? %>
-        <% activity_elements << {type: 'image', order: @activity.imagem_order || 2, content: @activity.imagem_url} %>
-      <% end %>
-      
-      <% if @activity.texte.present? %>
-        <% activity_elements << {type: 'texte', order: @activity.texte_order || 3, content: @activity.texte} %>
-      <% end %>
-      
-      <% @activity.statements.each do |statement| %>
-        <% activity_elements << {type: 'statement', order: statement.display_order || statement.id, content: statement.conteúdo} %>
-      <% end %>
-      
-      <% # Inclure les questions dans l'ordre des elements %>
-      <% @activity.questions.each do |question| %>
-        <% activity_elements << {type: 'question', order: question.display_order || question.id, content: question} %>
-      <% end %>
-      
-      <% # Inclure les suggestions dans l'ordre des elements %>
-      <% @activity.suggestions.each do |suggestion| %>
-        <% activity_elements << {type: 'suggestion', order: suggestion.display_order || suggestion.id, content: suggestion.conteúdo} %>
-      <% end %>
-      
-      <% # Inclure les exercices de lacunas dans l'ordre des elements %>
-      <% @activity.fill_blanks.each do |fill_blank| %>
-        <% activity_elements << {type: 'fill_blank', order: fill_blank.display_order || fill_blank.id, content: fill_blank} %>
-      <% end %>
-      
-      <% # Inclure les exercices d'organisation de mots dans l'ordre des elements %>
-      <% @activity.sentence_orderings.each do |sentence_ordering| %>
-        <% activity_elements << {type: 'sentence_ordering', order: sentence_ordering.display_order || sentence_ordering.id, content: sentence_ordering} %>
-      <% end %>
-      
-      <% # Inclure les exercices d'organisation de phrases dans l'ordre des elements %>
-      <% @activity.paragraph_orderings.each do |paragraph_ordering| %>
-        <% activity_elements << {type: 'paragraph_ordering', order: paragraph_ordering.display_order || paragraph_ordering.id, content: paragraph_ordering} %>
-      <% end %>
-      
-      <% # Inclure les exercices d'association de colonnes dans l'ordre des elements %>
-      <% @activity.column_associations.each do |column_association| %>
-        <% activity_elements << {type: 'column_association', order: column_association.display_order || column_association.id, content: column_association} %>
-      <% end %>
-      
-      <% # Trier elements par ordre explicite %>
-      <% activity_elements.sort_by! { |element| element[:order] } %>
-      
-      <% # Afficher contenu %>
-      <% activity_elements.each do |element| %>
-        <% case element[:type] %>
-        <% when 'video' %>
-          <div class="content-card video-card" id="video-section">
-            <div class="card-body">
-              <% 
-                # Convertir URL de YouTube en format embed
-                video_id = nil
-                if @activity.video_url.include?('youtube.com/watch?v=')
-                  video_id = @activity.video_url.split('watch?v=').last.split('&').first
-                elsif @activity.video_url.include?('youtu.be/')
-                  video_id = @activity.video_url.split('youtu.be/').last
-                end
-                
-                embed_url = video_id ? "https://www.youtube.com/embed/#{video_id}" : @activity.video_url
-              %>
-              <div class="video-container">
-                <iframe src="<%= embed_url %>" allowfullscreen></iframe>
-              </div>
-            </div>
-          </div>
-        <% when 'image' %>
-          <div class="content-card image-card" id="image-section">
-            <div class="card-body">
-              <div class="image-container">
-                <img src="<%= @activity.imagem_url %>" alt="Image de l'activité" class="activity-image">
-              </div>
-            </div>
-          </div>
-        <% when 'texte' %>
-          <div class="content-card text-card" id="texte-section">
-            <div class="card-body">
-              <div class="text-content preserve-format"><%= @activity.texte %></div>
-            </div>
-          </div>
-        <% when 'statement' %>
-          <div class="content-card statement-card">
-            <div class="card-body">
-              <div class="preserve-format"><%= element[:content] %></div>
-            </div>
-          </div>
-        <% when 'suggestion' %>
-          <div class="content-card suggestion-card">
-            <div class="card-body">
-              <div class="suggestion-content preserve-format"><%= element[:content] %></div>
-            </div>
-          </div>
-        <% when 'fill_blank' %>
+    <% end %>
+  <% end %>
+
+  <%# ---- Exercícios paginados (um por vez, padrão do practice-br) ---- %>
+  <% exercises_html = capture do %>
+    <% if has_exercises %>
+      <div class="quiz-progress-header">
+        <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:6px;">
+          <span id="quiz-step-counter" style="font-family:'DM Mono',monospace; font-weight:700; font-size:0.72rem; color:var(--ink-faint);">1 sur <%= exercise_elements.size %></span>
+        </div>
+        <div class="quiz-progress-bar-track" style="margin-bottom:0;">
+          <div class="quiz-progress-bar-fill" id="quiz-progress-fill"
+               style="width:<%= (100.0 / exercise_elements.size).round %>%;"></div>
+        </div>
+      </div>
+    <% end %>
+
+    <div class="quiz-questions-stack">
+      <% exercise_elements.each_with_index do |element, step_i| %>
+        <div class="quiz-step" data-step="<%= step_i %>" style="<%= step_i.zero? ? '' : 'display:none;' %>">
+          <% case element[:type] %>
+          <% when 'fill_blank' %>
           <% fill_blank = element[:content] %>
           <div class="content-card fill-blank-card">
             <div class="card-header">
               <i class="bi bi-dash-square-fill"></i>
-              <span>Exercice de lacunes <%= activity_elements.select { |e| e[:type] == 'fill_blank' }.index { |e| e[:content] == fill_blank } + 1 %></span>
+              <span>Exercice de lacunes <%= exercise_elements.select { |e| e[:type] == 'fill_blank' }.index { |e| e[:content] == fill_blank } + 1 %></span>
             </div>
             <div class="card-body">
               <div class="fill-blank-text preserve-format">
@@ -133,12 +99,13 @@
               </div>
             </div>
           </div>
-        <% when 'question' %>
+        
+          <% when 'question' %>
           <% question = element[:content] %>
           <div class="content-card question-card">
             <div class="card-header">
               <i class="bi bi-question-circle-fill"></i>
-              <span>Question <%= activity_elements.select { |e| e[:type] == 'question' }.index { |e| e[:content] == question } + 1 %></span>
+              <span>Question <%= exercise_elements.select { |e| e[:type] == 'question' }.index { |e| e[:content] == question } + 1 %></span>
             </div>
             <div class="card-body">
               <p class="question-text preserve-format"><%= question.conteúdo %></p>
@@ -164,12 +131,13 @@
               <% end %>
             </div>
           </div>
-        <% when 'sentence_ordering' %>
+        
+          <% when 'sentence_ordering' %>
           <% sentence_ordering = element[:content] %>
           <div class="content-card sentence-ordering-card">
             <div class="card-header">
               <i class="bi bi-arrows-move"></i>
-              <span>Exercice d'organisation de mots <%= activity_elements.select { |e| e[:type] == 'sentence_ordering' }.index { |e| e[:content] == sentence_ordering } + 1 %></span>
+              <span>Exercice d'organisation de mots <%= exercise_elements.select { |e| e[:type] == 'sentence_ordering' }.index { |e| e[:content] == sentence_ordering } + 1 %></span>
             </div>
             <div class="card-body">
               <p class="instruction-text">Remettez les mots dans le bon ordre pour former la phrase correcte:</p>
@@ -197,12 +165,13 @@
               </div>
             </div>
           </div>
-        <% when 'paragraph_ordering' %>
+        
+          <% when 'paragraph_ordering' %>
           <% paragraph_ordering = element[:content] %>
           <div class="content-card paragraph-ordering-card">
             <div class="card-header">
               <i class="bi bi-list-ol"></i>
-              <span>Exercice d'organisation de phrases <%= activity_elements.select { |e| e[:type] == 'paragraph_ordering' }.index { |e| e[:content] == paragraph_ordering } + 1 %></span>
+              <span>Exercice d'organisation de phrases <%= exercise_elements.select { |e| e[:type] == 'paragraph_ordering' }.index { |e| e[:content] == paragraph_ordering } + 1 %></span>
             </div>
             <div class="card-body">
               <% if paragraph_ordering.titre.present? %>
@@ -239,12 +208,13 @@
               </div>
             </div>
           </div>
-        <% when 'column_association' %>
+        
+          <% when 'column_association' %>
           <% column_association = element[:content] %>
           <div class="content-card column-association-card">
             <div class="card-header">
               <i class="bi bi-diagram-3"></i>
-              <span>Exercice d'association <%= activity_elements.select { |e| e[:type] == 'column_association' }.index { |e| e[:content] == column_association } + 1 %></span>
+              <span>Exercice d'association <%= exercise_elements.select { |e| e[:type] == 'column_association' }.index { |e| e[:content] == column_association } + 1 %></span>
             </div>
             <div class="card-body">
               <% if column_association.title.present? %>
@@ -297,71 +267,102 @@
               </div>
             </div>
           </div>
-        <% end %>
+        
+          <% end %>
+        </div>
       <% end %>
+    </div>
 
-      <% # Le formulaire maintenant ne concerne que le bouton d'envoi %>
-      <% if @activity.questions.any? || @activity.fill_blanks.any? || @activity.sentence_orderings.any? || @activity.paragraph_orderings.any? || @activity.column_associations.any? %>
-        <form id="activity-quiz-form">
-          <div class="submit-section">
-            <button type="submit" class="btn-submit" id="submit-answers">
-              <i class="bi bi-check-circle-fill"></i>
-              Soumettre les réponses
-            </button>
+    <% if has_exercises %>
+      <div class="quiz-nav-row" id="quiz-nav-row">
+        <% back_path = student_signed_in? ? student_dashboard_path : activities_path %>
+        <a href="<%= back_path %>" id="quiz-back-link"
+           style="flex:1; display:flex; align-items:center; justify-content:center; gap:5px; padding:7px 12px; background:var(--surface); border:1.5px solid var(--line); border-radius:9px; font-family:'Plus Jakarta Sans',sans-serif; font-size:0.8rem; font-weight:600; color:var(--ink-soft); text-decoration:none;">
+          <i class="bi bi-arrow-left"></i> Retour
+        </a>
+        <button type="button" id="quiz-prev-btn"
+                style="flex:1; display:none; align-items:center; justify-content:center; gap:5px; padding:7px 12px; background:var(--surface); border:1.5px solid var(--line); border-radius:9px; font-family:'Plus Jakarta Sans',sans-serif; font-size:0.8rem; font-weight:600; color:var(--ink-soft); cursor:pointer;">
+          <i class="bi bi-arrow-left"></i> Précédent
+        </button>
+        <button type="button" id="quiz-next-btn"
+                style="flex:2; display:<%= exercise_elements.size > 1 ? 'flex' : 'none' %>; align-items:center; justify-content:center; gap:5px; padding:7px 12px; background:var(--brand); border:none; border-radius:9px; font-family:'Plus Jakarta Sans',sans-serif; font-size:0.8rem; font-weight:700; color:var(--surface); cursor:pointer;">
+          Suivant <i class="bi bi-arrow-right"></i>
+        </button>
+      </div>
+
+      <form id="activity-quiz-form">
+        <div class="submit-section" style="<%= exercise_elements.size > 1 ? 'display:none;' : '' %>">
+          <button type="submit" class="btn-submit" id="submit-answers">
+            <i class="bi bi-check-circle-fill"></i>
+            Soumettre les réponses
+          </button>
+        </div>
+      </form>
+
+      <div id="results-container" style="display: none;">
+        <div class="content-card results-card">
+          <div class="card-header success-header">
+            <i class="bi bi-trophy-fill"></i>
+            <span>Résultats</span>
           </div>
-        </form>
-
-        <div id="results-container" style="display: none;">
-          <div class="content-card results-card">
-            <div class="card-header success-header">
-              <i class="bi bi-trophy-fill"></i>
-              <span>Résultats</span>
+          <div class="card-body">
+            <div class="score-display">
+              <div class="score-circle">
+                <span id="score-percentage"></span>
+              </div>
+              <div class="score-details">
+                <p id="score-message"></p>
+                <p id="feedback-message"></p>
+              </div>
             </div>
-            <div class="card-body">
-              <div class="score-display">
-                <div class="score-circle">
-                  <span id="score-percentage"></span>
-                </div>
-                <div class="score-details">
-                  <p id="score-message"></p>
-                  <p id="feedback-message"></p>
-                </div>
-              </div>
-              
-              <div id="question-feedback">
-                <!-- Le feedback détaillé de chaque question sera inséré ici -->
-              </div>
-              
-              <div class="action-buttons">
-                <button type="button" class="btn-secondary" id="show-answers">
-                  <i class="bi bi-eye-fill"></i>
-                  Voir les réponses
-                </button>
-                <button type="button" class="btn-outline" id="retry-quiz">
-                  <i class="bi bi-arrow-clockwise"></i>
-                  Réessayer
-                </button>
-              </div>
+            <div id="question-feedback"></div>
+            <div class="action-buttons">
+              <button type="button" class="btn-secondary" id="show-answers">
+                <i class="bi bi-eye-fill"></i>
+                Voir les réponses
+              </button>
+              <button type="button" class="btn-outline" id="retry-quiz">
+                <i class="bi bi-arrow-clockwise"></i>
+                Réessayer
+              </button>
             </div>
           </div>
         </div>
-      <% end %>
+      </div>
+    <% end %>
 
+    <% unless has_exercises %>
       <div class="navigation-section">
         <% if student_signed_in? %>
           <a href="#" id="back-to-dashboard-btn" class="btn-back" data-dashboard-url="<%= student_dashboard_path %>">
-            <i class="bi bi-arrow-left"></i>
-            Retour au tableau de bord
+            <i class="bi bi-arrow-left"></i> Retour au tableau de bord
           </a>
         <% else %>
           <%= link_to activities_path, class: "btn-back" do %>
-            <i class="bi bi-arrow-left"></i>
-            Retour aux activités
+            <i class="bi bi-arrow-left"></i> Retour aux activités
           <% end %>
         <% end %>
       </div>
+    <% end %>
+  <% end %>
+
+  <%# ---- Layout: duas colunas com material, ou coluna única ---- %>
+  <% if has_material %>
+    <button type="button" class="quiz-mobile-toggle" id="quiz-material-toggle">
+      <i class="bi bi-book"></i> Voir le support
+      <i class="bi bi-chevron-down" style="margin-left:auto;"></i>
+    </button>
+    <div class="quiz-two-col">
+      <div class="quiz-material-col" id="quiz-material-col"><%= material_html %></div>
+      <div class="quiz-exercise-col"><%= exercises_html %></div>
     </div>
-  </div>
+  <% else %>
+    <div class="quiz-paper" style="max-width:720px;">
+      <%= exercises_html %>
+    </div>
+  <% end %>
+
+</div>
 </div>
 
 <!-- Modal de Avaliação -->
@@ -3516,3 +3517,40 @@
     }
   }
 </style> 
+<script>
+// Paginação do quiz — um exercício por vez (padrão da franquia; vanilla até o app ganhar Stimulus)
+(function() {
+  var steps = document.querySelectorAll('.quiz-step');
+  if (!steps.length) return;
+  var atual = 0, total = steps.length;
+  var counter = document.getElementById('quiz-step-counter');
+  var fill = document.getElementById('quiz-progress-fill');
+  var prev = document.getElementById('quiz-prev-btn');
+  var next = document.getElementById('quiz-next-btn');
+  var back = document.getElementById('quiz-back-link');
+  var submitSec = document.querySelector('.submit-section');
+
+  function mostrar(n) {
+    atual = Math.max(0, Math.min(n, total - 1));
+    steps.forEach(function(s, i) { s.style.display = (i === atual) ? '' : 'none'; });
+    if (counter) counter.textContent = (atual + 1) + ' sur ' + total;
+    if (fill) fill.style.width = (((atual + 1) * 100) / total) + '%';
+    if (back) back.style.display = (atual === 0) ? 'flex' : 'none';
+    if (prev) prev.style.display = (atual === 0) ? 'none' : 'flex';
+    if (next) next.style.display = (atual === total - 1) ? 'none' : 'flex';
+    if (submitSec) submitSec.style.display = (atual === total - 1) ? '' : 'none';
+    var col = document.querySelector('.quiz-exercise-col') || document.querySelector('.quiz-paper');
+    if (col) col.scrollTop = 0;
+  }
+  if (prev) prev.addEventListener('click', function() { mostrar(atual - 1); });
+  if (next) next.addEventListener('click', function() { mostrar(atual + 1); });
+  mostrar(0);
+
+  // material colapsável no mobile
+  var toggle = document.getElementById('quiz-material-toggle');
+  var materialCol = document.getElementById('quiz-material-col');
+  if (toggle && materialCol) {
+    toggle.addEventListener('click', function() { materialCol.classList.toggle('collapsed'); });
+  }
+})();
+</script>
