@@ -426,12 +426,12 @@
     
     // Mapper niveaux à couleurs distinctes avec bon contraste
     const nivelColors = {
-      'A1': 'var(--success)',  // Vert
-      'A2': 'var(--info)',  // Bleu
-      'B1': 'var(--warning)',  // Orange
-      'B2': 'var(--violet)',  // Violet
-      'C1': 'var(--error)',  // Rouge
-      'C2': 'var(--ink-soft)'   // Bleu acinzenté
+      'A1': 'var(--brand-bright)',
+      'A2': 'var(--info)',
+      'B1': 'var(--violet)',
+      'B2': 'var(--warning)',
+      'C1': 'var(--neutral-ink)',
+      'C2': 'var(--ink-soft)'
     };
     
     nivelBadges.forEach(function(badge) {
@@ -1805,7 +1805,7 @@
       position: fixed;
       top: 20px;
       right: 20px;
-      background: linear-gradient(135deg, var(--success-border) 0%, var(--success) 100%);
+      background: var(--success);
       color: white;
       padding: 1rem 1.5rem;
       border-radius: 12px;
@@ -1832,7 +1832,7 @@
       position: fixed;
       top: 20px;
       right: 20px;
-      background: linear-gradient(135deg, var(--error-border) 0%, var(--error) 100%);
+      background: var(--error);
       color: white;
       padding: 1rem 1.5rem;
       border-radius: 12px;
@@ -1891,7 +1891,7 @@
   /* === CONFIGURAÇÃO GERAL DA PÁGINA === */
   .solve-activity {
     font-family: 'Plus Jakarta Sans', sans-serif;
-    background: linear-gradient(135deg, var(--brand-mist) 0%, var(--surface-2) 50%, var(--brand-mist) 100%);
+    background: var(--paper);
     min-height: 100vh;
     position: relative;
   }
@@ -1904,10 +1904,7 @@
     left: 0;
     width: 100%;
     height: 100%;
-    background: 
-      radial-gradient(circle at 20% 30%, rgba(74, 144, 226, 0.1) 0%, transparent 50%),
-      radial-gradient(circle at 80% 70%, rgba(236, 72, 153, 0.1) 0%, transparent 50%),
-      radial-gradient(circle at 50% 20%, rgba(124, 58, 237, 0.05) 0%, transparent 50%);
+    background: none;
     pointer-events: none;
     z-index: 0;
   }
@@ -1920,14 +1917,11 @@
   }
 
   .activity-header-card {
-    background: rgba(255, 255, 255, 0.95);
-    backdrop-filter: blur(10px);
-    border: 1px solid rgba(255, 255, 255, 0.2);
-    border-radius: 24px;
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: 18px;
     padding: 2rem;
-    box-shadow: 
-      0 8px 32px rgba(30, 61, 89, 0.1),
-      0 1px 2px rgba(0, 0, 0, 0.05);
+    box-shadow: 0 4px 24px var(--brand-veil);
     text-align: center;
     max-width: 800px;
     margin: 0 auto;
@@ -1942,12 +1936,7 @@
     left: 0;
     right: 0;
     height: 4px;
-    background: linear-gradient(90deg, 
-      var(--primary-blue) 0%, 
-      var(--success-green) 25%, 
-      var(--warning-orange) 50%, 
-      var(--info-purple) 75%, 
-      var(--accent-teal) 100%);
+    background: var(--brand);
   }
 
   .level-badge {
@@ -1960,36 +1949,23 @@
     margin-bottom: 1rem;
     text-transform: uppercase;
     letter-spacing: 0.5px;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+    box-shadow: 0 2px 8px var(--brand-veil-2);
   }
 
   /* Cores dos níveis consistentes com o dashboard */
-  .level-badge.level-a1 { 
-    background: linear-gradient(135deg, var(--success-border) 0%, var(--success) 100%); 
-  }
-  .level-badge.level-a2 { 
-    background: linear-gradient(135deg, var(--sky-border) 0%, var(--sky-bright) 100%); 
-  }
-  .level-badge.level-b1 { 
-    background: linear-gradient(135deg, var(--brand-soft) 0%, var(--brand-bright) 100%); 
-  }
-  .level-badge.level-b2 { 
-    background: linear-gradient(135deg, var(--violet) 0%, var(--violet-deep) 100%); 
-  }
-  .level-badge.level-c1 { 
-    background: linear-gradient(135deg, var(--error) 0%, var(--error) 100%); 
-  }
-  .level-badge.level-c2 { 
-    background: linear-gradient(135deg, var(--warning-border) 0%, var(--warning) 100%); 
-  }
+  .level-badge.level-a1 { background: var(--brand-bright); }
+  .level-badge.level-a2 { background: var(--info); }
+  .level-badge.level-b1 { background: var(--violet); }
+  .level-badge.level-b2 { background: var(--warning); }
+  .level-badge.level-c1 { background: var(--neutral-ink); }
+  .level-badge.level-c2 { background: var(--ink-soft); }
 
   .activity-title {
     font-family: 'Raleway', sans-serif;
-    color: var(--primary-dark);
-    font-size: 2.5rem;
-    font-weight: 600;
+    color: var(--brand-deep);
+    font-size: 2rem;
+    font-weight: 700;
     margin: 0 0 1rem;
-    text-shadow: 0 2px 4px rgba(30, 61, 89, 0.1);
   }
 
   .activity-description {
@@ -2015,28 +1991,30 @@
 
   /* === CARDS DE CONTEÚDO COM CORES ESPECÍFICAS === */
   .content-card {
-    background: rgba(255, 255, 255, 0.95);
-    backdrop-filter: blur(10px);
-    border: 1px solid rgba(255, 255, 255, 0.2);
-    border-radius: 20px;
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: 18px;
     margin-bottom: 2rem;
-    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 4px 20px var(--brand-veil);
     overflow: hidden;
     transition: all 0.3s ease;
     position: relative;
   }
 
   .content-card:hover {
-    transform: translateY(-4px);
-    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 28px var(--brand-veil-2);
   }
 
   /* === CABEÇALHOS DOS CARDS COM CORES ESPECÍFICAS === */
   .card-header {
-    padding: 1.25rem 1.5rem;
+    padding: 0.9rem 1.5rem;
     font-weight: 600;
-    font-size: 1.1rem;
-    color: white;
+    font-size: 0.95rem;
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    color: var(--ink);
+    background: var(--surface-2);
+    border-bottom: 1px solid var(--line-soft);
     display: flex;
     align-items: center;
     gap: 0.75rem;
@@ -2044,54 +2022,31 @@
     overflow: hidden;
   }
 
-  .card-header::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: -100%;
-    width: 100%;
-    height: 100%;
-    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
-    transition: left 0.5s ease;
-  }
-
-  .content-card:hover .card-header::before {
-    left: 100%;
-  }
-
   .card-header i {
-    font-size: 1.3rem;
-    filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.2));
+    font-size: 1.1rem;
   }
 
   /* Cores específicas por tipo de exercício */
-  .question-card .card-header {
-    background: linear-gradient(135deg, var(--question-color) 0%, var(--brand) 100%);
-  }
+  .question-card .card-header { border-left: 4px solid var(--brand); }
+  .question-card .card-header i { color: var(--brand); }
 
-  .fill-blank-card .card-header {
-    background: linear-gradient(135deg, var(--fill-blank-color) 0%, var(--success) 100%);
-  }
+  .fill-blank-card .card-header { border-left: 4px solid var(--success); }
+  .fill-blank-card .card-header i { color: var(--success); }
 
-  .sentence-ordering-card .card-header {
-    background: linear-gradient(135deg, var(--sentence-ordering-color) 0%, var(--warning) 100%);
-  }
+  .sentence-ordering-card .card-header { border-left: 4px solid var(--warning); }
+  .sentence-ordering-card .card-header i { color: var(--warning); }
 
-  .paragraph-ordering-card .card-header {
-    background: linear-gradient(135deg, var(--paragraph-ordering-color) 0%, var(--violet-deep) 100%);
-  }
+  .paragraph-ordering-card .card-header { border-left: 4px solid var(--violet); }
+  .paragraph-ordering-card .card-header i { color: var(--violet); }
 
-  .column-association-card .card-header {
-    background: linear-gradient(135deg, var(--column-association-color) 0%, var(--sky) 100%);
-  }
+  .column-association-card .card-header { border-left: 4px solid var(--sky); }
+  .column-association-card .card-header i { color: var(--sky); }
 
-  .suggestion-card .card-header {
-    background: linear-gradient(135deg, var(--suggestion-color) 0%, var(--brand) 100%);
-  }
+  .suggestion-card .card-header { border-left: 4px solid var(--brand-bright); }
+  .suggestion-card .card-header i { color: var(--brand-bright); }
 
-  .statement-card .card-header {
-    background: linear-gradient(135deg, var(--statement-color) 0%, var(--info) 100%);
-  }
+  .statement-card .card-header { border-left: 4px solid var(--info); }
+  .statement-card .card-header i { color: var(--info); }
 
   /* === CORPO DOS CARDS === */
   .card-body {
@@ -2138,7 +2093,7 @@
     left: -100%;
     width: 100%;
     height: 100%;
-    background: linear-gradient(90deg, transparent, rgba(74, 144, 226, 0.1), transparent);
+    background: linear-gradient(90deg, transparent, var(--brand-veil-2), transparent);
     transition: left 0.5s ease;
   }
 
@@ -2153,7 +2108,7 @@
   }
 
   .alternative-input:checked + .alternative-label {
-    background: linear-gradient(135deg, var(--question-color) 0%, var(--brand) 100%);
+    background: var(--brand);
     border-color: var(--question-color);
     color: white;
     transform: translateX(8px);
@@ -2180,7 +2135,7 @@
 
   /* === EXERCÍCIOS DE ARRASTAR COM CORES ESPECÍFICAS === */
   .draggable-word {
-    background: linear-gradient(135deg, var(--sentence-ordering-color) 0%, var(--warning) 100%);
+    background: var(--warning);
     color: white;
     padding: 0.75rem 1rem;
     border-radius: 12px;
@@ -2199,7 +2154,7 @@
   }
 
   .draggable-sentence {
-    background: linear-gradient(135deg, var(--paragraph-ordering-color) 0%, var(--violet-deep) 100%);
+    background: var(--violet-deep);
     color: white;
     padding: 0.75rem 1rem;
     border-radius: 12px;
@@ -2258,7 +2213,7 @@
 
   /* === BOTÕES COM DESIGN MODERNO === */
   .btn-submit {
-    background: linear-gradient(135deg, var(--success-green) 0%, var(--success) 100%);
+    background: var(--success);
     color: white;
     border: none;
     border-radius: 16px;
@@ -2306,14 +2261,14 @@
 
   /* === EFEITOS DE FEEDBACK === */
   .success-header {
-    background: linear-gradient(135deg, var(--success-green) 0%, var(--success) 100%) !important;
+    background: var(--success) !important;
   }
 
   .score-circle {
     width: 100px;
     height: 100px;
     border-radius: 50%;
-    background: linear-gradient(135deg, var(--success-green) 0%, var(--success) 100%);
+    background: var(--success);
     color: white;
     display: flex;
     align-items: center;
@@ -2391,15 +2346,14 @@
   /* Cartões de sugestão com design especial */
   .suggestion-card {
     border-left: 6px solid var(--suggestion-color);
-    background: linear-gradient(135deg, rgba(236, 72, 153, 0.02) 0%, rgba(255, 255, 255, 0.95) 100%);
+    background: var(--brand-mist);
   }
 
   /* Cartões de vídeo e imagem com bordas arredondadas especiais */
   .video-card,
   .image-card {
     border: 2px solid transparent;
-    background: linear-gradient(white, white) padding-box,
-                linear-gradient(45deg, var(--primary-blue), var(--accent-teal)) border-box;
+    background: var(--surface); border-color: var(--brand-soft);
   }
 
      /* === MELHORIAS NOS INPUTS === */
@@ -2598,7 +2552,7 @@
    .sentence-result {
      margin-top: 1rem;
      padding: 1rem;
-     background: linear-gradient(135deg, rgba(246, 173, 85, 0.08) 0%, rgba(255, 255, 255, 0.8) 100%);
+     background: var(--action-tint);
      border-radius: 12px;
      border-left: 4px solid var(--warning-orange);
      backdrop-filter: blur(10px);
@@ -2607,7 +2561,7 @@
   .paragraph-result {
     margin-top: 1rem;
     padding: 1rem;
-     background: linear-gradient(135deg, rgba(124, 58, 237, 0.08) 0%, rgba(255, 255, 255, 0.8) 100%);
+     background: var(--violet-tint);
      border-radius: 12px;
      border-left: 4px solid var(--info-purple);
      backdrop-filter: blur(10px);
@@ -2799,7 +2753,7 @@
    }
 
      .results-card .card-header.success-header {
-    background: linear-gradient(135deg, var(--success-green) 0%, var(--success) 100%) !important;
+    background: var(--success) !important;
   }
 
    .score-display {
@@ -2836,7 +2790,7 @@
    }
 
    .btn-secondary {
-     background: linear-gradient(135deg, var(--primary-blue) 0%, var(--brand) 100%);
+     background: var(--brand);
      color: white;
      border: none;
      padding: 0.75rem 1.5rem;
@@ -3025,9 +2979,8 @@
   }
   
   /* === EXERCÍCIOS DE ASSOCIAÇÃO === */
-  .column-association-card .card-header {
-    background: linear-gradient(135deg, var(--violet) 0%, var(--violet) 100%);
-  }
+  .column-association-card .card-header { border-left: 4px solid var(--sky); }
+  .column-association-card .card-header i { color: var(--sky); }
   
   .association-exercise {
     margin-top: 1rem;
@@ -3222,11 +3175,11 @@
   }
 
   #question-feedback .bg-success {
-    background: linear-gradient(135deg, var(--success-border) 0%, var(--success) 100%) !important;
+    background: var(--success) !important;
   }
 
   #question-feedback .bg-danger {
-    background: linear-gradient(135deg, var(--error-border) 0%, var(--error) 100%) !important;
+    background: var(--error) !important;
   }
 
   /* Estilos removidos - usando novos estilos coloridos */
@@ -3516,7 +3469,7 @@
   }
 
   .btn-modal-submit {
-    background: linear-gradient(135deg, var(--brand-bright) 0%, var(--brand) 100%);
+    background: var(--brand);
     border: none;
     color: white;
     padding: 0.75rem 1.5rem;
@@ -3530,7 +3483,7 @@
   }
 
   .btn-modal-submit:hover:not(:disabled) {
-    background: linear-gradient(135deg, var(--brand) 0%, var(--brand) 100%);
+    background: var(--brand);
     transform: translateY(-1px);
     box-shadow: 0 5px 15px rgba(74, 144, 226, 0.3);
   }
