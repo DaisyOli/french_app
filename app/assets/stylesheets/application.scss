@@ -4,6 +4,30 @@
 
 @import "tokens"; // 🎨 Design tokens da franquia Practice (fonte de verdade)
 
+/* Botões fantasma da navbar (estado visitante) — ideia da Daisy:
+   contorno rosê bem fraquinho; no hover enchem de rosê com texto vinho */
+.nav-ghost-btn {
+  display: inline-flex;
+  align-items: center;
+  white-space: nowrap;
+  padding: 6px 16px;
+  border-radius: 8px;
+  border: 1px solid color-mix(in srgb, var(--brand-tint-2) 35%, transparent);
+  color: var(--brand-tint-2);
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 0.875rem;
+  font-weight: 600;
+  text-decoration: none;
+  transition: background 0.2s ease, color 0.2s ease, border-color 0.2s ease;
+}
+
+.nav-ghost-btn:hover {
+  background: var(--brand-tint-2);
+  color: var(--brand-deep);
+  border-color: var(--brand-tint-2);
+  text-decoration: none;
+}
+
 /* Base da franquia Practice — o resto vem do Tailwind + tokens */
 * {
   box-sizing: border-box;

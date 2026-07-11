@@ -20,7 +20,7 @@
         </div>
       </div>
       <p style="font-family:'Plus Jakarta Sans',sans-serif; font-size:0.88rem; color:var(--ink-soft); margin:0;">
-        Bienvenue ! Connectez-vous pour continuer.
+        Bienvenu(e) ! Connectez-vous pour continuer.
       </p>
     </div>
 
@@ -64,7 +64,7 @@
     <% if devise_mapping.recoverable? %>
       <div style="text-align:center; margin-bottom:14px;">
         <%= link_to t('devise.shared.links.forgot_password'), new_password_path(resource_name),
-              style: "font-family:'Plus Jakarta Sans',sans-serif; font-size:0.82rem; color:var(--info); text-decoration:none; font-weight:500;" %>
+              style: "font-family:'Plus Jakarta Sans',sans-serif; font-size:0.82rem; color:var(--brand); text-decoration:none; font-weight:500;" %>
       </div>
     <% end %>
 
@@ -72,10 +72,10 @@
     <div style="text-align:center; border-top:1px solid var(--line-soft); padding-top:14px;">
       <% if resource_name == :student %>
         <%= link_to "Vous êtes professeure ? →", new_user_session_path,
-              style: "font-family:'Plus Jakarta Sans',sans-serif; font-size:0.78rem; color:var(--ink-faint); text-decoration:none;" %>
+              style: "font-family:'Plus Jakarta Sans',sans-serif; font-size:0.78rem; color:var(--brand); text-decoration:none; font-weight:500;" %>
       <% else %>
         <%= link_to "Vous êtes élève ? →", new_student_session_path,
-              style: "font-family:'Plus Jakarta Sans',sans-serif; font-size:0.78rem; color:var(--ink-faint); text-decoration:none;" %>
+              style: "font-family:'Plus Jakarta Sans',sans-serif; font-size:0.78rem; color:var(--brand); text-decoration:none; font-weight:500;" %>
       <% end %>
     </div>
 

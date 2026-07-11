@@ -2,35 +2,35 @@
 <div style="display:flex; flex-direction:column; gap:10px; text-align:center;">
   <%- if controller_name != 'sessions' %>
     <%= link_to new_session_path(resource_name),
-          style: "font-family:'Plus Jakarta Sans',sans-serif; font-size:0.82rem; color:var(--info); text-decoration:none; font-weight:500;" do %>
+          style: "font-family:'Plus Jakarta Sans',sans-serif; font-size:0.82rem; color:var(--brand); text-decoration:none; font-weight:500;" do %>
       <i class="bi bi-box-arrow-in-right"></i> <%= t('devise.shared.links.sign_in') %>
     <% end %>
   <% end %>
 
   <%- if devise_mapping.registerable? && controller_name != 'registrations' %>
     <%= link_to new_registration_path(resource_name),
-          style: "font-family:'Plus Jakarta Sans',sans-serif; font-size:0.82rem; color:var(--info); text-decoration:none; font-weight:500;" do %>
+          style: "font-family:'Plus Jakarta Sans',sans-serif; font-size:0.82rem; color:var(--brand); text-decoration:none; font-weight:500;" do %>
       <i class="bi bi-person-plus"></i> <%= t('devise.shared.links.sign_up') %>
     <% end %>
   <% end %>
 
   <%- if devise_mapping.recoverable? && controller_name != 'passwords' && controller_name != 'registrations' %>
     <%= link_to new_password_path(resource_name),
-          style: "font-family:'Plus Jakarta Sans',sans-serif; font-size:0.82rem; color:var(--info); text-decoration:none; font-weight:500;" do %>
+          style: "font-family:'Plus Jakarta Sans',sans-serif; font-size:0.82rem; color:var(--brand); text-decoration:none; font-weight:500;" do %>
       <i class="bi bi-key"></i> <%= t('devise.shared.links.forgot_password') %>
     <% end %>
   <% end %>
 
   <%- if devise_mapping.confirmable? && controller_name != 'confirmations' %>
     <%= link_to new_confirmation_path(resource_name),
-          style: "font-family:'Plus Jakarta Sans',sans-serif; font-size:0.82rem; color:var(--info); text-decoration:none; font-weight:500;" do %>
+          style: "font-family:'Plus Jakarta Sans',sans-serif; font-size:0.82rem; color:var(--brand); text-decoration:none; font-weight:500;" do %>
       <i class="bi bi-envelope-check"></i> <%= t('devise.shared.links.confirmation_instructions') %>
     <% end %>
   <% end %>
 
   <%- if devise_mapping.lockable? && resource_class.unlock_strategy_enabled?(:email) && controller_name != 'unlocks' %>
     <%= link_to new_unlock_path(resource_name),
-          style: "font-family:'Plus Jakarta Sans',sans-serif; font-size:0.82rem; color:var(--info); text-decoration:none; font-weight:500;" do %>
+          style: "font-family:'Plus Jakarta Sans',sans-serif; font-size:0.82rem; color:var(--brand); text-decoration:none; font-weight:500;" do %>
       <i class="bi bi-unlock"></i> <%= t('devise.shared.links.unlock_instructions') %>
     <% end %>
   <% end %>

@@ -67,13 +67,9 @@
             sign_out_path: destroy_student_session_path %>
 
     <% else %>
-      <%# ---- Visitante: entradas de professora e aluno ---- %>
-      <%= link_to t('devise.shared.links.sign_in_student'), new_student_session_path,
-            class: "inline-flex items-center whitespace-nowrap px-4 py-1.5 rounded-lg text-sm font-semibold text-white no-underline",
-            style: "background:var(--brand-bright); font-family:'Plus Jakarta Sans',sans-serif; text-decoration:none;" %>
-      <%= link_to t('devise.shared.links.sign_in_teacher'), new_user_session_path,
-            class: "inline-flex items-center whitespace-nowrap px-4 py-1.5 rounded-lg text-sm font-semibold no-underline",
-            style: "color:var(--brand-tint-2); font-family:'Plus Jakarta Sans',sans-serif; text-decoration:none;" %>
+      <%# ---- Visitante: entradas de professora e aluno (botões fantasma) ---- %>
+      <%= link_to t('devise.shared.links.sign_in_student'), new_student_session_path, class: "nav-ghost-btn" %>
+      <%= link_to t('devise.shared.links.sign_in_teacher'), new_user_session_path, class: "nav-ghost-btn" %>
     <% end %>
   </div>
 </nav>
