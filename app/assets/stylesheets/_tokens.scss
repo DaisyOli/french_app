@@ -8,41 +8,41 @@
 // ⚠️ Views de mailer NÃO usam var() (clientes de email não suportam);
 //    lá o hex fica escrito e deve espelhar esta tabela.
 //
-// 🇫🇷 PRACTICE-FR: valores PROVISÓRIOS emprestados do practice-br.
-//    A paleta francesa nasce na Sprint 2-FR (escolha da Daisy) e
-//    substitui só os valores — os nomes são o contrato da franquia.
+// 🇫🇷 PRACTICE-FR — paleta BORDEAUX CRÈME (escolhida pela Daisy em 2026-07-11):
+//    bordô de bistrô sobre creme, dourado-mostarda na ação, rosa empoeirado
+//    como tom suave (o mesmo #C08A95 do logo). Élégant !
 
 :root {
-  // ---- Neutros (escala "stone" quente) ----
-  --ink:          #1C1917;  // texto principal
-  --ink-soft:     #5C5853;  // texto secundário
-  --ink-faint:    #9C9892;  // texto terciário, placeholders
-  --paper:        #F7F5F0;  // fundo da página
-  --paper-2:      #EDEAE4;  // fundo rebaixado (wells, faixas)
+  // ---- Neutros (escala creme quente) ----
+  --ink:          #2A1B1E;  // texto principal
+  --ink-soft:     #6B5458;  // texto secundário
+  --ink-faint:    #A18E91;  // texto terciário, placeholders
+  --paper:        #FAF6EF;  // fundo da página (creme)
+  --paper-2:      #F0E9DC;  // fundo rebaixado (wells, faixas)
   --surface:      #FFFFFF;  // cards e superfícies elevadas
-  --surface-2:    #FAFAF9;  // painel suave sobre o card
-  --line:         #DDD9D2;  // bordas padrão
-  --line-soft:    #F0EDE8;  // bordas sutis, divisores internos
+  --surface-2:    #FCFAF5;  // painel suave sobre o card
+  --line:         #E2D8C8;  // bordas padrão
+  --line-soft:    #F2EDE2;  // bordas sutis, divisores internos
   --neutral-tint: #F3F4F6;  // fundo de chip neutro (nível C1, badges)
   --neutral-ink:  #374151;  // texto de chip neutro
 
-  // ---- Marca (no BR: verdes) ----
-  --brand-deep:   #0F3826;  // botão compacto, headers escuros
-  --brand:        #1A6B4A;  // CTA de rodapé, links fortes
-  --brand-bright: #2A9B6F;  // progresso, hover, realces
-  --brand-soft:   #6EBD96;  // realce claro
-  --brand-tint-2: #D1EAD9;  // fundo de marca mais presente
-  --brand-tint:   #E8F5EE;  // fundo de marca padrão (badge A1)
-  --brand-mist:   #F0FAF5;  // fundo de marca quase imperceptível
+  // ---- Marca (no FR: bordôs) ----
+  --brand-deep:   #5C1630;  // botão compacto, headers escuros
+  --brand:        #8A2545;  // CTA de rodapé, links fortes
+  --brand-bright: #B24563;  // progresso, hover, realces
+  --brand-soft:   #C08A95;  // realce claro (rosa empoeirado — o rosa do logo)
+  --brand-tint-2: #F3D9DF;  // fundo de marca mais presente
+  --brand-tint:   #F8E7EB;  // fundo de marca padrão (badge A1)
+  --brand-mist:   #FCF3F5;  // fundo de marca quase imperceptível
 
-  // ---- Ação (no BR: dourado — submit de formulário) ----
-  --action:        #C9952A;
-  --action-hover:  #B8841E;
-  --action-bright: #E6B65C;
-  --action-border: #E8C97A;
-  --action-soft:   #F5D478;
-  --action-tint:   #FBF3E0;
-  --action-ink:    #7C4A00;  // texto escuro sobre fundo dourado claro
+  // ---- Ação (no FR: dourado-mostarda — submit de formulário) ----
+  --action:        #C08A28;
+  --action-hover:  #A87718;
+  --action-bright: #DBAE55;
+  --action-border: #E6C888;
+  --action-soft:   #EDD397;
+  --action-tint:   #FAF1DC;
+  --action-ink:    #6E4A00;  // texto escuro sobre fundo dourado claro
 
   // ---- Estados ----
   --success:        #15803D;  // acerto no quiz
@@ -50,10 +50,12 @@
   --success-border: #BBF7D0;
   --success-tint:   #DCFCE7;
 
-  --error:          #B91C1C;  // erro no quiz, validações
-  --error-deep:     #991B1B;
-  --error-border:   #FECACA;
-  --error-tint:     #FEF2F2;
+  // erro puxado pro vermelho-alaranjado de propósito: o bordô da marca
+  // é vinho/magenta — o erro precisa se distinguir dele no quiz
+  --error:          #C0392B;
+  --error-deep:     #96281B;
+  --error-border:   #F5C6BC;
+  --error-tint:     #FDEEEA;
 
   --warning:        #EA580C;  // avisos, badge B2
   --warning-ink:    #7C2D12;
@@ -75,14 +77,14 @@
   --amber-ink:  #92400E;
   --amber-tint: #FEF3C7;
 
-  --violet:        #7C3AED;  // badge B1, tipo eCPF
+  --violet:        #7C3AED;  // badge B1
   --violet-deep:   #4C1D95;
   --violet-border: #DDD6FE;
   --violet-tint:   #F5F3FF;
 
   // ---- Véus e brilhos derivados da marca (sombras tintadas) ----
-  --brand-veil:   rgba(26, 107, 74, 0.06);
-  --brand-veil-2: rgba(26, 107, 74, 0.10);
-  --brand-glow:   rgba(42, 155, 111, 0.12);
-  --action-veil:  rgba(201, 149, 42, 0.07);
+  --brand-veil:   rgba(138, 37, 69, 0.06);
+  --brand-veil-2: rgba(138, 37, 69, 0.10);
+  --brand-glow:   rgba(178, 69, 99, 0.12);
+  --action-veil:  rgba(192, 138, 40, 0.07);
 }

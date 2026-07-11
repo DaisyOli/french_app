@@ -62,24 +62,24 @@ module.exports = {
   daisyui: {
     // DaisyUI exige valores literais (converte para oklch no build).
     // Esta paleta ESPELHA _tokens.scss — mudou lá, muda aqui.
-    // 🇫🇷 Valores provisórios do practice-br até a Sprint 2-FR definir a marca francesa.
+    // 🇫🇷 BORDEAUX CRÈME (Sprint 2-FR, 2026-07-11).
     themes: [
       {
         'practice-fr': {
-          'primary':          '#C9952A',
+          'primary':          '#C08A28',
           'primary-content':  '#FFFFFF',
-          'secondary':        '#0F3826',
+          'secondary':        '#5C1630',
           'secondary-content':'#FFFFFF',
           'accent':           '#2563EB',
           'accent-content':   '#FFFFFF',
-          'neutral':          '#1C1917',
-          'base-100':         '#F7F5F0',
-          'base-200':         '#EDEAE4',
-          'base-300':         '#DDD9D2',
-          'base-content':     '#1C1917',
-          'success':          '#2A9B6F',
+          'neutral':          '#2A1B1E',
+          'base-100':         '#FAF6EF',
+          'base-200':         '#F0E9DC',
+          'base-300':         '#E2D8C8',
+          'base-content':     '#2A1B1E',
+          'success':          '#15803D',
           'error':            '#C0392B',
-          'warning':          '#D97706',
+          'warning':          '#EA580C',
           'info':             '#2563EB',
         },
       },

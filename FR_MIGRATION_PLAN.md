@@ -47,6 +47,10 @@ apps — só os VALORES mudam). Fonte de verdade lá: `app/assets/stylesheets/_t
    fontes (`Raleway`/`Plus Jakarta Sans`/`DM Mono` — franquia) e raios 8/12/18/24px.
 
 ### Sprint 2-FR — Nascer a marca francesa (decisão de design da Daisy)
+> **STATUS 2026-07-11: decidida — Bordeaux crème** (bordô #8A2545/#5C1630 sobre
+> creme #FAF6EF, action dourado #C08A28, brand-soft rosa empoeirado #C08A95).
+> Branding completo em `branding/fr/` (logo vetorial, Raleway SemiBold 600, sem
+> subtítulo). Falta só gravar os valores em `_tokens.scss`/tema DaisyUI (início do Sprint 3).
 1. Criar `mockup.html` com 3–4 direções de paleta preenchendo os MESMOS tokens
    (ex.: evoluir o roxo atual para uma família roxa "de gente grande"; azul-França +
    accent quente; bordô/creme). Mostrar cada direção trocando só o bloco `:root`.
@@ -57,6 +61,15 @@ apps — só os VALORES mudam). Fonte de verdade lá: `app/assets/stylesheets/_t
 
 ### Sprint 3+ — Migração página a página (receita R8 do BR)
 Ordem sugerida: layout/navbar → telas Devise → lista de atividades → show/quiz → admin.
+
+> **Cards, grid e responsividade NÃO se recriam — se PORTAM do BR.** O trabalho
+> que a Daisy fez nos cards/responsividade do Practice-BR é estrutura da franquia
+> (classes Tailwind/DaisyUI); copiar/adaptar o markup das views equivalentes do BR
+> e deixar os tokens pintarem de bordô. Abrir a sessão com
+> `claude --add-dir ~/code/exercise_app` pra ler as views de lá.
+> **Critério de qualidade:** a franquia Practice é peça de portfólio — tem que
+> ficar incrível para recrutadores (polimento visual, estados vazios com charme,
+> responsividade impecável).
 Por página: substituir classes Bootstrap por Tailwind/DaisyUI com tokens; collapses
 viram Stimulus; `form-control` → `form-input`; hex que sobrar → rodar
 `scripts/tokenize_colors.rb` (ajustar o mapa hex→token para a paleta local; dry-run
