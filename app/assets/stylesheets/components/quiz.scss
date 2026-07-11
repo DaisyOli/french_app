@@ -804,3 +804,32 @@
     min-height: 40px;
   }
 }
+
+/* ==============================================
+   🇫🇷 AJUSTES LOCAIS DO PRACTICE-FR
+   O layout do BR fixa a altura na viewport (coluna estica, nav no rodapé).
+   Com exercícios curtos sobrava um vazio enorme — pedido da Daisy: a
+   coluna abraça o conteúdo e a página rola naturalmente.
+   ============================================== */
+.quiz-outer {
+  height: auto;
+  min-height: calc(100vh - 56px);
+  overflow: visible;
+}
+
+.quiz-two-col {
+  flex: none;
+  height: auto;
+  min-height: 420px;
+}
+
+.quiz-material-col,
+.quiz-exercise-col {
+  overflow: visible;
+}
+
+.quiz-questions-stack {
+  flex: none;
+  overflow-y: visible;
+  min-height: 240px; /* amortece o pulo de altura entre passos */
+}
