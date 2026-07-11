@@ -1,0 +1,380 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Practice-FR · Direções de paleta (Sprint 2)</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Raleway:wght@400;500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <style>
+    /* ==========================================================
+       🇫🇷 MOCKUP SPRINT 2-FR — 4 direções preenchendo os MESMOS tokens.
+       A ESTRUTURA abaixo é a franquia Practice; só o :root muda.
+       (Este arquivo é temporário: apagar após a escolha da paleta.)
+       ========================================================== */
+
+    /* Direção padrão: Violette royale (o JS troca os valores) */
+    :root {
+      --ink: #241E33; --ink-soft: #5F5871; --ink-faint: #9A93AB;
+      --paper: #F7F5FA; --paper-2: #ECE8F3;
+      --surface: #FFFFFF; --surface-2: #FBFAFD;
+      --line: #DDD8E8; --line-soft: #EFECF5;
+      --neutral-tint: #F3F4F6; --neutral-ink: #374151;
+
+      --brand-deep: #3A2D7D; --brand: #5A48C0; --brand-bright: #7B68E8;
+      --brand-soft: #A99CF0; --brand-tint-2: #DFD9F8; --brand-tint: #ECE8FB; --brand-mist: #F5F3FD;
+
+      --action: #D08C1F; --action-hover: #B87A15; --action-bright: #E8B25C;
+      --action-border: #ECCA8A; --action-soft: #F2D493; --action-tint: #FBF1DC; --action-ink: #7A4A00;
+
+      --success: #15803D; --success-tint: #DCFCE7; --success-border: #BBF7D0;
+      --error: #B91C1C; --error-tint: #FEF2F2; --error-border: #FECACA;
+      --warning: #EA580C; --warning-tint: #FFF7ED;
+      --info: #2563EB; --info-tint: #EBF2FC;
+      --violet: #7C3AED; --violet-tint: #F5F3FF;
+      --sky: #0369A1; --sky-tint: #E0F2FE;
+      --amber: #D97706; --amber-tint: #FEF3C7;
+
+      --brand-veil: rgba(90, 72, 192, 0.07);
+      --brand-glow: rgba(123, 104, 232, 0.14);
+    }
+
+    * { box-sizing: border-box; margin: 0; }
+    body {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      background: var(--paper); color: var(--ink);
+      transition: background .35s, color .35s;
+    }
+    h1, h2, h3 { font-family: 'Raleway', sans-serif; }
+    .mono { font-family: 'DM Mono', monospace; }
+
+    /* ---- Seletor de direções (só do mockup) ---- */
+    .switcher {
+      position: sticky; top: 0; z-index: 10;
+      background: var(--surface); border-bottom: 1px solid var(--line);
+      padding: 14px 24px; display: flex; gap: 10px; flex-wrap: wrap; align-items: center;
+      box-shadow: 0 4px 18px var(--brand-veil);
+    }
+    .switcher strong { font-family: 'Raleway', sans-serif; margin-right: 6px; }
+    .dir-btn {
+      font-family: 'Plus Jakarta Sans', sans-serif; font-weight: 600; font-size: .85rem;
+      padding: 8px 14px; border-radius: 999px; border: 1.5px solid var(--line);
+      background: var(--surface); color: var(--ink-soft); cursor: pointer;
+      display: inline-flex; align-items: center; gap: 8px; transition: all .2s;
+    }
+    .dir-btn .dot { width: 14px; height: 14px; border-radius: 50%; display: inline-block; }
+    .dir-btn.active { border-color: var(--brand); color: var(--brand-deep); background: var(--brand-tint); }
+    .dir-note { width: 100%; font-size: .82rem; color: var(--ink-faint); }
+
+    .wrap { max-width: 960px; margin: 0 auto; padding: 0 24px 80px; }
+
+    /* ---- Navbar (estrutura da franquia) ---- */
+    .navbar {
+      display: flex; justify-content: space-between; align-items: center;
+      padding: 18px 0;
+    }
+    .logo { font-family: 'Raleway', sans-serif; font-weight: 800; font-size: 1.3rem; color: var(--brand-deep); letter-spacing: .02em; }
+    .logo span { color: var(--brand); }
+    .nav-links { display: flex; gap: 22px; font-size: .9rem; font-weight: 600; color: var(--ink-soft); }
+
+    /* ---- Hero ---- */
+    .hero {
+      background: linear-gradient(135deg, var(--brand-deep), var(--brand));
+      color: #fff; border-radius: 24px; padding: 46px 42px; margin: 8px 0 34px;
+      box-shadow: 0 18px 40px var(--brand-glow);
+    }
+    .hero h1 { font-size: 2rem; font-weight: 800; margin-bottom: 10px; }
+    .hero p { opacity: .88; max-width: 34em; margin-bottom: 24px; }
+    .btn-cta {
+      background: var(--surface); color: var(--brand-deep);
+      font-weight: 700; border: none; padding: 13px 26px; border-radius: 12px;
+      font-size: .95rem; cursor: pointer; font-family: inherit;
+    }
+    .hero .mono-tag { font-size: .75rem; opacity: .75; letter-spacing: .12em; text-transform: uppercase; display: block; margin-bottom: 14px; }
+
+    h2.section { font-size: 1.15rem; margin: 34px 0 16px; color: var(--ink); }
+    h2.section small { color: var(--ink-faint); font-weight: 500; font-family: 'Plus Jakarta Sans', sans-serif; font-size: .8rem; margin-left: 8px; }
+
+    /* ---- Cards de atividade ---- */
+    .cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 18px; }
+    .card {
+      background: var(--surface); border: 1px solid var(--line); border-radius: 18px;
+      padding: 20px; box-shadow: 0 6px 20px var(--brand-veil);
+      display: flex; flex-direction: column; gap: 12px;
+    }
+    .card h3 { font-size: 1.02rem; }
+    .badges { display: flex; gap: 8px; flex-wrap: wrap; }
+    .badge {
+      font-family: 'DM Mono', monospace; font-size: .72rem; font-weight: 500;
+      padding: 3px 10px; border-radius: 999px;
+    }
+    .b-a1 { background: var(--brand-tint); color: var(--brand-deep); }
+    .b-a2 { background: var(--info-tint); color: var(--info); }
+    .b-b1 { background: var(--violet-tint); color: var(--violet); }
+    .b-b2 { background: var(--warning-tint); color: var(--warning); }
+    .b-co { background: var(--sky-tint); color: var(--sky); }
+    .b-ce { background: var(--amber-tint); color: var(--amber); }
+    .progress { height: 8px; background: var(--paper-2); border-radius: 999px; overflow: hidden; }
+    .progress i { display: block; height: 100%; background: var(--brand-bright); border-radius: 999px; }
+    .card p { font-size: .85rem; color: var(--ink-soft); flex: 1; }
+    .btn-compact {
+      align-self: flex-start; background: var(--brand-deep); color: #fff;
+      border: none; border-radius: 8px; padding: 8px 16px; font-weight: 600;
+      font-size: .82rem; cursor: pointer; font-family: inherit;
+    }
+
+    /* ---- Bloco de peso (contraste com coragem) ---- */
+    .deep-block {
+      background: var(--brand-deep); color: #fff; border-radius: 18px;
+      padding: 26px 30px; margin-top: 34px; display: flex; justify-content: space-between;
+      align-items: center; gap: 18px; flex-wrap: wrap;
+    }
+    .deep-block .mono { opacity: .8; font-size: .78rem; letter-spacing: .1em; }
+    .deep-block strong { font-family: 'Raleway', sans-serif; font-size: 1.1rem; display: block; margin-top: 4px; }
+    .btn-footer-cta {
+      background: var(--brand); color: #fff; border: none; border-radius: 12px;
+      padding: 12px 24px; font-weight: 700; font-size: .92rem; cursor: pointer; font-family: inherit;
+      box-shadow: 0 8px 22px var(--brand-glow);
+    }
+    .btn-footer-cta:hover { background: var(--brand-bright); }
+
+    /* ---- Formulário ---- */
+    .form-card {
+      background: var(--surface); border: 1px solid var(--line); border-radius: 18px;
+      padding: 26px; max-width: 430px;
+    }
+    .form-card label { font-size: .82rem; font-weight: 600; color: var(--ink-soft); display: block; margin: 14px 0 6px; }
+    .form-card input {
+      width: 100%; padding: 11px 14px; border: 1.5px solid var(--line); border-radius: 8px;
+      font-family: inherit; font-size: .9rem; background: var(--surface-2); color: var(--ink);
+    }
+    .form-card input:focus { outline: 2px solid var(--brand-soft); border-color: var(--brand); }
+    .btn-submit {
+      width: 100%; margin-top: 20px; background: var(--action); color: #fff;
+      border: none; border-radius: 8px; padding: 13px; font-weight: 700; font-size: .95rem;
+      cursor: pointer; font-family: inherit;
+    }
+    .btn-submit:hover { background: var(--action-hover); }
+
+    /* ---- Quiz: estados ---- */
+    .quiz-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 18px; }
+    .quiz {
+      border-radius: 12px; padding: 16px 18px; font-size: .9rem; font-weight: 600;
+      border: 1.5px solid;
+    }
+    .quiz.ok  { background: var(--success-tint); border-color: var(--success-border); color: var(--success); }
+    .quiz.nok { background: var(--error-tint);  border-color: var(--error-border);  color: var(--error); }
+    .quiz small { display: block; font-weight: 400; color: var(--ink-soft); margin-top: 4px; }
+
+    /* ---- Empty state (fofura é requisito!) ---- */
+    .empty {
+      text-align: center; background: var(--brand-mist); border: 2px dashed var(--brand-soft);
+      border-radius: 18px; padding: 40px 20px; margin-top: 18px;
+    }
+    .empty .croissant { font-size: 2.4rem; display: block; margin-bottom: 10px; }
+    .empty p { color: var(--ink-soft); font-size: .92rem; }
+    .empty strong { color: var(--brand-deep); }
+
+    /* ---- Amostras da paleta ---- */
+    .swatches { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 14px; }
+    .swatch { width: 44px; height: 44px; border-radius: 8px; border: 1px solid var(--line); position: relative; }
+    .swatch em { position: absolute; bottom: -18px; left: 0; font-size: .58rem; font-style: normal; color: var(--ink-faint); white-space: nowrap; }
+    .swatches { margin-bottom: 26px; }
+  </style>
+</head>
+<body>
+
+  <div class="switcher">
+    <strong>🎨 Direção:</strong>
+    <button class="dir-btn active" data-dir="violette"><span class="dot" style="background:#5A48C0"></span>1 · Violette royale</button>
+    <button class="dir-btn" data-dir="bleu"><span class="dot" style="background:#2E5FD0"></span>2 · Bleu de France</button>
+    <button class="dir-btn" data-dir="bordeaux"><span class="dot" style="background:#8A2545"></span>3 · Bordeaux crème ✔ escolhida</button>
+    <button class="dir-btn" data-dir="terracotta"><span class="dot" style="background:#B0532F"></span>4 · Terracotta de Provence</button>
+    <button class="dir-btn" data-dir="violettePapoula"><span class="dot" style="background:linear-gradient(135deg,#5A48C0 50%,#E2574B 50%)"></span>5 · Violette + papoula</button>
+    <span class="dir-note" id="dirNote"></span>
+  </div>
+
+  <div class="wrap">
+
+    <nav class="navbar">
+      <div class="logo" style="display:flex; align-items:center; gap:10px;">
+        <img src="branding/fr/practice-fr-logo-mark-color.svg" alt="" style="height:36px; width:auto;">
+        Practice<span>-FR</span>
+      </div>
+      <div class="nav-links"><span>Activités</span><span>Progrès</span><span>Mon compte</span></div>
+    </nav>
+
+    <section class="hero">
+      <span class="mono mono-tag">Apprendre est une aventure</span>
+      <h1>Bonjour, Daisy ! Prête pour le français d'aujourd'hui ?</h1>
+      <p>Des activités courtes et pleines de charme pour pratiquer un peu chaque jour — compréhension orale, écrite, et plus encore.</p>
+      <button class="btn-cta">Commencer une activité</button>
+    </section>
+
+    <h2 class="section">Cards de atividade <small>badges CEFR e habilidades — cores fixas da franquia</small></h2>
+    <div class="cards">
+      <div class="card">
+        <div class="badges"><span class="badge b-a1">A1</span><span class="badge b-co">CO</span></div>
+        <h3>Les salutations</h3>
+        <p>Écoutez le dialogue et choisissez la bonne réponse.</p>
+        <div class="progress"><i style="width:70%"></i></div>
+        <button class="btn-compact">Continuer</button>
+      </div>
+      <div class="card">
+        <div class="badges"><span class="badge b-a2">A2</span><span class="badge b-ce">CE</span></div>
+        <h3>Au marché</h3>
+        <p>Lisez le texte et complétez les phrases à trous.</p>
+        <div class="progress"><i style="width:35%"></i></div>
+        <button class="btn-compact">Continuer</button>
+      </div>
+      <div class="card">
+        <div class="badges"><span class="badge b-b1">B1</span><span class="badge b-b2">B2</span></div>
+        <h3>Le subjonctif</h3>
+        <p>Remettez les mots dans le bon ordre. Courage !</p>
+        <div class="progress"><i style="width:10%"></i></div>
+        <button class="btn-compact">Commencer</button>
+      </div>
+    </div>
+
+    <h2 class="section">Formulário e quiz <small>submit usa --action; feedback usa --success/--error</small></h2>
+    <div style="display:flex; gap:18px; flex-wrap:wrap; align-items:flex-start;">
+      <div class="form-card" style="flex:1; min-width:260px;">
+        <h3 style="font-size:1rem;">Se connecter</h3>
+        <label>E-mail</label>
+        <input type="email" placeholder="daisy@practicefr.com">
+        <label>Mot de passe</label>
+        <input type="password" placeholder="••••••••">
+        <button class="btn-submit">Connexion</button>
+      </div>
+      <div class="quiz-row" style="flex:1; min-width:260px;">
+        <div class="quiz ok">✓ Très bien ! « Bonjour » est correct.<small>+10 points — continuez comme ça !</small></div>
+        <div class="quiz nok">✗ Presque ! La bonne réponse était « chez ».<small>Pas de souci, on réessaie ?</small></div>
+      </div>
+    </div>
+
+    <h2 class="section">Empty state <small>fofura é requisito de produto</small></h2>
+    <div class="empty">
+      <span class="croissant">🥐</span>
+      <p><strong>Aucune activité pour l'instant…</strong><br>Votre professeur prépare quelque chose de délicieux. Revenez bientôt !</p>
+    </div>
+
+    <div class="deep-block">
+      <div>
+        <span class="mono">PRÊTE POUR LA SUITE ?</span>
+        <strong>Encore 2 activités et vous complétez la semaine ! 🎉</strong>
+      </div>
+      <button class="btn-footer-cta">Voir mes activités</button>
+    </div>
+
+    <h2 class="section">A paleta desta direção <small>os mesmos nomes de token, sempre</small></h2>
+    <div class="swatches" id="swatches"></div>
+
+    <h2 class="section">O logo Practice-FR <small>recolorido do BR — rosa empoeirado #C08A95, dourado #DCA63E constante da franquia</small></h2>
+    <div style="display:flex; gap:18px; flex-wrap:wrap; align-items:stretch;">
+      <div class="card" style="align-items:center; justify-content:center;">
+        <img src="branding/fr/practice-fr-logo-mark-color.svg" alt="Símbolo colorido" style="height:90px; width:auto;">
+        <p style="text-align:center; flex:0;">símbolo colorido</p>
+      </div>
+      <div class="card" style="align-items:center; justify-content:center;">
+        <img src="branding/fr/practice-fr-logo-horizontal-color.svg" alt="Lockup horizontal" style="max-width:280px; width:100%; height:auto;">
+        <p style="text-align:center; flex:0;">lockup horizontal — wordmark vetorial em Raleway ExtraBold, sem subtítulo</p>
+      </div>
+      <div class="card" style="align-items:center; justify-content:center; background:var(--brand-deep); border-color:var(--brand-deep);">
+        <img src="branding/fr/practice-fr-logo-mark-mono-light.svg" alt="Símbolo mono claro" style="height:90px; width:auto;">
+        <p style="text-align:center; flex:0; color:rgba(255,255,255,.75);">mono claro sobre bordô</p>
+      </div>
+    </div>
+
+  </div>
+
+  <script>
+    // Cada direção preenche os MESMOS tokens da franquia — só valores mudam.
+    const direcoes = {
+      violette: {
+        nota: "Direção 1 — a evolução do roxo atual: profundo, confiante, com dourado-mel nos submits.",
+        tokens: {
+          '--ink':'#241E33','--ink-soft':'#5F5871','--ink-faint':'#9A93AB',
+          '--paper':'#F7F5FA','--paper-2':'#ECE8F3','--surface':'#FFFFFF','--surface-2':'#FBFAFD',
+          '--line':'#DDD8E8','--line-soft':'#EFECF5',
+          '--brand-deep':'#3A2D7D','--brand':'#5A48C0','--brand-bright':'#7B68E8','--brand-soft':'#A99CF0',
+          '--brand-tint-2':'#DFD9F8','--brand-tint':'#ECE8FB','--brand-mist':'#F5F3FD',
+          '--action':'#D08C1F','--action-hover':'#B87A15','--action-bright':'#E8B25C',
+          '--action-border':'#ECCA8A','--action-soft':'#F2D493','--action-tint':'#FBF1DC','--action-ink':'#7A4A00',
+          '--brand-veil':'rgba(90,72,192,0.07)','--brand-glow':'rgba(123,104,232,0.14)'
+        }
+      },
+      bleu: {
+        nota: "Direção 2 — azul-França clássico e luminoso, com coral-papoula quente para a ação.",
+        tokens: {
+          '--ink':'#1A2433','--ink-soft':'#56617A','--ink-faint':'#959DB2',
+          '--paper':'#F5F7FA','--paper-2':'#E9EDF4','--surface':'#FFFFFF','--surface-2':'#F9FBFD',
+          '--line':'#D6DDE8','--line-soft':'#EBF0F6',
+          '--brand-deep':'#1D3E9E','--brand':'#2E5FD0','--brand-bright':'#4A82E8','--brand-soft':'#8FB4F0',
+          '--brand-tint-2':'#D6E4FB','--brand-tint':'#E7F0FD','--brand-mist':'#F2F7FE',
+          '--action':'#E2574B','--action-hover':'#C94539','--action-bright':'#F08A75',
+          '--action-border':'#F5B0A0','--action-soft':'#F6BFB0','--action-tint':'#FDEEE9','--action-ink':'#8A2A1A',
+          '--brand-veil':'rgba(46,95,208,0.07)','--brand-glow':'rgba(74,130,232,0.14)'
+        }
+      },
+      bordeaux: {
+        nota: "Direção 3 — ESCOLHIDA (2026-07-11): bordô de bistrô sobre creme, mostarda dourada nos submits. Logo recolorido com rosa empoeirado #C08A95 (= --brand-soft). Élégant !",
+        tokens: {
+          '--ink':'#2A1B1E','--ink-soft':'#6B5458','--ink-faint':'#A18E91',
+          '--paper':'#FAF6EF','--paper-2':'#F0E9DC','--surface':'#FFFFFF','--surface-2':'#FCFAF5',
+          '--line':'#E2D8C8','--line-soft':'#F2EDE2',
+          '--brand-deep':'#5C1630','--brand':'#8A2545','--brand-bright':'#B24563','--brand-soft':'#C08A95',
+          '--brand-tint-2':'#F3D9DF','--brand-tint':'#F8E7EB','--brand-mist':'#FCF3F5',
+          '--action':'#C08A28','--action-hover':'#A87718','--action-bright':'#DBAE55',
+          '--action-border':'#E6C888','--action-soft':'#EDD397','--action-tint':'#FAF1DC','--action-ink':'#6E4A00',
+          '--brand-veil':'rgba(138,37,69,0.07)','--brand-glow':'rgba(178,69,99,0.14)'
+        }
+      },
+      terracotta: {
+        nota: "Direção 4 — o cartão-surpresa: terracota da Provence com verde-menta fresco na ação.",
+        tokens: {
+          '--ink':'#2B2320','--ink-soft':'#6B5B54','--ink-faint':'#A2938B',
+          '--paper':'#FAF6F2','--paper-2':'#F1E9E2','--surface':'#FFFFFF','--surface-2':'#FCF9F6',
+          '--line':'#E3D8CE','--line-soft':'#F2EBE4',
+          '--brand-deep':'#7A3520','--brand':'#B0532F','--brand-bright':'#D3714A','--brand-soft':'#E8A385',
+          '--brand-tint-2':'#F5DFD3','--brand-tint':'#F9E9E1','--brand-mist':'#FCF4EF',
+          '--action':'#2E8C7E','--action-hover':'#237064','--action-bright':'#55B3A4',
+          '--action-border':'#9AD6CB','--action-soft':'#B5E0D8','--action-tint':'#E2F4F0','--action-ink':'#0F4A42',
+          '--brand-veil':'rgba(176,83,47,0.07)','--brand-glow':'rgba(211,113,74,0.14)'
+        }
+      },
+      violettePapoula: {
+        nota: "Direção 5 — o pedido da Daisy: o violeta royale da direção 1, com o coral-papoula da direção 2 na ação.",
+        tokens: {
+          '--ink':'#241E33','--ink-soft':'#5F5871','--ink-faint':'#9A93AB',
+          '--paper':'#F7F5FA','--paper-2':'#ECE8F3','--surface':'#FFFFFF','--surface-2':'#FBFAFD',
+          '--line':'#DDD8E8','--line-soft':'#EFECF5',
+          '--brand-deep':'#3A2D7D','--brand':'#5A48C0','--brand-bright':'#7B68E8','--brand-soft':'#A99CF0',
+          '--brand-tint-2':'#DFD9F8','--brand-tint':'#ECE8FB','--brand-mist':'#F5F3FD',
+          '--action':'#E2574B','--action-hover':'#C94539','--action-bright':'#F08A75',
+          '--action-border':'#F5B0A0','--action-soft':'#F6BFB0','--action-tint':'#FDEEE9','--action-ink':'#8A2A1A',
+          '--brand-veil':'rgba(90,72,192,0.07)','--brand-glow':'rgba(123,104,232,0.14)'
+        }
+      }
+    };
+
+    const principais = ['--brand-deep','--brand','--brand-bright','--brand-tint','--action','--action-tint','--ink','--paper'];
+
+    function aplicar(nome) {
+      const dir = direcoes[nome];
+      for (const [token, valor] of Object.entries(dir.tokens)) {
+        document.documentElement.style.setProperty(token, valor);
+      }
+      document.getElementById('dirNote').textContent = dir.nota;
+      document.querySelectorAll('.dir-btn').forEach(b => b.classList.toggle('active', b.dataset.dir === nome));
+      const sw = document.getElementById('swatches');
+      sw.innerHTML = principais.map(t =>
+        `<div class="swatch" style="background:${dir.tokens[t]}"><em>${t.replace('--','')}</em></div>`
+      ).join('');
+    }
+
+    document.querySelectorAll('.dir-btn').forEach(b => b.addEventListener('click', () => aplicar(b.dataset.dir)));
+    aplicar('bordeaux');   // direção escolhida em 2026-07-11
+  </script>
+</body>
+</html>
