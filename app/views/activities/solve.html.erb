@@ -299,36 +299,6 @@
         </div>
       </form>
 
-      <div id="results-container" style="display: none;">
-        <div class="content-card results-card">
-          <div class="card-header success-header">
-            <i class="bi bi-trophy-fill"></i>
-            <span>Résultats</span>
-          </div>
-          <div class="card-body">
-            <div class="score-display">
-              <div class="score-circle">
-                <span id="score-percentage"></span>
-              </div>
-              <div class="score-details">
-                <p id="score-message"></p>
-                <p id="feedback-message"></p>
-              </div>
-            </div>
-            <div id="question-feedback"></div>
-            <div class="action-buttons">
-              <button type="button" class="btn-secondary" id="show-answers">
-                <i class="bi bi-eye-fill"></i>
-                Voir les réponses
-              </button>
-              <button type="button" class="btn-outline" id="retry-quiz">
-                <i class="bi bi-arrow-clockwise"></i>
-                Réessayer
-              </button>
-            </div>
-          </div>
-        </div>
-      </div>
     <% end %>
 
     <% unless has_exercises %>
@@ -361,6 +331,38 @@
       <%= exercises_html %>
     </div>
   <% end %>
+
+  <%# Resultado — fica FORA das colunas: quando aparece, toma a cena sozinho %>
+  <div id="results-container" style="display: none;">
+    <div class="content-card results-card">
+      <div class="card-header success-header">
+        <i class="bi bi-trophy-fill"></i>
+        <span>Résultats</span>
+      </div>
+      <div class="card-body">
+        <div class="score-display">
+          <div class="score-circle">
+            <span id="score-percentage"></span>
+          </div>
+          <div class="score-details">
+            <p id="score-message"></p>
+            <p id="feedback-message"></p>
+          </div>
+        </div>
+        <div id="question-feedback"></div>
+        <div class="action-buttons">
+          <button type="button" class="btn-secondary" id="show-answers">
+            <i class="bi bi-eye-fill"></i>
+            Voir les réponses
+          </button>
+          <button type="button" class="btn-outline" id="retry-quiz">
+            <i class="bi bi-arrow-clockwise"></i>
+            Réessayer
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
 
 </div>
 </div>
@@ -2051,8 +2053,9 @@
 
   /* === CORPO DOS CARDS === */
   .card-body {
-    padding: 2rem;
+    padding: 1.1rem 1.35rem;
     position: relative;
+    font-size: 0.92rem;
   }
 
   /* === ALTERNATIVAS COM DESIGN MODERNO === */
@@ -2076,7 +2079,8 @@
   .alternative-label {
     display: flex;
     align-items: center;
-    gap: 1rem;
+    font-size: 0.92rem;
+    gap: 0.7rem;
     padding: 1rem 1.5rem;
     background: rgba(74, 144, 226, 0.05);
     border: 2px solid rgba(74, 144, 226, 0.1);
@@ -2103,9 +2107,8 @@
   }
 
   .alternative-label:hover {
-    transform: translateX(8px);
-    border-color: var(--question-color);
-    background: rgba(74, 144, 226, 0.1);
+    border-color: var(--brand-bright);
+    background: var(--brand-mist);
   }
 
   .alternative-input:checked + .alternative-label {
@@ -2117,8 +2120,9 @@
   }
 
   .alternative-letter {
-    width: 32px;
-    height: 32px;
+    width: 24px;
+    height: 24px;
+    font-size: 0.75rem;
     border-radius: 50%;
     background: rgba(74, 144, 226, 0.2);
     display: flex;
@@ -2686,7 +2690,7 @@
    /* === INSTRUÇÕES E TEXTOS === */
    .instruction-text {
      color: var(--primary-dark);
-     font-size: 1.1rem;
+     font-size: 0.85rem;
      font-weight: 500;
      margin-bottom: 1.5rem;
      text-align: center;
@@ -2703,7 +2707,7 @@
    }
 
    .question-text {
-     font-size: 1.1rem;
+     font-size: 0.92rem;
      line-height: 1.6;
      color: var(--primary-dark);
      margin-bottom: 1.5rem;
@@ -3551,6 +3555,22 @@
   var materialCol = document.getElementById('quiz-material-col');
   if (toggle && materialCol) {
     toggle.addEventListener('click', function() { materialCol.classList.toggle('collapsed'); });
+  }
+
+  // modo resultado: quiz sai de cena quando o placar aparece
+  var results = document.getElementById('results-container');
+  var outer = document.querySelector('.quiz-outer');
+  if (results && outer) {
+    new MutationObserver(function() {
+      var visivel = results.style.display !== 'none';
+      outer.classList.toggle('fr-results-mode', visivel);
+      if (visivel) window.scrollTo({ top: 0 });
+    }).observe(results, { attributes: true, attributeFilter: ['style'] });
+    var showAnswers = document.getElementById('show-answers');
+    if (showAnswers) showAnswers.addEventListener('click', function() {
+      outer.classList.remove('fr-results-mode');
+      window.scrollTo({ top: 0 });
+    });
   }
 })();
 </script>
