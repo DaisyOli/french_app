@@ -151,6 +151,24 @@
   .dash-level-grid { grid-template-columns: repeat(3, 1fr); }
 }
 
+/* Dashboard do professor — hero sólido em --brand-deep (direção "Adega")
+   e linha de aluno/avaliação reaproveitada nas duas listas da página. */
+.dash-hero {
+  background: var(--brand-deep);
+  padding: 36px 16px 30px;
+}
+
+.dash-activity-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 0;
+}
+
+.dash-activity-row + .dash-activity-row {
+  border-top: 1px solid var(--line-soft);
+}
+
 /* Base da franquia Practice — o resto vem do Tailwind + tokens */
 * {
   box-sizing: border-box;

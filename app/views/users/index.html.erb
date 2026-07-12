@@ -1,0 +1,151 @@
+<% content_for :head do %>
+  <title>Tableau de bord professeur · Practice-FR</title>
+<% end %>
+
+<%# Hero sólido em --brand-deep — direção "Adega" escolhida por Daisy %>
+<div class="dash-hero">
+  <div style="max-width:1100px; margin:0 auto;">
+    <div style="display:flex; align-items:center; gap:10px; margin-bottom:6px;">
+      <i class="bi bi-mortarboard-fill" style="color:var(--brand-soft); font-size:1.3rem;"></i>
+      <span style="font-family:'DM Mono',monospace; font-size:0.7rem; font-weight:700; letter-spacing:0.08em; text-transform:uppercase; color:var(--brand-soft);">Espace professeur</span>
+    </div>
+    <h1 style="font-family:'Raleway',sans-serif; font-size:1.7rem; font-weight:800; color:var(--paper); margin:0 0 6px;">
+      Bonjour !
+    </h1>
+    <p style="font-family:'Plus Jakarta Sans',sans-serif; font-size:0.92rem; color:var(--brand-tint-2); margin:0;">
+      Voici un aperçu de votre espace professeur.
+    </p>
+  </div>
+</div>
+
+<div style="max-width:1100px; margin:0 auto; padding:24px 16px 60px;">
+
+  <%# Grade de 4 métricas %>
+  <div class="dash-metrics-grid" style="margin-bottom:24px;">
+    <div style="background:var(--surface); border:1px solid var(--line); border-radius:14px; padding:16px 18px;">
+      <div style="font-family:'DM Mono',monospace; font-size:0.68rem; font-weight:700; letter-spacing:0.05em; text-transform:uppercase; color:var(--ink-faint); margin-bottom:6px;">Activités</div>
+      <span style="font-family:'Raleway',sans-serif; font-size:1.7rem; font-weight:800; color:var(--brand-deep);"><%= @total_activities %></span>
+      <div style="font-family:'Plus Jakarta Sans',sans-serif; font-size:0.78rem; color:var(--ink-soft);">créée<%= @total_activities > 1 ? 's' : '' %> par vous</div>
+    </div>
+
+    <div style="background:var(--surface); border:1px solid var(--line); border-radius:14px; padding:16px 18px;">
+      <div style="font-family:'DM Mono',monospace; font-size:0.68rem; font-weight:700; letter-spacing:0.05em; text-transform:uppercase; color:var(--ink-faint); margin-bottom:6px;">Étudiants</div>
+      <span style="font-family:'Raleway',sans-serif; font-size:1.7rem; font-weight:800; color:var(--info);"><%= @unique_students %></span>
+      <div style="font-family:'Plus Jakarta Sans',sans-serif; font-size:0.78rem; color:var(--ink-soft);">ont pratiqué</div>
+    </div>
+
+    <div style="background:var(--surface); border:1px solid var(--line); border-radius:14px; padding:16px 18px;">
+      <div style="font-family:'DM Mono',monospace; font-size:0.68rem; font-weight:700; letter-spacing:0.05em; text-transform:uppercase; color:var(--ink-faint); margin-bottom:6px;">Tentatives</div>
+      <span style="font-family:'Raleway',sans-serif; font-size:1.7rem; font-weight:800; color:var(--action);"><%= @total_attempts %></span>
+      <div style="font-family:'Plus Jakarta Sans',sans-serif; font-size:0.78rem; color:var(--ink-soft);">au total</div>
+    </div>
+
+    <div style="background:var(--surface); border:1px solid var(--line); border-radius:14px; padding:16px 18px;">
+      <div style="font-family:'DM Mono',monospace; font-size:0.68rem; font-weight:700; letter-spacing:0.05em; text-transform:uppercase; color:var(--ink-faint); margin-bottom:6px;">Note moyenne</div>
+      <div style="display:flex; align-items:baseline; gap:5px;">
+        <span style="font-family:'Raleway',sans-serif; font-size:1.7rem; font-weight:800; color:var(--violet);"><%= @average_rating %></span>
+        <span style="font-size:0.9rem; color:var(--ink-faint);">/ 5</span>
+      </div>
+      <div style="font-family:'Plus Jakarta Sans',sans-serif; font-size:0.78rem; color:var(--ink-soft);">★ des étudiants</div>
+    </div>
+  </div>
+
+  <%# Grade de níveis: quantas atividades você tem em cada nível CEFR %>
+  <div style="background:var(--surface); border:1px solid var(--line); border-radius:14px; padding:14px 16px; margin-bottom:24px;">
+    <div style="font-family:'Plus Jakarta Sans',sans-serif; font-size:0.78rem; font-weight:700; color:var(--ink-soft); text-transform:uppercase; letter-spacing:0.04em; margin-bottom:12px;">
+      Activités par niveau
+    </div>
+    <div class="dash-level-grid">
+      <% @level_progress.each do |lp| %>
+        <% m = cefr_colors(lp[:level]) %>
+        <div style="text-align:center;">
+          <span style="display:inline-block; font-family:'DM Mono',monospace; font-size:0.72rem; font-weight:700; background:<%= m[:bg] %>; color:<%= m[:text] %>; border:1.5px solid <%= m[:border] %>; padding:2px 8px; border-radius:20px; margin-bottom:6px;">
+            <%= lp[:level] %>
+          </span>
+          <div style="font-family:'Raleway',sans-serif; font-size:1rem; font-weight:800; color:var(--ink);">
+            <%= lp[:total] %>
+          </div>
+        </div>
+      <% end %>
+    </div>
+  </div>
+
+  <%# Seção do meio: meus alunos + avaliações recentes %>
+  <div class="dash-mid-grid" style="margin-bottom:24px;">
+
+    <%# Card "Meus alunos" %>
+    <div style="background:var(--surface); border:1px solid var(--line); border-radius:14px; padding:16px 18px;">
+      <div style="font-family:'Plus Jakarta Sans',sans-serif; font-size:0.78rem; font-weight:700; color:var(--ink-soft); text-transform:uppercase; letter-spacing:0.04em; margin-bottom:10px;">
+        Mes étudiants
+      </div>
+      <% if @recent_students.any? %>
+        <% @recent_students.each do |student| %>
+          <div class="dash-activity-row">
+            <div style="width:34px; height:34px; border-radius:50%; background:var(--brand-tint); color:var(--brand-deep); display:flex; align-items:center; justify-content:center; font-family:'Raleway',sans-serif; font-weight:700; font-size:0.85rem; flex-shrink:0;">
+              <%= student.email.first.upcase %>
+            </div>
+            <div style="flex:1; min-width:0;">
+              <div style="font-family:'Plus Jakarta Sans',sans-serif; font-weight:600; font-size:0.88rem; color:var(--ink); overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">
+                <%= student.email %>
+              </div>
+              <div style="font-family:'Plus Jakarta Sans',sans-serif; font-size:0.74rem; color:var(--ink-faint);">
+                invité <%= time_ago_in_words(student.created_at) %>
+              </div>
+            </div>
+          </div>
+        <% end %>
+      <% else %>
+        <div style="text-align:center; padding:20px 8px;">
+          <span style="font-size:1.8rem; display:block; margin-bottom:6px;">🥐</span>
+          <p style="font-family:'Plus Jakarta Sans',sans-serif; color:var(--ink-soft); font-size:0.85rem; margin:0;">
+            Aucun étudiant invité pour l'instant.
+          </p>
+        </div>
+      <% end %>
+    </div>
+
+    <%# Card "Avis récents" %>
+    <div style="background:var(--surface); border:1px solid var(--line); border-radius:14px; padding:16px 18px;">
+      <div style="font-family:'Plus Jakarta Sans',sans-serif; font-size:0.78rem; font-weight:700; color:var(--ink-soft); text-transform:uppercase; letter-spacing:0.04em; margin-bottom:10px;">
+        Avis récents
+      </div>
+      <% if @recent_ratings.any? %>
+        <% @recent_ratings.each do |rating| %>
+          <div class="dash-activity-row" style="align-items:flex-start;">
+            <div style="flex:1; min-width:0;">
+              <div style="color:var(--action); font-size:0.8rem; margin-bottom:2px;">
+                <%= "★" * rating.stars %><span style="color:var(--line);"><%= "★" * (5 - rating.stars) %></span>
+              </div>
+              <% if rating.comment.present? %>
+                <p style="font-family:'Plus Jakarta Sans',sans-serif; font-size:0.82rem; color:var(--ink-soft); font-style:italic; margin:0 0 3px;">
+                  "<%= truncate(rating.comment, length: 70) %>"
+                </p>
+              <% end %>
+              <div style="font-family:'Plus Jakarta Sans',sans-serif; font-size:0.72rem; color:var(--ink-faint);">
+                <%= rating.activity.título %>
+              </div>
+            </div>
+          </div>
+        <% end %>
+      <% else %>
+        <div style="text-align:center; padding:20px 8px;">
+          <span style="font-size:1.8rem; display:block; margin-bottom:6px;">🥐</span>
+          <p style="font-family:'Plus Jakarta Sans',sans-serif; color:var(--ink-soft); font-size:0.85rem; margin:0;">
+            Aucun avis pour l'instant.
+          </p>
+        </div>
+      <% end %>
+    </div>
+  </div>
+
+  <%# CTA final %>
+  <div style="text-align:center;">
+    <%= link_to "Voir mes activités", activities_path,
+          style: "font-family:'Plus Jakarta Sans',sans-serif; font-size:0.9rem; font-weight:700; padding:11px 24px; border-radius:999px; text-decoration:none; display:inline-flex; align-items:center; gap:8px; background:var(--brand); color:var(--surface); margin-right:10px;" %>
+    <%= link_to new_activity_path,
+          style: "font-family:'Plus Jakarta Sans',sans-serif; font-size:0.9rem; font-weight:700; padding:11px 24px; border-radius:999px; text-decoration:none; display:inline-flex; align-items:center; gap:8px; background:var(--surface); color:var(--ink-soft); border:1.5px solid var(--line);" do %>
+      <i class="bi bi-plus-circle"></i> Nouvelle activité
+    <% end %>
+  </div>
+
+</div>

@@ -5,6 +5,7 @@ class User < ApplicationRecord
          :recoverable, :rememberable, :validatable
          
   has_many :activities, dependent: :destroy
-  
+  has_many :students, foreign_key: :invited_by_id
+
   validates :email, presence: true, uniqueness: true
 end
