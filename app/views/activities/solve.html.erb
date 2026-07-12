@@ -16,7 +16,10 @@
     activity_elements << {type: 'video', order: @activity.video_order || 1, content: @activity.video_url} if @activity.video_url.present?
     activity_elements << {type: 'image', order: @activity.imagem_order || 2, content: @activity.imagem_url} if @activity.imagem_url.present?
     activity_elements << {type: 'texte', order: @activity.texte_order || 3, content: @activity.texte} if @activity.texte.present?
-    @activity.statements.each { |s| activity_elements << {type: 'statement', order: s.display_order || s.id, content: s.conteúdo} }
+    # Enunciado (statement) é a instrução do exercício — sempre aparece antes
+    # da mídia (vídeo/imagem/texte), não importa a ordem em que o professor
+    # adicionou os elementos na tela de criação.
+    @activity.statements.each { |s| activity_elements << {type: 'statement', order: -1000 + (s.display_order || s.id), content: s.conteúdo} }
     @activity.questions.each { |q| activity_elements << {type: 'question', order: q.display_order || q.id, content: q} }
     @activity.suggestions.each { |s| activity_elements << {type: 'suggestion', order: s.display_order || s.id, content: s.conteúdo} }
     @activity.fill_blanks.each { |f| activity_elements << {type: 'fill_blank', order: f.display_order || f.id, content: f} }
