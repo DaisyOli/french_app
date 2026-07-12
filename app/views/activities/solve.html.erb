@@ -142,23 +142,20 @@
             <div class="card-body">
               <p class="instruction-text">Remettez les mots dans le bon ordre pour former la phrase correcte:</p>
               <div class="drag-drop-exercise" data-exercise-type="sentence" data-exercise-id="<%= sentence_ordering.id %>">
-                <!-- Zone de construction de la phrase com palavras já embaralhadas -->
-                <div class="sentence-builder">
-                  <div class="drop-zones" data-word-count="<%= sentence_ordering.sentence_words.count %>">
-                    <% shuffled_words = sentence_ordering.sentence_words.shuffle %>
-                    <% shuffled_words.each_with_index do |word, i| %>
-                      <div class="drop-zone" data-position="<%= i + 1 %>">
-                        <span class="position-number"><%= i + 1 %></span>
-                        <div class="draggable-word"
-                             data-word-id="<%= word.id %>"
-                             data-correct-position="<%= word.correct_position %>">
-                          <%= word.word %>
-                        </div>
+                <div class="drop-zones" data-word-count="<%= sentence_ordering.sentence_words.count %>">
+                  <% shuffled_words = sentence_ordering.sentence_words.shuffle %>
+                  <% shuffled_words.each_with_index do |word, i| %>
+                    <div class="drop-zone" data-position="<%= i + 1 %>">
+                      <span class="position-number"><%= i + 1 %></span>
+                      <div class="draggable-word"
+                           data-word-id="<%= word.id %>"
+                           data-correct-position="<%= word.correct_position %>">
+                        <%= word.word %>
                       </div>
-                    <% end %>
-                  </div>
-                  <p class="sr-only ordering-status" aria-live="polite"></p>
+                    </div>
+                  <% end %>
                 </div>
+                <p class="sr-only ordering-status" aria-live="polite"></p>
               </div>
             </div>
           </div>
@@ -180,25 +177,22 @@
                 <p class="instruction-text">Remettez ces phrases dans le bon ordre pour former un paragraphe cohérent:</p>
               <% end %>
               <div class="drag-drop-exercise" data-exercise-type="paragraph" data-exercise-id="<%= paragraph_ordering.id %>">
-                <!-- Zone de construction du paragraphe com frases já embaralhadas -->
-                <div class="paragraph-builder">
-                  <div class="paragraph-drop-zones" data-sentence-count="<%= paragraph_ordering.paragraph_sentences.count %>">
-                    <% shuffled_sentences = paragraph_ordering.paragraph_sentences.shuffle %>
-                    <% shuffled_sentences.each_with_index do |sentence, i| %>
-                      <div class="paragraph-drop-zone" data-position="<%= i + 1 %>">
-                        <span class="position-number"><%= i + 1 %></span>
-                        <div class="drop-content">
-                          <div class="draggable-sentence"
-                               data-sentence-id="<%= sentence.id %>"
-                               data-correct-position="<%= sentence.correct_position %>">
-                            <span class="sentence-content"><%= sentence.sentence %></span>
-                          </div>
+                <div class="paragraph-drop-zones" data-sentence-count="<%= paragraph_ordering.paragraph_sentences.count %>">
+                  <% shuffled_sentences = paragraph_ordering.paragraph_sentences.shuffle %>
+                  <% shuffled_sentences.each_with_index do |sentence, i| %>
+                    <div class="paragraph-drop-zone" data-position="<%= i + 1 %>">
+                      <span class="position-number"><%= i + 1 %></span>
+                      <div class="drop-content">
+                        <div class="draggable-sentence"
+                             data-sentence-id="<%= sentence.id %>"
+                             data-correct-position="<%= sentence.correct_position %>">
+                          <span class="sentence-content"><%= sentence.sentence %></span>
                         </div>
                       </div>
-                    <% end %>
-                  </div>
-                  <p class="sr-only ordering-status" aria-live="polite"></p>
+                    </div>
+                  <% end %>
                 </div>
+                <p class="sr-only ordering-status" aria-live="polite"></p>
               </div>
             </div>
           </div>
@@ -219,39 +213,20 @@
               <% end %>
               
               <div class="association-exercise" data-exercise-type="column_association" data-exercise-id="<%= column_association.id %>">
-                <div class="association-container">
-                  <!-- Colonne A -->
-                  <div class="association-column column-a">
-                    <div class="column-items">
-                      <% column_association.association_pairs.ordered.each_with_index do |pair, index| %>
-                        <div class="association-item" data-pair-id="<%= pair.id %>" data-item-type="a">
-                          <span class="item-text"><%= pair.item_a %></span>
-                          <div class="connection-point" data-pair-id="<%= pair.id %>" data-side="a" data-pair-index="<%= index %>"></div>
-                        </div>
-                      <% end %>
-                    </div>
+                <div class="matching-grid">
+                  <div class="matching-column">
+                    <% column_association.association_pairs.ordered.each do |pair| %>
+                      <div class="matching-item left-item" data-pair-id="<%= pair.id %>">
+                        <%= pair.item_a %>
+                      </div>
+                    <% end %>
                   </div>
-                  
-                  <!-- Zone de connexion SVG -->
-                  <div class="connection-zone">
-                    <svg class="connection-svg" width="100%" height="100%">
-                      <!-- Les lignes de connexion seront ajoutées ici par JavaScript -->
-                    </svg>
-                  </div>
-                  
-                  <!-- Colonne B -->
-                  <div class="association-column column-b">
-                    <div class="column-items">
-                      <% ordered_pairs = column_association.association_pairs.ordered.to_a %>
-                      <% shuffled_pairs = ordered_pairs.shuffle %>
-                      <% shuffled_pairs.each do |pair| %>
-                        <% pair_index = ordered_pairs.index(pair) %>
-                        <div class="association-item" data-pair-id="<%= pair.id %>" data-item-type="b">
-                          <div class="connection-point" data-pair-id="<%= pair.id %>" data-side="b" data-pair-index="<%= pair_index %>"></div>
-                          <span class="item-text"><%= pair.item_b %></span>
-                        </div>
-                      <% end %>
-                    </div>
+                  <div class="matching-column">
+                    <% column_association.association_pairs.ordered.to_a.shuffle.each do |pair| %>
+                      <div class="matching-item right-item" data-pair-id="<%= pair.id %>">
+                        <%= pair.item_b %>
+                      </div>
+                    <% end %>
                   </div>
                 </div>
               </div>
@@ -750,10 +725,8 @@
         // Désactiver les exercices d'association
         document.querySelectorAll('.association-exercise').forEach(function(exercise) {
           exercise.classList.add('disabled');
-          const connectionPoints = exercise.querySelectorAll('.connection-point');
-          connectionPoints.forEach(point => {
-            point.style.pointerEvents = 'none';
-            point.style.opacity = '0.6';
+          exercise.querySelectorAll('.matching-item').forEach(item => {
+            item.style.pointerEvents = 'none';
           });
         });
         
@@ -833,16 +806,10 @@
             // Réinitialiser les exercices d'association
             document.querySelectorAll('.association-exercise').forEach(function(exercise) {
               exercise.classList.remove('disabled');
-              const connectionPoints = exercise.querySelectorAll('.connection-point');
-              connectionPoints.forEach(point => {
-                point.style.pointerEvents = '';
-                point.style.opacity = '';
+              exercise.querySelectorAll('.matching-item').forEach(item => {
+                item.style.pointerEvents = '';
               });
               resetAssociationExercise(exercise);
-              
-              // Resetar contador específico do exercício
-              // Isso é feito reinicializando o exercício
-              initializeAssociationExercise(exercise);
             });
             
             // Effacer feedback détaillé
@@ -1133,293 +1100,138 @@
       setStatus(messages.initial);
     }
 
-    // === FUNÇÕES PARA EXERCÍCIOS DE ASSOCIAÇÃO ===
-    
+    // === FUNÇÕES PARA EXERCÍCIOS DE ASSOCIAÇÃO — mesma anatomia do
+    // practice-br: grade de 2 colunas, a caixa inteira é o alvo de
+    // clique, par conectado = mesma cor de fundo/borda nos dois lados,
+    // sem ponto de conexão nem linha desenhada. ===
+
+    const ASSOCIATION_PAIR_COLORS = [
+      { bg: 'var(--info-tint)', border: 'var(--info)' },
+      { bg: 'var(--brand-tint)', border: 'var(--brand)' },
+      { bg: 'var(--warning-tint)', border: 'var(--action)' },
+      { bg: 'var(--violet-tint)', border: 'var(--violet)' },
+      { bg: 'var(--error-tint)', border: 'var(--error)' },
+      { bg: 'var(--success-tint)', border: 'var(--success-deep)' },
+      { bg: 'var(--amber-tint)', border: 'var(--amber)' }
+    ];
+
     // Função para verificar associações de colunas
     function checkColumnAssociation(exercise) {
-      const associationItems = exercise.querySelectorAll('.association-item[data-item-type="a"]');
-      const totalPairs = associationItems.length;
+      const leftItems = exercise.querySelectorAll('.matching-item.left-item');
+      const totalPairs = leftItems.length;
       let correctConnections = 0;
-      
-      // Verificar cada item da coluna A
-      associationItems.forEach(itemA => {
-        const pairId = itemA.getAttribute('data-pair-id');
-        const pointA = itemA.querySelector('.connection-point');
-        
-        // Encontrar se há conexão para este ponto
-        const connectionLines = exercise.querySelectorAll('.connection-line');
-        connectionLines.forEach(line => {
-          const startPoint = line.getAttribute('data-start-point');
-          const endPoint = line.getAttribute('data-end-point');
-          const pointAId = pairId + '-a';
-          const pointBId = pairId + '-b';
-          
-          // Verificar se a linha conecta os pontos corretos do mesmo par
-          if ((startPoint === pointAId && endPoint === pointBId) || 
-              (startPoint === pointBId && endPoint === pointAId)) {
-            correctConnections++;
-          }
-        });
+
+      leftItems.forEach(left => {
+        if (left.dataset.connectedTo && left.dataset.connectedTo === left.dataset.pairId) {
+          correctConnections++;
+        }
       });
-      
-      return correctConnections === totalPairs;
+
+      return totalPairs > 0 && correctConnections === totalPairs;
     }
-    
+
     // Função para resetar exercício de associação
     function resetAssociationExercise(exercise) {
-      // Remover todas as linhas de conexão
-      const svg = exercise.querySelector('.connection-svg');
-      if (svg) {
-        svg.innerHTML = '';
-      }
-      
-      // Remover classes de conexão dos pontos e restaurar estado neutro
-      const connectionPoints = exercise.querySelectorAll('.connection-point');
-      connectionPoints.forEach(point => {
-        point.classList.remove('connected', 'selected');
-        point.removeAttribute('data-connection-color');
-        
-        // Restaurar estado neutro (cinza)
-        point.style.backgroundColor = 'var(--line)';
-        point.style.border = '3px solid var(--line)';
-        point.style.opacity = '0.8';
-        point.style.transform = 'scale(1)';
-        point.style.boxShadow = 'none';
+      exercise.querySelectorAll('.matching-item').forEach(item => {
+        item.classList.remove('matching-selected', 'matching-connected');
+        item.style.backgroundColor = '';
+        item.style.borderColor = '';
+        delete item.dataset.connectedTo;
       });
-      
-      // Resetar contador de conexões para cada exercício
-      // Isso será feito na reinicialização do exercício específico
-      
-      // Limpar resultado
-      const resultFeedback = exercise.querySelector('.result-feedback');
-      if (resultFeedback) {
-        resultFeedback.innerHTML = '';
-      }
     }
-    
+
     // Inicializar exercícios de associação
     initializeColumnAssociations();
-    
+
     // Função para inicializar exercícios de associação
     function initializeColumnAssociations() {
       document.querySelectorAll('.association-exercise').forEach(exercise => {
         initializeAssociationExercise(exercise);
       });
     }
-    
+
     // Função para inicializar um exercício de associação específico
     function initializeAssociationExercise(exercise) {
-      const connectionPoints = exercise.querySelectorAll('.connection-point');
-      const svg = exercise.querySelector('.connection-svg');
-      const resultFeedback = exercise.querySelector('.result-feedback');
-      
+      const leftItems = [...exercise.querySelectorAll('.matching-item.left-item')];
+      const rightItems = [...exercise.querySelectorAll('.matching-item.right-item')];
 
-      
-      let selectedPoint = null;
-      let connections = new Map(); // Para rastrear conexões
-      let connectionCounter = 0; // Contador para garantir cores diferentes
-      
-      // Cores para diferentes pares
-      const pairColors = [
-        'var(--error)', // Vermelho
-        'var(--info)', // Azul
-        'var(--success-border)', // Verde
-        'var(--warning)', // Amarelo/Laranja
-        'var(--violet)', // Roxo
-        'var(--brand-bright)', // Rosa
-        'var(--sky-bright)', // Ciano
-        'var(--success)', // Lima
-        'var(--warning)', // Laranja
-        'var(--info)'  // Índigo
-      ];
-      
-            // Aplicar estilo inicial neutro aos pontos de conexão
-      connectionPoints.forEach(point => {
-        // Começar com cor neutra (cinza)
-        point.style.backgroundColor = 'var(--line)';
-        point.style.border = '3px solid var(--line)';
-        point.style.opacity = '0.8';
-        point.style.cursor = 'pointer';
-        
-      });
-      
-      // Adicionar event listeners aos pontos de conexão
-      connectionPoints.forEach(point => {
-        point.addEventListener('click', handleConnectionPointClick);
+      let selectedLeft = null;
+      let nextColorIndex = 0;
+      const colorOfLeft = {}; // pairId da esquerda -> índice em ASSOCIATION_PAIR_COLORS
 
-      });
-      
+      function findRight(pairId) {
+        return rightItems.find(r => r.dataset.pairId === pairId);
+      }
 
-      
-      function handleConnectionPointClick(e) {
-        const clickedPoint = e.target;
+      function clearStyle(item) {
+        item.classList.remove('matching-connected');
+        item.style.backgroundColor = '';
+        item.style.borderColor = '';
+      }
 
-        
-        if (exercise.classList.contains('disabled')) {
-          return; // Não permitir interação se desabilitado
-        }
-        
-        // Se clicou em um ponto já selecionado, desselecionar
-        if (selectedPoint === clickedPoint) {
+      // Solta a ligação de uma esquerda por completo (usado quando outra
+      // esquerda "rouba" a direita que ela tinha)
+      function disconnectLeft(leftEl) {
+        const rightEl = findRight(leftEl.dataset.connectedTo);
+        if (rightEl) clearStyle(rightEl);
+        delete leftEl.dataset.connectedTo;
+        clearStyle(leftEl);
+        delete colorOfLeft[leftEl.dataset.pairId];
+      }
 
-          deselectPoint(selectedPoint);
-          selectedPoint = null;
-          return;
-        }
-        
-        // Se clicou em um ponto conectado, permitir reconexão
-        if (clickedPoint.classList.contains('connected')) {
-          removeExistingConnections(clickedPoint);
-        }
-        
-        if (!selectedPoint) {
-          // Primeiro clique - selecionar ponto
-          selectedPoint = clickedPoint;
-          selectPoint(clickedPoint);
-        } else {
-          // Segundo clique - tentar fazer conexão
-          const firstSide = selectedPoint.getAttribute('data-side');
-          const secondSide = clickedPoint.getAttribute('data-side');
-          
-          if (firstSide !== secondSide) {
-            // Lados diferentes - fazer conexão
-            // Remover conexões existentes destes pontos
-            removeExistingConnections(selectedPoint);
-            removeExistingConnections(clickedPoint);
-            
-            // Criar nova conexão
-            createConnection(selectedPoint, clickedPoint);
-            
-            // Aplicar cor de conexão aos pontos conectados
-            applyConnectedColor(selectedPoint, clickedPoint);
-            
-            // Marcar pontos como conectados
-            selectedPoint.classList.add('connected');
-            clickedPoint.classList.add('connected');
-            
-            // Armazenar conexão
-            connections.set(selectedPoint, clickedPoint);
-          } else {
-            // Mesmo lado - apenas selecionar o novo ponto
-            deselectPoint(selectedPoint);
-            selectPoint(clickedPoint);
+      leftItems.forEach(left => {
+        left.addEventListener('click', () => {
+          if (exercise.classList.contains('disabled')) return;
+
+          if (selectedLeft === left) {
+            left.classList.remove('matching-selected');
+            selectedLeft = null;
+            return;
           }
-          
-          // Limpar seleção anterior
-          if (selectedPoint) {
-            deselectPoint(selectedPoint);
-          }
-          selectedPoint = null;
-        }
-      }
-      
-      // Funções auxiliares para gerenciar estados visuais
-      function selectPoint(point) {
-        point.classList.add('selected');
-        point.style.opacity = '1';
-        point.style.transform = 'scale(1.2)';
-        point.style.boxShadow = '0 0 0 4px rgba(192, 138, 40, 0.3)';
-      }
-      
-      function deselectPoint(point) {
-        point.classList.remove('selected');
-        point.style.boxShadow = 'none';
-        if (!point.classList.contains('connected')) {
-          resetPointToOriginalColor(point);
-        }
-      }
-      
-      function applyConnectedColor(point1, point2) {
-        // Usar o contador para garantir cores diferentes para cada conexão
-        const color = pairColors[connectionCounter % pairColors.length];
-        connectionCounter++;
-        
-        // Aplicar a mesma cor a ambos os pontos
-        [point1, point2].forEach(point => {
-          point.style.backgroundColor = color;
-          point.style.border = `3px solid ${color}`;
-          point.style.opacity = '1';
-          point.style.transform = 'scale(1)';
-          point.style.boxShadow = 'none';
+
+          leftItems.forEach(l => l.classList.remove('matching-selected'));
+          selectedLeft = left;
+          left.classList.add('matching-selected');
         });
-        
-        // Armazenar a cor da conexão nos pontos para uso posterior
-        point1.setAttribute('data-connection-color', color);
-        point2.setAttribute('data-connection-color', color);
-      }
-      
-      function resetPointToOriginalColor(point) {
-        // Restaurar estado neutro (cinza)
-        point.style.backgroundColor = 'var(--line)';
-        point.style.border = '3px solid var(--line)';
-        point.style.opacity = '0.8';
-        point.style.transform = 'scale(1)';
-        point.style.boxShadow = 'none';
-      }
-      
-      function removeExistingConnections(point) {
-        // Encontrar e remover linha SVG existente
-        const existingLines = svg.querySelectorAll('.connection-line');
-        existingLines.forEach(line => {
-          const startPoint = line.getAttribute('data-start-point');
-          const endPoint = line.getAttribute('data-end-point');
-          const pointId = point.getAttribute('data-pair-id') + '-' + point.getAttribute('data-side');
-          
-          if (startPoint === pointId || endPoint === pointId) {
-            line.remove();
-          }
-        });
-        
-        // Remover da lista de conexões
-        for (let [key, value] of connections) {
-          if (key === point || value === point) {
-            connections.delete(key);
-            key.classList.remove('connected');
-            value.classList.remove('connected');
-            key.removeAttribute('data-connection-color');
-            value.removeAttribute('data-connection-color');
-            resetPointToOriginalColor(key);
-            resetPointToOriginalColor(value);
-            break;
-          }
-        }
-      }
-      
-      function createConnection(point1, point2) {
-        const rect1 = point1.getBoundingClientRect();
-        const rect2 = point2.getBoundingClientRect();
-        const svgRect = svg.getBoundingClientRect();
-        
-        // Calcular posições relativas ao SVG
-        const x1 = rect1.left + rect1.width / 2 - svgRect.left;
-        const y1 = rect1.top + rect1.height / 2 - svgRect.top;
-        const x2 = rect2.left + rect2.width / 2 - svgRect.left;
-        const y2 = rect2.top + rect2.height / 2 - svgRect.top;
-        
-        // Usar a cor armazenada na conexão
-        const color = point1.getAttribute('data-connection-color');
-        
-        const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
-        line.setAttribute('x1', x1);
-        line.setAttribute('y1', y1);
-        line.setAttribute('x2', x2);
-        line.setAttribute('y2', y2);
-        line.setAttribute('stroke', color); // Cor da conexão
-        line.setAttribute('stroke-width', '3');
-        line.setAttribute('stroke-linecap', 'round');
-        line.classList.add('connection-line');
-        
-        // Adicionar dados para identificação
-        const point1Id = point1.getAttribute('data-pair-id') + '-' + point1.getAttribute('data-side');
-        const point2Id = point2.getAttribute('data-pair-id') + '-' + point2.getAttribute('data-side');
-        line.setAttribute('data-start-point', point1Id);
-        line.setAttribute('data-end-point', point2Id);
-        line.setAttribute('data-pair-id', point1.getAttribute('data-pair-id'));
-        
-        svg.appendChild(line);
-      }
-      
+      });
 
+      rightItems.forEach(right => {
+        right.addEventListener('click', () => {
+          if (exercise.classList.contains('disabled')) return;
+          if (!selectedLeft) return;
+
+          const rightId = right.dataset.pairId;
+
+          // Essa direita já estava ligada a OUTRA esquerda? solta aquela por completo
+          const otherLeft = leftItems.find(l => l !== selectedLeft && l.dataset.connectedTo === rightId);
+          if (otherLeft) disconnectLeft(otherLeft);
+
+          // A esquerda selecionada já tinha parceiro? só solta o parceiro antigo
+          // (mantém a mesma cor pra essa esquerda)
+          if (selectedLeft.dataset.connectedTo) {
+            const oldRight = findRight(selectedLeft.dataset.connectedTo);
+            if (oldRight) clearStyle(oldRight);
+          }
+
+          if (colorOfLeft[selectedLeft.dataset.pairId] === undefined) {
+            colorOfLeft[selectedLeft.dataset.pairId] = nextColorIndex % ASSOCIATION_PAIR_COLORS.length;
+            nextColorIndex++;
+          }
+          const color = ASSOCIATION_PAIR_COLORS[colorOfLeft[selectedLeft.dataset.pairId]];
+
+          selectedLeft.classList.remove('matching-selected');
+          selectedLeft.classList.add('matching-connected');
+          selectedLeft.style.backgroundColor = color.bg;
+          selectedLeft.style.borderColor = color.border;
+          selectedLeft.dataset.connectedTo = rightId;
+
+          right.classList.add('matching-connected');
+          right.style.backgroundColor = color.bg;
+          right.style.borderColor = color.border;
+
+          selectedLeft = null;
+        });
+      });
     }
   });
 
@@ -2072,61 +1884,44 @@
     background: var(--brand-tint);
   }
 
-  /* === ASSOCIAÇÃO DE COLUNAS === */
+  /* === ASSOCIAÇÃO DE COLUNAS — mesma anatomia do practice-br: grade de
+     2 colunas, a caixa inteira é clicável, par conectado = mesma cor
+     de fundo/borda nos dois lados. === */
   .association-exercise {
     margin-top: 1rem;
   }
 
-  .association-item {
+  .matching-item {
     background: var(--surface);
-    border: 1.5px solid var(--line);
-    border-radius: 10px;
-    padding: 0.7rem 0.9rem;
+    border: 2px solid var(--line);
+    border-radius: 8px;
+    padding: 0.6rem 0.75rem;
+    min-height: 44px;
+    display: flex;
+    align-items: center;
     font-size: 0.9rem;
-    margin-bottom: 0.75rem;
-    transition: all 0.3s ease;
-    position: relative;
-  }
-
-  .association-item:hover {
-    background: var(--brand-mist);
-    border-color: var(--brand-bright);
-  }
-
-  .item-text {
+    line-height: 1.3;
     font-weight: 500;
     color: var(--ink);
-  }
-
-  .connection-point {
-    width: 16px;
-    height: 16px;
-    border: 3px solid var(--brand-bright);
-    border-radius: 50%;
-    background: var(--surface);
     cursor: pointer;
-    transition: all 0.3s ease;
-    position: relative;
+    transition: border-color 0.15s ease, background-color 0.15s ease, box-shadow 0.15s ease;
+    user-select: none;
   }
 
-  .connection-point:hover {
-    transform: scale(1.3);
-    background: var(--brand-bright);
-    box-shadow: 0 0 12px var(--brand-glow);
+  .matching-item:hover {
+    border-color: var(--brand-soft);
   }
 
-  .connection-point.connected {
-    background: var(--brand-bright);
-    box-shadow: 0 0 8px var(--brand-glow);
+  .matching-item.matching-selected {
+    border-color: var(--info);
+    background-color: var(--info-tint);
+    box-shadow: 0 0 0 3px var(--info-border);
+    font-weight: 600;
   }
 
-  .connection-point.selected {
-    animation: pulse 1s infinite;
-  }
-
-  @keyframes pulse {
-    0%, 100% { transform: scale(1); }
-    50% { transform: scale(1.1); }
+  .matching-item.matching-connected {
+    font-weight: 600;
+    border-width: 2px;
   }
 
   .association-exercise.disabled {
@@ -2134,7 +1929,7 @@
     pointer-events: none;
   }
 
-  .association-exercise.disabled .connection-point {
+  .association-exercise.disabled .matching-item {
     cursor: not-allowed;
   }
 
@@ -2298,49 +2093,29 @@
     outline: none;
   }
 
-   /* === ESTILOS PARA EXERCÍCIOS DE ORDENAÇÃO (toque pra trocar) === */
+   /* === EXERCÍCIOS DE ORDENAÇÃO (toque pra trocar) — mesma anatomia do
+      practice-br: a própria "zones-container" é a caixa (sem wrapper
+      extra por cima), zona sempre neutra, só a palavra/frase ganha
+      cor de marca. === */
 
-   /* === LAYOUT SIMPLIFICADO DE UMA COLUNA === */
-   .drag-drop-exercise[data-exercise-type="paragraph"] {
-     display: block;
-     max-width: 800px;
-     margin: 0 auto;
-   }
-
-   /* Construtores */
-   .sentence-builder {
-     background: var(--surface-2);
-     border: 1.5px solid var(--line);
-     border-radius: 16px;
-     padding: 1.5rem;
-   }
-
-   .paragraph-builder {
-     background: var(--surface-2);
-     border: 1.5px solid var(--line);
-     border-radius: 12px;
-     padding: 1rem;
-     min-height: fit-content;
-     display: flex;
-     flex-direction: column;
-   }
-
-   /* Zonas de drop */
+   /* Palavras: fileira que quebra linha, tipo banco de palavras */
   .drop-zones {
     display: flex;
     flex-wrap: wrap;
     gap: 0.5rem;
-    margin-bottom: 1rem;
+    padding: 1rem;
+    background: var(--paper-2);
+    border-radius: 8px;
     min-height: 60px;
     align-items: flex-start;
   }
-  
+
   .drop-zone {
-     background: var(--surface);
-     border: 2px dashed var(--line);
-     border-radius: 8px;
-    min-width: 80px;
-    min-height: 50px;
+    background: var(--surface);
+    border: 2px dashed var(--line);
+    border-radius: 6px;
+    min-width: 52px;
+    min-height: 52px;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -2348,12 +2123,12 @@
     transition: all 0.3s ease;
     padding: 0.25rem;
   }
-  
-  .drop-zone .position-number {
+
+  .position-number {
     position: absolute;
     top: -8px;
     left: -8px;
-     background: var(--paper-2);
+    background: var(--paper-2);
     color: var(--ink-faint);
     border: 1px solid var(--line);
     width: 20px;
@@ -2365,125 +2140,45 @@
     font-size: 0.75rem;
     font-weight: 600;
   }
-  
-  .drop-zone:has(.draggable-word) {
-    background: transparent;
-    border: 2px solid transparent;
-  }
-  
-   /* Zonas de drop para parágrafos */
+
+   /* Frases: pilha vertical, cada frase ocupa a linha toda */
   .paragraph-drop-zones {
     display: flex;
     flex-direction: column;
-    gap: 0.25rem;
-    margin-bottom: 0.5rem;
-    flex: 1;
-    min-height: fit-content;
-  }
-  
-  .paragraph-drop-zone {
-     background: var(--violet-tint);
-     border: 2px dashed var(--violet-border);
+    gap: 0.5rem;
+    padding: 0.5rem;
+    background: var(--paper-2);
     border-radius: 8px;
+  }
+
+  .paragraph-drop-zone {
+    background: var(--surface);
+    border: 2px dashed var(--line);
+    border-radius: 10px;
     min-height: 40px;
     display: flex;
     align-items: center;
     position: relative;
     transition: all 0.3s ease;
-    padding: 0.4rem;
+    padding: 0.5rem 0.75rem 0.4rem;
   }
 
-  .paragraph-drop-zone .position-number {
-    position: absolute;
-    top: -10px;
-    left: 0.75rem;
-     background: var(--info-purple);
-    color: var(--surface);
-    padding: 0.2rem 0.4rem;
-    border-radius: 10px;
-    font-size: 0.7rem;
-    font-weight: 600;
-  }
-  
   .paragraph-drop-zone .drop-content {
     width: 100%;
   }
-  
-  .paragraph-drop-zone:has(.draggable-sentence) {
-    background: transparent;
-    border: 2px solid transparent;
-    min-height: auto;
-    padding: 0.25rem;
-  }
-  
-  /* Zonas sempre têm frases - remover placeholder */
 
-   /* === ASSOCIAÇÃO DE COLUNAS — LAYOUT (encaixado no card estreito) === */
-   .association-container {
-     display: flex;
-     align-items: flex-start;
-     gap: 1.25rem;
-     margin: 1.5rem 0;
-     position: relative;
+   /* === ASSOCIAÇÃO DE COLUNAS — LAYOUT (grade 2 colunas do practice-br) === */
+   .matching-grid {
+     display: grid;
+     grid-template-columns: 1fr 1fr;
+     gap: 0.75rem;
+     margin-top: 0.75rem;
    }
 
-   .association-column {
-     flex: 1;
-     min-width: 0;
-   }
-
-   .column-items {
+   .matching-column {
      display: flex;
      flex-direction: column;
-     gap: 0.75rem;
-   }
-
-   .association-column.column-a .association-item {
-     padding-right: 1.75rem;
-   }
-
-   .association-column.column-b .association-item {
-     padding-left: 1.75rem;
-   }
-
-   .association-column.column-a .connection-point {
-     position: absolute;
-     right: -8px;
-     top: 50%;
-     transform: translateY(-50%);
-   }
-
-   .association-column.column-b .connection-point {
-     position: absolute;
-     left: -8px;
-     top: 50%;
-     transform: translateY(-50%);
-   }
-
-   .connection-zone {
-     position: absolute;
-     top: 0;
-     left: 50%;
-     transform: translateX(-50%);
-     width: 1.5rem;
-     height: 100%;
-     pointer-events: none;
-   }
-
-   .connection-svg {
-     position: absolute;
-     top: 0;
-     left: 0;
-   }
-
-   /* Sem "stroke" aqui de propósito: cada linha ganha a cor do seu par
-      via JS (setAttribute), e uma regra CSS pisaria nisso e pintaria
-      todas as linhas da mesma cor. */
-   .connection-line {
-     stroke-width: 3;
-     fill: none;
-     stroke-linecap: round;
-     transition: all 0.3s ease;
+     gap: 0.5rem;
    }
 
    /* === FEEDBACK DE CORES === */
@@ -2695,15 +2390,10 @@
   
   /* === RESPONSIVE === */
   @media (max-width: 768px) {
-    .drag-drop-exercise[data-exercise-type="paragraph"] {
-      max-width: 100%;
-      margin: 0;
-    }
-    
-    .paragraph-builder {
+    .paragraph-drop-zones {
       padding: 0.75rem;
     }
-    
+
     .drop-zones {
       justify-content: center;
     }
@@ -2734,11 +2424,11 @@
   }
 
   @media (max-width: 480px) {
-    .sentence-builder,
-    .paragraph-builder {
+    .drop-zones,
+    .paragraph-drop-zones {
       padding: 0.6rem;
     }
-    
+
     .drop-zone {
       min-width: 60px;
       min-height: 40px;
@@ -2778,21 +2468,16 @@
     border-left: 4px solid var(--success-border);
   }
   
-  /* Responsive para exercícios de associação — empilha as colunas e some
-     com a zona de conexão (as linhas não fazem sentido empilhadas) */
-  @media (max-width: 640px) {
-    .association-container {
-      flex-direction: column;
-      gap: 1.75rem;
+  /* Responsive para associação — mesmo tratamento do practice-br:
+     continua em 2 colunas (os itens são curtos), só encolhe o gap */
+  @media (max-width: 380px) {
+    .matching-grid {
+      gap: 0.4rem;
     }
 
-    .connection-zone {
-      display: none;
-    }
-
-    .connection-point {
-      width: 14px;
-      height: 14px;
+    .matching-item {
+      padding: 0.5rem;
+      font-size: 0.82rem;
     }
   }
 
