@@ -814,7 +814,7 @@
 .quiz-outer.fr-results-mode .quiz-two-col,
 .quiz-outer.fr-results-mode .quiz-paper,
 .quiz-outer.fr-results-mode .quiz-mobile-toggle {
-  display: none;
+  display: none !important;
 }
 
 .quiz-outer.fr-results-mode {

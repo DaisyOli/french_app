@@ -2869,7 +2869,9 @@
     }).observe(results, { attributes: true, attributeFilter: ['style'] });
     var showAnswers = document.getElementById('show-answers');
     if (showAnswers) showAnswers.addEventListener('click', function() {
-      outer.classList.remove('fr-results-mode');
+      // "Voir les réponses" deixa o resultado ainda mais alto (soma a
+      // lista de respostas) — tem que MANTER o fr-results-mode aqui, não
+      // tirar, senão a página volta pra altura fixa e corta o conteúdo.
       window.scrollTo({ top: 0 });
     });
   }
