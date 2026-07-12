@@ -1,5 +1,5 @@
 class ActivitiesController < ApplicationController
-  before_action :authenticate_user_or_student!, except: [:solve]
+  before_action :authenticate_user_or_student!
   before_action :authenticate_user!, only: [:new, :create, :edit, :update, :destroy, :remove_video, :remove_image, :remove_texte]
   before_action :set_activity, only: [:show, :edit, :update, :destroy, :remove_video, :remove_image, :remove_texte, :solve, :save_result]
 
@@ -317,8 +317,12 @@ class ActivitiesController < ApplicationController
 
     def authenticate_user_or_student!
       unless user_signed_in? || student_signed_in?
-        # Redirecionar para a página de login apropriada baseada no contexto
-        if request.path.include?('student') || params[:student_context]
+        # Redirecionar para a página de login apropriada baseada no contexto.
+        # "solve" é sempre tratado como contexto de aluno — é o link que os
+        # professores compartilham, então quem cai aqui sem sessão é aluno,
+        # não professor.
+        if action_name == 'solve' || request.path.include?('student') || params[:student_context]
+          store_location_for(:student, request.fullpath)
           redirect_to new_student_session_path, alert: t('devise.failure.unauthenticated')
         else
           redirect_to new_user_session_path, alert: t('devise.failure.unauthenticated')

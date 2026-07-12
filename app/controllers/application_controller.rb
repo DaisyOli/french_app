@@ -12,11 +12,9 @@ class ApplicationController < ActionController::Base
   protected
   
   def after_sign_in_path_for(resource)
-    if resource.is_a?(Student)
-      student_dashboard_path
-    else
-      teacher_dashboard_path
-    end
+    # Se veio de um link direto (ex.: atividade compartilhada), volta pra lá
+    # em vez de mandar sempre pro painel.
+    stored_location_for(resource) || (resource.is_a?(Student) ? student_dashboard_path : teacher_dashboard_path)
   end
   
   # Helper para verificar se é um professor autenticado
