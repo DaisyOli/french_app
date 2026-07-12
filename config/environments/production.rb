@@ -24,7 +24,14 @@ Rails.application.configure do
   # config.public_file_server.enabled = false
 
   # Compress CSS using a preprocessor.
-  config.assets.css_compressor = :sass
+  # Desligado (nil, não comentado!) de propósito: a gem sassc-rails religa
+  # sozinha o compressor :sass se a chave não existir na config
+  # (config/initializers do gem: "unless app.config.assets.has_key?(:css_compressor)").
+  # O :sass (SassC/LibSass, motor antigo) não entende sintaxe CSS moderna que
+  # o DaisyUI gera (ex.: @supports not selector(:has(*))) e quebra o build
+  # inteiro tentando "minificar" o tailwind.css. Sem minificação o CSS só
+  # fica um pouco maior — nada quebra.
+  config.assets.css_compressor = nil
 
   # Do not fall back to assets pipeline if a precompiled asset is missed.
   config.assets.compile = false
