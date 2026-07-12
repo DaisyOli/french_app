@@ -144,23 +144,20 @@
               <div class="drag-drop-exercise" data-exercise-type="sentence" data-exercise-id="<%= sentence_ordering.id %>">
                 <!-- Zone de construction de la phrase com palavras já embaralhadas -->
                 <div class="sentence-builder">
-                  <p class="builder-instruction">Réorganisez les mots dans l'ordre correct:</p>
                   <div class="drop-zones" data-word-count="<%= sentence_ordering.sentence_words.count %>">
                     <% shuffled_words = sentence_ordering.sentence_words.shuffle %>
                     <% shuffled_words.each_with_index do |word, i| %>
                       <div class="drop-zone" data-position="<%= i + 1 %>">
                         <span class="position-number"><%= i + 1 %></span>
-                        <div class="draggable-word" 
-                             data-word-id="<%= word.id %>" 
+                        <div class="draggable-word"
+                             data-word-id="<%= word.id %>"
                              data-correct-position="<%= word.correct_position %>">
                           <%= word.word %>
                         </div>
                       </div>
                     <% end %>
                   </div>
-                  <div class="sentence-result">
-                    <div class="result-feedback"></div>
-                  </div>
+                  <p class="sr-only ordering-status" aria-live="polite"></p>
                 </div>
               </div>
             </div>
@@ -185,15 +182,14 @@
               <div class="drag-drop-exercise" data-exercise-type="paragraph" data-exercise-id="<%= paragraph_ordering.id %>">
                 <!-- Zone de construction du paragraphe com frases já embaralhadas -->
                 <div class="paragraph-builder">
-                  <p class="builder-instruction">Réorganisez les phrases dans l'ordre correct:</p>
                   <div class="paragraph-drop-zones" data-sentence-count="<%= paragraph_ordering.paragraph_sentences.count %>">
                     <% shuffled_sentences = paragraph_ordering.paragraph_sentences.shuffle %>
                     <% shuffled_sentences.each_with_index do |sentence, i| %>
                       <div class="paragraph-drop-zone" data-position="<%= i + 1 %>">
                         <span class="position-number"><%= i + 1 %></span>
                         <div class="drop-content">
-                          <div class="draggable-sentence" 
-                               data-sentence-id="<%= sentence.id %>" 
+                          <div class="draggable-sentence"
+                               data-sentence-id="<%= sentence.id %>"
                                data-correct-position="<%= sentence.correct_position %>">
                             <span class="sentence-content"><%= sentence.sentence %></span>
                           </div>
@@ -201,9 +197,7 @@
                       </div>
                     <% end %>
                   </div>
-                  <div class="paragraph-result">
-                    <div class="result-feedback"></div>
-                  </div>
+                  <p class="sr-only ordering-status" aria-live="polite"></p>
                 </div>
               </div>
             </div>
@@ -259,10 +253,6 @@
                       <% end %>
                     </div>
                   </div>
-                </div>
-                
-                <div class="association-result">
-                  <div class="result-feedback"></div>
                 </div>
               </div>
             </div>
@@ -1062,177 +1052,87 @@
       }
     }
     
-    // Inicializar drag and drop quando a página carregar
-    initializeDragAndDrop();
-    
-    // Função para inicializar drag and drop
-    function initializeDragAndDrop() {
-      // Inicializar exercícios de palavras
-      document.querySelectorAll('.drag-drop-exercise[data-exercise-type="sentence"]').forEach(exercise => {
-        initializeSentenceOrdering(exercise);
-      });
-      
-      // Inicializar exercícios de frases
-      document.querySelectorAll('.drag-drop-exercise[data-exercise-type="paragraph"]').forEach(exercise => {
-        initializeParagraphOrdering(exercise);
-      });
-    }
-    
-    // Função para inicializar organização de palavras
-    function initializeSentenceOrdering(exercise) {
-      const draggableWords = exercise.querySelectorAll('.draggable-word');
-      const dropZones = exercise.querySelectorAll('.drop-zone');
-      const resultFeedback = exercise.querySelector('.result-feedback');
-      
-      // Tornar palavras arrastáveis
-      draggableWords.forEach(word => {
-        word.draggable = true;
-        word.addEventListener('dragstart', handleDragStart);
-        word.addEventListener('dragend', handleDragEnd);
-      });
-      
-      // Configurar zonas de drop
-      dropZones.forEach(zone => {
-        zone.addEventListener('dragover', handleDragOver);
-        zone.addEventListener('drop', handleDrop);
-        zone.addEventListener('dragenter', handleDragEnter);
-        zone.addEventListener('dragleave', handleDragLeave);
-      });
-      
-      function handleDragStart(e) {
-        e.dataTransfer.setData('text/plain', '');
-        e.target.classList.add('dragging');
-      }
-      
-      function handleDragEnd(e) {
-        e.target.classList.remove('dragging');
-      }
-      
-      function handleDragOver(e) {
-        e.preventDefault();
-      }
-      
-      function handleDragEnter(e) {
-        e.preventDefault();
-        if (e.target.classList.contains('drop-zone') || e.target.closest('.drop-zone')) {
-          const zone = e.target.classList.contains('drop-zone') ? e.target : e.target.closest('.drop-zone');
-          zone.classList.add('drag-over');
-        }
-      }
-      
-      function handleDragLeave(e) {
-        const zone = e.target.classList.contains('drop-zone') ? e.target : e.target.closest('.drop-zone');
-        if (zone) {
-          zone.classList.remove('drag-over');
-        }
-      }
-      
-      function handleDrop(e) {
-        e.preventDefault();
-        const dropZone = e.target.closest('.drop-zone');
-        if (!dropZone) return;
-        
-        dropZone.classList.remove('drag-over');
-        
-        const draggingWord = exercise.querySelector('.dragging');
-        if (!draggingWord) return;
-        
-        // Se já há uma palavra na zona, trocar posições
-        const existingWord = dropZone.querySelector('.draggable-word');
-        if (existingWord && existingWord !== draggingWord) {
-          const draggingParent = draggingWord.parentNode;
-          draggingParent.appendChild(existingWord);
-        }
-        
-        dropZone.appendChild(draggingWord);
-      }
-    }
-    
-    // Função para inicializar organização de frases
-    function initializeParagraphOrdering(exercise) {
-      const draggableSentences = exercise.querySelectorAll('.draggable-sentence');
-      const dropZones = exercise.querySelectorAll('.paragraph-drop-zone');
-      const resultFeedback = exercise.querySelector('.result-feedback');
-      
-      // Tornar frases arrastáveis
-      draggableSentences.forEach(sentence => {
-        sentence.draggable = true;
-        sentence.addEventListener('dragstart', handleDragStart);
-        sentence.addEventListener('dragend', handleDragEnd);
-      });
-      
-      // Configurar zonas de drop
-      dropZones.forEach(zone => {
-        zone.addEventListener('dragover', handleDragOver);
-        zone.addEventListener('drop', handleDrop);
-        zone.addEventListener('dragenter', handleDragEnter);
-        zone.addEventListener('dragleave', handleDragLeave);
-      });
-      
-      function handleDragStart(e) {
-        e.dataTransfer.setData('text/plain', '');
-        e.target.classList.add('dragging');
-      }
-      
-      function handleDragEnd(e) {
-        e.target.classList.remove('dragging');
-        updateParagraphResult();
-      }
-      
-      function handleDragOver(e) {
-        e.preventDefault();
-      }
-      
-      function handleDragEnter(e) {
-        e.preventDefault();
-        if (e.target.classList.contains('paragraph-drop-zone') || e.target.closest('.paragraph-drop-zone')) {
-          const zone = e.target.classList.contains('paragraph-drop-zone') ? e.target : e.target.closest('.paragraph-drop-zone');
-          zone.classList.add('drag-over');
-        }
-      }
-      
-      function handleDragLeave(e) {
-        const zone = e.target.classList.contains('paragraph-drop-zone') ? e.target : e.target.closest('.paragraph-drop-zone');
-        if (zone) {
-          zone.classList.remove('drag-over');
-        }
-      }
-      
-      function handleDrop(e) {
-        e.preventDefault();
-        const dropZone = e.target.closest('.paragraph-drop-zone');
-        if (!dropZone) return;
-        
-        dropZone.classList.remove('drag-over');
-        
-        const draggingSentence = exercise.querySelector('.dragging');
-        if (!draggingSentence) return;
-        
-        // Se já há uma frase na zona, trocar posições
-        const existingSentence = dropZone.querySelector('.draggable-sentence');
-        if (existingSentence && existingSentence !== draggingSentence) {
-          const draggingParent = draggingSentence.parentNode;
-          draggingParent.appendChild(existingSentence);
-        }
-        
-        const dropContent = dropZone.querySelector('.drop-content');
-        dropContent.appendChild(draggingSentence);
-      }
-      
+    // Ordenar palavras/frases por toque: clica num item, clica noutro, eles
+    // trocam de lugar. checkSentenceOrder/checkParagraphOrder acima leem o
+    // DOM das zonas normalmente, então a correção não precisa saber como o
+    // item chegou ali.
+    //
+    // Vanilla JS de propósito (não Stimulus): o layout deste app ainda não
+    // chama javascript_importmap_tags, então nenhum controller Stimulus
+    // conecta hoje — mesma razão do filtro de nível em students/activities.
+    initializeTapToSwap();
 
-      
-      function updateParagraphResult() {
-        const sentences = [];
-        dropZones.forEach(zone => {
-          const sentence = zone.querySelector('.draggable-sentence');
-          sentences.push(sentence ? true : false);
+    function initializeTapToSwap() {
+      document.querySelectorAll('.drag-drop-exercise[data-exercise-type="sentence"]').forEach(exercise => {
+        setupTapToSwapGroup(exercise, '.draggable-word', {
+          initial: "Touchez un mot puis un autre pour les échanger.",
+          selected: "Touchez un autre mot pour l'échanger.",
+          deselected: "Sélectionnez un mot pour commencer.",
+          swapped: "Mot placé ! Touchez un autre mot pour continuer."
         });
-        
-        // Não mostrar feedback automático - apenas permitir organização
-        // O feedback será mostrado apenas após submissão
-      }
+      });
+
+      document.querySelectorAll('.drag-drop-exercise[data-exercise-type="paragraph"]').forEach(exercise => {
+        setupTapToSwapGroup(exercise, '.draggable-sentence', {
+          initial: "Touchez une phrase puis une autre pour les échanger.",
+          selected: "Touchez une autre phrase pour l'échanger.",
+          deselected: "Sélectionnez une phrase pour commencer.",
+          swapped: "Phrase placée ! Touchez une autre phrase pour continuer."
+        });
+      });
     }
-    
+
+    function setupTapToSwapGroup(exercise, itemSelector, messages) {
+      let selected = null;
+      const status = exercise.querySelector('.ordering-status');
+      const setStatus = (msg) => { if (status) status.textContent = msg; };
+
+      function clearSelection() {
+        if (selected) selected.classList.remove('selected');
+        selected = null;
+      }
+
+      function handleActivate(item) {
+        if (exercise.classList.contains('disabled')) return;
+
+        if (!selected) {
+          selected = item;
+          item.classList.add('selected');
+          setStatus(messages.selected);
+          return;
+        }
+
+        if (selected === item) {
+          clearSelection();
+          setStatus(messages.deselected);
+          return;
+        }
+
+        const zoneA = selected.parentElement;
+        const zoneB = item.parentElement;
+        if (zoneA && zoneB && zoneA !== zoneB) {
+          zoneA.appendChild(item);
+          zoneB.appendChild(selected);
+        }
+        clearSelection();
+        setStatus(messages.swapped);
+      }
+
+      exercise.querySelectorAll(itemSelector).forEach(item => {
+        item.setAttribute('role', 'button');
+        item.setAttribute('tabindex', '0');
+        item.addEventListener('click', () => handleActivate(item));
+        item.addEventListener('keydown', function(e) {
+          if (e.key === 'Enter' || e.key === ' ') {
+            e.preventDefault();
+            handleActivate(item);
+          }
+        });
+      });
+
+      setStatus(messages.initial);
+    }
+
     // === FUNÇÕES PARA EXERCÍCIOS DE ASSOCIAÇÃO ===
     
     // Função para verificar associações de colunas
@@ -2109,7 +2009,7 @@
     color: var(--surface);
   }
 
-  /* === EXERCÍCIOS DE ARRASTAR COM CORES ESPECÍFICAS === */
+  /* === EXERCÍCIOS DE ORDENAÇÃO — toque numa palavra/frase, depois noutra, pra trocar === */
   .draggable-word {
     background: var(--surface);
     border: 2px solid var(--brand);
@@ -2118,15 +2018,31 @@
     font-weight: 600;
     padding: 5px 10px;
     border-radius: 7px;
-    cursor: grab;
+    cursor: pointer;
     user-select: none;
-    transition: all 0.3s ease;
+    transition: all 0.2s ease;
     display: inline-block;
     margin: 0.25rem;
+    touch-action: manipulation;
   }
 
   .draggable-word:hover {
     background: var(--brand-tint);
+  }
+
+  .draggable-word.selected,
+  .draggable-sentence.selected {
+    background: var(--brand);
+    border-color: var(--brand);
+    color: var(--surface);
+    transform: scale(1.04);
+    box-shadow: 0 4px 10px var(--brand-glow);
+  }
+
+  .draggable-word:focus-visible,
+  .draggable-sentence:focus-visible {
+    outline: 2px solid var(--brand-bright);
+    outline-offset: 2px;
   }
 
   .draggable-sentence {
@@ -2137,10 +2053,11 @@
     font-weight: 600;
     padding: 6px 10px;
     border-radius: 7px;
-    cursor: grab;
+    cursor: pointer;
     user-select: none;
-    transition: all 0.3s ease;
-    box-shadow: 0 3px 8px rgba(122, 82, 150, 0.25);
+    transition: all 0.2s ease;
+    touch-action: manipulation;
+    box-shadow: 0 3px 8px var(--brand-veil-2);
     margin-bottom: 0.5rem;
     font-size: 0.9rem;
     line-height: 1.3;
@@ -2150,7 +2067,11 @@
     background: var(--brand-tint);
   }
 
-  /* === ASSOCIAÇÃO DE COLUNAS COM CORES ESPECÍFICAS === */
+  /* === ASSOCIAÇÃO DE COLUNAS === */
+  .association-exercise {
+    margin-top: 1rem;
+  }
+
   .association-item {
     background: var(--surface);
     border: 1.5px solid var(--line);
@@ -2167,12 +2088,17 @@
     border-color: var(--brand-bright);
   }
 
+  .item-text {
+    font-weight: 500;
+    color: var(--ink);
+  }
+
   .connection-point {
     width: 16px;
     height: 16px;
     border: 3px solid var(--brand-bright);
     border-radius: 50%;
-    background: white;
+    background: var(--surface);
     cursor: pointer;
     transition: all 0.3s ease;
     position: relative;
@@ -2187,6 +2113,24 @@
   .connection-point.connected {
     background: var(--brand-bright);
     box-shadow: 0 0 8px var(--brand-glow);
+  }
+
+  .connection-point.selected {
+    animation: pulse 1s infinite;
+  }
+
+  @keyframes pulse {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.1); }
+  }
+
+  .association-exercise.disabled {
+    opacity: 0.7;
+    pointer-events: none;
+  }
+
+  .association-exercise.disabled .connection-point {
+    cursor: not-allowed;
   }
 
   /* === BOTÕES COM DESIGN MODERNO === */
@@ -2349,41 +2293,8 @@
     outline: none;
   }
 
-   /* === ESTILOS PARA EXERCÍCIOS DE DRAG AND DROP === */
-   
-   /* Estados de arrasto */
-   .draggable-word.dragging,
-   .draggable-sentence.dragging {
-     opacity: 0.5;
-     transform: rotate(2deg);
-     cursor: grabbing;
-     z-index: 1000;
-   }
+   /* === ESTILOS PARA EXERCÍCIOS DE ORDENAÇÃO (toque pra trocar) === */
 
-   /* Pools de elementos */
-  .words-pool {
-     background: rgba(192, 138, 40, 0.08);
-     border: 2px solid rgba(192, 138, 40, 0.15);
-     border-radius: 16px;
-     padding: 1.5rem;
-    margin-bottom: 1.5rem;
-     min-height: 100px;
-    display: flex;
-    flex-wrap: wrap;
-     gap: 0.5rem;
-    align-items: flex-start;
-  }
-  
-  .words-pool:empty::before {
-     content: "Tous les mots ont été placés! 🎉";
-     color: var(--warning-orange);
-     font-weight: 600;
-    font-style: italic;
-    width: 100%;
-    text-align: center;
-    padding: 1rem 0;
-  }
-  
    /* === LAYOUT SIMPLIFICADO DE UMA COLUNA === */
    .drag-drop-exercise[data-exercise-type="paragraph"] {
      display: block;
@@ -2393,31 +2304,20 @@
 
    /* Construtores */
    .sentence-builder {
-     background: rgba(255, 255, 255, 0.8);
-     border: 2px solid rgba(192, 138, 40, 0.2);
+     background: var(--surface-2);
+     border: 1.5px solid var(--line);
      border-radius: 16px;
      padding: 1.5rem;
-     backdrop-filter: blur(10px);
    }
 
    .paragraph-builder {
-     background: rgba(255, 255, 255, 0.8);
-     border: 2px solid rgba(122, 82, 150, 0.2);
+     background: var(--surface-2);
+     border: 1.5px solid var(--line);
      border-radius: 12px;
      padding: 1rem;
-     backdrop-filter: blur(10px);
      min-height: fit-content;
      display: flex;
      flex-direction: column;
-   }
-
-   .builder-instruction {
-     text-align: left;
-     color: var(--ink-faint);
-     font-weight: 400;
-     font-style: italic;
-     margin-bottom: 0.75rem;
-     font-size: 0.8rem;
    }
 
    /* Zonas de drop */
@@ -2442,12 +2342,6 @@
     position: relative;
     transition: all 0.3s ease;
     padding: 0.25rem;
-  }
-  
-  .drop-zone.drag-over {
-     background: var(--brand-mist);
-     border-color: var(--brand-bright);
-     box-shadow: 0 4px 12px var(--brand-glow);
   }
   
   .drop-zone .position-number {
@@ -2483,8 +2377,8 @@
   }
   
   .paragraph-drop-zone {
-     background: rgba(122, 82, 150, 0.08);
-     border: 2px dashed rgba(122, 82, 150, 0.3);
+     background: var(--violet-tint);
+     border: 2px dashed var(--violet-border);
     border-radius: 8px;
     min-height: 40px;
     display: flex;
@@ -2493,20 +2387,13 @@
     transition: all 0.3s ease;
     padding: 0.4rem;
   }
-  
-  .paragraph-drop-zone.drag-over {
-     background: rgba(122, 82, 150, 0.2);
-     border-color: var(--info-purple);
-    transform: scale(1.02);
-     box-shadow: 0 4px 12px rgba(122, 82, 150, 0.3);
-  }
-  
+
   .paragraph-drop-zone .position-number {
     position: absolute;
     top: -10px;
     left: 0.75rem;
      background: var(--info-purple);
-    color: white;
+    color: var(--surface);
     padding: 0.2rem 0.4rem;
     border-radius: 10px;
     font-size: 0.7rem;
@@ -2525,43 +2412,12 @@
   }
   
   /* Zonas sempre têm frases - remover placeholder */
-  
-   /* Resultados */
-   .sentence-result {
-     margin-top: 1rem;
-     padding: 1rem;
-     background: var(--action-tint);
-     border-radius: 12px;
-     border-left: 4px solid var(--warning-orange);
-     backdrop-filter: blur(10px);
-   }
 
-  .paragraph-result {
-    margin-top: 1rem;
-    padding: 1rem;
-     background: var(--violet-tint);
-     border-radius: 12px;
-     border-left: 4px solid var(--info-purple);
-     backdrop-filter: blur(10px);
-   }
-
-   .result-text {
-     font-size: 1.1rem;
-     font-weight: 500;
-     color: var(--primary-dark);
-     margin-bottom: 0.5rem;
-     display: block;
-   }
-
-   .result-feedback {
-     font-weight: 600;
-   }
-
-   /* === ASSOCIAÇÃO DE COLUNAS APRIMORADA === */
+   /* === ASSOCIAÇÃO DE COLUNAS — LAYOUT (encaixado no card estreito) === */
    .association-container {
      display: flex;
      align-items: flex-start;
-     gap: 2rem;
+     gap: 1.25rem;
      margin: 1.5rem 0;
      position: relative;
    }
@@ -2578,11 +2434,11 @@
    }
 
    .association-column.column-a .association-item {
-     padding-right: 2rem;
+     padding-right: 1.75rem;
    }
 
    .association-column.column-b .association-item {
-     padding-left: 2rem;
+     padding-left: 1.75rem;
    }
 
    .association-column.column-a .connection-point {
@@ -2604,7 +2460,7 @@
      top: 0;
      left: 50%;
      transform: translateX(-50%);
-     width: 2rem;
+     width: 1.5rem;
      height: 100%;
      pointer-events: none;
    }
@@ -2615,26 +2471,14 @@
      left: 0;
    }
 
+   /* Sem "stroke" aqui de propósito: cada linha ganha a cor do seu par
+      via JS (setAttribute), e uma regra CSS pisaria nisso e pintaria
+      todas as linhas da mesma cor. */
    .connection-line {
-     stroke: var(--column-association-color);
      stroke-width: 3;
      fill: none;
      stroke-linecap: round;
      transition: all 0.3s ease;
-     filter: drop-shadow(0 2px 4px rgba(51, 112, 142, 0.3));
-   }
-
-   .connection-line.correct {
-         stroke: var(--success-green);
-    stroke-width: 4;
-    filter: drop-shadow(0 2px 8px rgba(21, 128, 61, 0.4));
-   }
-
-   .connection-line.incorrect {
-     stroke: var(--error);
-     stroke-width: 4;
-     stroke-dasharray: 5,5;
-     filter: drop-shadow(0 2px 8px rgba(239, 68, 68, 0.4));
    }
 
    /* === FEEDBACK DE CORES === */
@@ -2826,29 +2670,11 @@
 
   /* === DRAG AND DROP EXERCISES === */
   
-  /* Headers já definidos nos novos estilos - removendo duplicação */
-  
-  /* Estilos de instruções já definidos nos novos estilos */
-  
-  /* Estilos de drag-drop-exercise definidos nos novos estilos */
-  
-  /* === EXERCÍCIO DE PALAVRAS === */
-  
-  /* Estilos de words-pool já definidos nos novos estilos */
-  
-  /* Estilos de draggable-word já definidos nos novos estilos */
-  
-  /* Estilos duplicados removidos - usando novos estilos coloridos */
-  
-  /* Estilos de draggable-sentence já definidos nos novos estilos */
-  
   .sentence-content {
     font-weight: 500;
     line-height: 1.4;
   }
-  
-  /* Estilos de paragraph builder e drop zones já definidos nos novos estilos */
-  
+
   /* === FEEDBACK COLORS === */
   .text-success {
     color: var(--success-border) !important;
@@ -2900,15 +2726,9 @@
     .drag-drop-exercise {
       padding: 0.75rem;
     }
-    
-    .builder-instruction {
-      font-size: 0.9rem;
-    }
   }
-  
+
   @media (max-width: 480px) {
-    /* Removido: .words-pool não é mais usado */
-    
     .sentence-builder,
     .paragraph-builder {
       padding: 0.6rem;
@@ -2939,11 +2759,6 @@
       font-size: 0.65rem;
       padding: 0.15rem 0.3rem;
     }
-    
-    .builder-instruction {
-      font-size: 0.85rem;
-      margin-bottom: 0.5rem;
-    }
   }
 
   /* === FEEDBACK DETAILED === */
@@ -2958,188 +2773,21 @@
     border-left: 4px solid var(--success-border);
   }
   
-  /* === EXERCÍCIOS DE ASSOCIAÇÃO === */
-    
-  .association-exercise {
-    margin-top: 1rem;
-  }
-  
-  .association-help {
-    background: var(--surface-2);
-    border: 1px solid var(--line);
-    border-radius: 8px;
-    padding: 0.75rem;
-    margin-bottom: 1rem;
-  }
-  
-  .association-help small {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    color: var(--ink-soft);
-    font-size: 0.85rem;
-  }
-  
-  .association-help i {
-    color: var(--violet);
-  }
-  
-  .association-container {
-    display: grid;
-    grid-template-columns: 1fr auto 1fr;
-    gap: 2rem;
-    align-items: start;
-    margin-bottom: 1.5rem;
-  }
-  
-  .association-column {
-    background: var(--surface-2);
-    border: 2px solid var(--line);
-    border-radius: 12px;
-    padding: 1.5rem;
-    min-height: 300px;
-  }
-  
-  .column-title {
-    color: var(--brand-deep);
-    font-size: 1.1rem;
-    font-weight: 600;
-    margin-bottom: 1rem;
-    text-align: center;
-    padding-bottom: 0.5rem;
-    border-bottom: 2px solid var(--line);
-  }
-  
-  .column-items {
-    display: flex;
-    flex-direction: column;
-    gap: 1rem;
-  }
-  
-  .association-item {
-    background: white;
-    border: 2px solid var(--line);
-    border-radius: 10px;
-    padding: 1rem;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    transition: all 0.3s ease;
-    position: relative;
-  }
-  
-  .association-item:hover {
-    border-color: var(--violet);
-    transform: translateY(-1px);
-    box-shadow: 0 4px 12px rgba(122, 82, 150, 0.12);
-  }
-  
-  .association-item[data-item-type="b"] {
-    flex-direction: row-reverse;
-  }
-  
-  .item-text {
-    font-weight: 500;
-    color: var(--ink);
-    flex: 1;
-    text-align: center;
-  }
-  
-  .connection-point {
-    width: 20px;
-    height: 20px;
-    border-radius: 50%;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    position: relative;
-    flex-shrink: 0;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-  }
-  
-  .connection-point:hover {
-    transform: scale(1.3);
-    opacity: 1 !important;
-    box-shadow: 0 4px 8px rgba(0,0,0,0.2);
-  }
-  
-  .connection-point.selected {
-    animation: pulse 1s infinite;
-    box-shadow: 0 0 0 4px rgba(192, 138, 40, 0.3);
-  }
-  
-  .connection-point.connected {
-    box-shadow: 0 2px 8px rgba(0,0,0,0.3);
-  }
-  
-  @keyframes pulse {
-    0%, 100% { transform: scale(1); }
-    50% { transform: scale(1.1); }
-  }
-  
-  .connection-zone {
-    position: relative;
-    width: 60px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
-  
-  .connection-svg {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    pointer-events: none;
-    z-index: 1;
-  }
-  
-  .connection-line {
-    transition: all 0.3s ease;
-  }
-  
-  .association-result {
-    margin-top: 1rem;
-  }
-  
-
-  
-  .association-exercise.disabled {
-    opacity: 0.7;
-    pointer-events: none;
-  }
-  
-  .association-exercise.disabled .connection-point {
-    cursor: not-allowed;
-  }
-  
-  /* Responsive para exercícios de associação */
-  @media (max-width: 768px) {
+  /* Responsive para exercícios de associação — empilha as colunas e some
+     com a zona de conexão (as linhas não fazem sentido empilhadas) */
+  @media (max-width: 640px) {
     .association-container {
-      grid-template-columns: 1fr;
-      gap: 1rem;
+      flex-direction: column;
+      gap: 1.75rem;
     }
-    
+
     .connection-zone {
       display: none;
     }
-    
-    .association-column {
-      padding: 1rem;
-      min-height: auto;
-    }
-    
-    .association-item {
-      padding: 0.75rem;
-    }
-    
-    .item-text {
-      font-size: 0.9rem;
-    }
-    
+
     .connection-point {
-      width: 16px;
-      height: 16px;
+      width: 14px;
+      height: 14px;
     }
   }
 

@@ -750,12 +750,12 @@
   }
 
   .quiz-nav-row {
-    position: sticky;
-    bottom: 0;
-    z-index: 20;
+    /* sem sticky de propósito: com um card mais alto que a viewport
+       (ex.: organizar frases com muitos itens) um rodapé grudado no
+       fundo cobria o final do card. Segue solto no fluxo, como o
+       resto do conteúdo em mobile (ver comentários acima). */
     background: var(--surface);
     border-top: 1px solid var(--line);
-    box-shadow: 0 -2px 12px rgba(0, 0, 0, 0.06);
     padding: 10px 0;
     margin-top: 8px;
     gap: 10px;
