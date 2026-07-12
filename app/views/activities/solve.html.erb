@@ -239,15 +239,15 @@
       <div class="quiz-nav-row" id="quiz-nav-row">
         <% back_path = student_signed_in? ? student_dashboard_path : activities_path %>
         <a href="<%= back_path %>" id="quiz-back-link"
-           style="flex:1; display:flex; align-items:center; justify-content:center; gap:5px; padding:7px 12px; background:var(--surface); border:1.5px solid var(--line); border-radius:9px; font-family:'Plus Jakarta Sans',sans-serif; font-size:0.8rem; font-weight:600; color:var(--ink-soft); text-decoration:none;">
+           style="flex:1; display:flex; align-items:center; justify-content:center; gap:5px; padding:7px 16px; background:var(--surface); border:1.5px solid var(--line); border-radius:999px; font-family:'Plus Jakarta Sans',sans-serif; font-size:0.8rem; font-weight:600; color:var(--ink-soft); text-decoration:none;">
           <i class="bi bi-arrow-left"></i> Retour
         </a>
         <button type="button" id="quiz-prev-btn"
-                style="flex:1; display:none; align-items:center; justify-content:center; gap:5px; padding:7px 12px; background:var(--surface); border:1.5px solid var(--line); border-radius:9px; font-family:'Plus Jakarta Sans',sans-serif; font-size:0.8rem; font-weight:600; color:var(--ink-soft); cursor:pointer;">
+                style="flex:1; display:none; align-items:center; justify-content:center; gap:5px; padding:7px 16px; background:var(--surface); border:1.5px solid var(--line); border-radius:999px; font-family:'Plus Jakarta Sans',sans-serif; font-size:0.8rem; font-weight:600; color:var(--ink-soft); cursor:pointer;">
           <i class="bi bi-arrow-left"></i> Précédent
         </button>
         <button type="button" id="quiz-next-btn"
-                style="flex:2; display:<%= exercise_elements.size > 1 ? 'flex' : 'none' %>; align-items:center; justify-content:center; gap:5px; padding:7px 12px; background:var(--brand); border:none; border-radius:9px; font-family:'Plus Jakarta Sans',sans-serif; font-size:0.8rem; font-weight:700; color:var(--surface); cursor:pointer;">
+                style="flex:2; display:<%= exercise_elements.size > 1 ? 'flex' : 'none' %>; align-items:center; justify-content:center; gap:5px; padding:7px 16px; background:var(--brand); border:none; border-radius:999px; font-family:'Plus Jakarta Sans',sans-serif; font-size:0.8rem; font-weight:700; color:var(--surface); cursor:pointer;">
           Suivant <i class="bi bi-arrow-right"></i>
         </button>
       </div>
@@ -1935,7 +1935,7 @@
     background: var(--action);
     color: var(--surface);
     border: none;
-    border-radius: 12px;
+    border-radius: 999px;
     padding: 0.8rem 1.8rem;
     font-size: 0.95rem;
     font-weight: 700;
