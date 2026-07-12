@@ -1940,6 +1940,11 @@
   
   /* === CORPO DOS CARDS === */
   .card-body {
+    /* display:block explícito de propósito: o componente "card" do
+       DaisyUI também define uma classe .card-body (display:flex) que
+       colide com esse nome genérico daqui — sem isso, os exercícios
+       de ordenação encolhiam e centralizavam em vez de esticar. */
+    display: block;
     padding: 14px 16px;
     position: relative;
     font-size: 0.92rem;
