@@ -236,31 +236,29 @@
     </div>
 
     <% if has_exercises %>
-      <div class="quiz-nav-row" id="quiz-nav-row">
-        <% back_path = student_signed_in? ? student_dashboard_path : activities_path %>
-        <a href="<%= back_path %>" id="quiz-back-link"
-           style="flex:1; display:flex; align-items:center; justify-content:center; gap:5px; padding:7px 16px; background:var(--surface); border:1.5px solid var(--line); border-radius:999px; font-family:'Plus Jakarta Sans',sans-serif; font-size:0.8rem; font-weight:600; color:var(--ink-soft); text-decoration:none;">
-          <i class="bi bi-arrow-left"></i> Retour
-        </a>
-        <button type="button" id="quiz-prev-btn"
-                style="flex:1; display:none; align-items:center; justify-content:center; gap:5px; padding:7px 16px; background:var(--surface); border:1.5px solid var(--line); border-radius:999px; font-family:'Plus Jakarta Sans',sans-serif; font-size:0.8rem; font-weight:600; color:var(--ink-soft); cursor:pointer;">
-          <i class="bi bi-arrow-left"></i> Précédent
-        </button>
-        <button type="button" id="quiz-next-btn"
-                style="flex:2; display:<%= exercise_elements.size > 1 ? 'flex' : 'none' %>; align-items:center; justify-content:center; gap:5px; padding:7px 16px; background:var(--brand); border:none; border-radius:999px; font-family:'Plus Jakarta Sans',sans-serif; font-size:0.8rem; font-weight:700; color:var(--surface); cursor:pointer;">
-          Suivant <i class="bi bi-arrow-right"></i>
-        </button>
-      </div>
-
       <form id="activity-quiz-form">
-        <div class="submit-section" style="<%= exercise_elements.size > 1 ? 'display:none;' : '' %>">
-          <button type="submit" class="btn-submit" id="submit-answers">
-            <i class="bi bi-check-circle-fill"></i>
-            Soumettre les réponses
+        <div class="quiz-nav-row" id="quiz-nav-row">
+          <% back_path = student_signed_in? ? student_dashboard_path : activities_path %>
+          <a href="<%= back_path %>" id="quiz-back-link"
+             style="flex:1; display:flex; align-items:center; justify-content:center; gap:5px; padding:7px 16px; background:var(--surface); border:1.5px solid var(--line); border-radius:999px; font-family:'Plus Jakarta Sans',sans-serif; font-size:0.8rem; font-weight:600; color:var(--ink-soft); text-decoration:none;">
+            <i class="bi bi-arrow-left"></i> Retour
+          </a>
+          <button type="button" id="quiz-prev-btn"
+                  style="flex:1; display:none; align-items:center; justify-content:center; gap:5px; padding:7px 16px; background:var(--surface); border:1.5px solid var(--line); border-radius:999px; font-family:'Plus Jakarta Sans',sans-serif; font-size:0.8rem; font-weight:600; color:var(--ink-soft); cursor:pointer;">
+            <i class="bi bi-arrow-left"></i> Précédent
+          </button>
+          <button type="button" id="quiz-next-btn"
+                  style="flex:2; display:<%= exercise_elements.size > 1 ? 'flex' : 'none' %>; align-items:center; justify-content:center; gap:5px; padding:7px 16px; background:var(--brand); border:none; border-radius:999px; font-family:'Plus Jakarta Sans',sans-serif; font-size:0.8rem; font-weight:700; color:var(--surface); cursor:pointer;">
+            Suivant <i class="bi bi-arrow-right"></i>
+          </button>
+          <%# Mesmo lugar, mesma cor do Suivant — só troca de rótulo/ação
+              na última pergunta, sem virar um botão separado embaixo. %>
+          <button type="submit" id="submit-answers"
+                  style="flex:2; display:<%= exercise_elements.size > 1 ? 'none' : 'flex' %>; align-items:center; justify-content:center; gap:5px; padding:7px 16px; background:var(--brand); border:none; border-radius:999px; font-family:'Plus Jakarta Sans',sans-serif; font-size:0.8rem; font-weight:700; color:var(--surface); cursor:pointer;">
+            Soumettre <i class="bi bi-check-circle-fill"></i>
           </button>
         </div>
       </form>
-
     <% end %>
 
     <% unless has_exercises %>
@@ -1931,25 +1929,6 @@
   }
 
   /* === BOTÕES COM DESIGN MODERNO === */
-  .btn-submit {
-    background: var(--action);
-    color: var(--surface);
-    border: none;
-    border-radius: 999px;
-    padding: 0.8rem 1.8rem;
-    font-size: 0.95rem;
-    font-weight: 700;
-    font-family: 'Plus Jakarta Sans', sans-serif;
-    cursor: pointer;
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-  }
-
-  .btn-submit:hover {
-    background: var(--action-hover);
-  }
-
   .btn-back {
     background: rgba(255, 255, 255, 0.9);
     color: var(--primary-dark);
@@ -2042,11 +2021,6 @@
     
     .alternative-label {
       padding: 0.75rem 1rem;
-    }
-    
-    .btn-submit {
-      width: 100%;
-      margin: 1.5rem 0;
     }
   }
 
@@ -2257,12 +2231,7 @@
      color: var(--primary-dark);
    }
 
-   /* === SUBMIT E RESULTS === */
-   .submit-section {
-     text-align: center;
-     margin: 2rem 0;
-   }
-
+   /* === RESULTS === */
      .results-card .card-header.success-header {
     background: var(--brand-deep) !important;
     color: var(--surface) !important;
@@ -2586,7 +2555,6 @@
 
     .btn-secondary,
     .btn-outline,
-    .btn-submit,
     .btn-back {
       width: 100%;
       max-width: 300px;
@@ -2865,7 +2833,7 @@
   var prev = document.getElementById('quiz-prev-btn');
   var next = document.getElementById('quiz-next-btn');
   var back = document.getElementById('quiz-back-link');
-  var submitSec = document.querySelector('.submit-section');
+  var submitBtn = document.getElementById('submit-answers');
 
   function mostrar(n) {
     atual = Math.max(0, Math.min(n, total - 1));
@@ -2875,7 +2843,7 @@
     if (back) back.style.display = (atual === 0) ? 'flex' : 'none';
     if (prev) prev.style.display = (atual === 0) ? 'none' : 'flex';
     if (next) next.style.display = (atual === total - 1) ? 'none' : 'flex';
-    if (submitSec) submitSec.style.display = (atual === total - 1) ? '' : 'none';
+    if (submitBtn) submitBtn.style.display = (atual === total - 1) ? 'flex' : 'none';
     var col = document.querySelector('.quiz-exercise-col') || document.querySelector('.quiz-paper');
     if (col) col.scrollTop = 0;
   }
