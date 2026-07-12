@@ -260,20 +260,6 @@
         </div>
       </form>
     <% end %>
-
-    <% unless has_exercises %>
-      <div class="navigation-section">
-        <% if student_signed_in? %>
-          <a href="#" id="back-to-dashboard-btn" class="btn-back" data-dashboard-url="<%= student_dashboard_path %>">
-            <i class="bi bi-arrow-left"></i> Retour au tableau de bord
-          </a>
-        <% else %>
-          <%= link_to activities_path, class: "btn-back" do %>
-            <i class="bi bi-arrow-left"></i> Retour aux activités
-          <% end %>
-        <% end %>
-      </div>
-    <% end %>
   <% end %>
 
   <%# ---- Layout: duas colunas com material, ou coluna única ---- %>
@@ -322,6 +308,21 @@
         </div>
       </div>
     </div>
+  </div>
+
+  <%# Sempre visível, fora das colunas (não some no modo resultado) — é
+      esse botão que a lógica do modal de avaliação intercepta pra
+      perguntar a nota antes de voltar pro painel. %>
+  <div class="navigation-section">
+    <% if student_signed_in? %>
+      <a href="#" id="back-to-dashboard-btn" class="btn-back" data-dashboard-url="<%= student_dashboard_path %>">
+        <i class="bi bi-arrow-left"></i> Retour au tableau de bord
+      </a>
+    <% else %>
+      <%= link_to activities_path, class: "btn-back" do %>
+        <i class="bi bi-arrow-left"></i> Retour aux activités
+      <% end %>
+    <% end %>
   </div>
 
 </div>
