@@ -310,9 +310,11 @@
     </div>
   </div>
 
-  <%# Sempre visível, fora das colunas (não some no modo resultado) — é
-      esse botão que a lógica do modal de avaliação intercepta pra
-      perguntar a nota antes de voltar pro painel. %>
+  <%# Só aparece junto do resultado (ver .fr-results-mode no quiz.scss) —
+      fica fora das colunas de propósito, senão some quando o modo
+      resultado esconde .quiz-two-col. É esse botão que a lógica do
+      modal de avaliação intercepta pra perguntar a nota antes de
+      voltar pro painel. %>
   <div class="navigation-section">
     <% if student_signed_in? %>
       <a href="#" id="back-to-dashboard-btn" class="btn-back" data-dashboard-url="<%= student_dashboard_path %>">
@@ -1931,26 +1933,25 @@
 
   /* === BOTÕES COM DESIGN MODERNO === */
   .btn-back {
-    background: rgba(255, 255, 255, 0.9);
-    color: var(--primary-dark);
-    border: 2px solid rgba(30, 61, 89, 0.2);
-    border-radius: 12px;
-    padding: 0.75rem 1.5rem;
+    background: var(--surface);
+    color: var(--ink-soft);
+    border: 1.5px solid var(--line);
+    border-radius: 999px;
+    padding: 7px 16px;
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-size: 0.8rem;
+    font-weight: 600;
     text-decoration: none;
-    font-weight: 500;
-    transition: all 0.3s ease;
+    transition: all 0.2s ease;
     display: inline-flex;
     align-items: center;
-    gap: 0.5rem;
-    backdrop-filter: blur(10px);
+    gap: 5px;
   }
 
   .btn-back:hover {
-    background: var(--primary-dark);
-    color: white;
+    border-color: var(--brand-bright);
+    color: var(--brand-deep);
     text-decoration: none;
-    transform: translateX(-4px);
-    box-shadow: 0 8px 24px rgba(30, 61, 89, 0.3);
   }
 
   /* === EFEITOS DE FEEDBACK === */
@@ -2314,11 +2315,12 @@
    }
 
    /* === NAVIGATION === */
+   /* Escondido por padrão — só aparece junto do resultado
+      (.quiz-outer.fr-results-mode libera, ver quiz.scss) */
    .navigation-section {
+     display: none;
      text-align: center;
-     margin-top: 2rem;
-     padding-top: 2rem;
-     border-top: 1px solid rgba(255, 255, 255, 0.3);
+     margin-top: 1rem;
    }
 
    /* === PRESERVE FORMATTING === */

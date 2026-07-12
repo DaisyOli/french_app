@@ -823,6 +823,10 @@
   overflow-y: auto;
 }
 
+.quiz-outer.fr-results-mode .navigation-section {
+  display: block;
+}
+
 #results-container {
   width: 100%;
   max-width: 480px;
