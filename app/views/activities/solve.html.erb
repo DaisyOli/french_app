@@ -171,9 +171,6 @@
               <span>Exercice d'organisation de phrases <%= exercise_elements.select { |e| e[:type] == 'paragraph_ordering' }.index { |e| e[:content] == paragraph_ordering } + 1 %></span>
             </div>
             <div class="card-body">
-              <% if paragraph_ordering.titre.present? %>
-                <h4 class="exercise-title"><%= paragraph_ordering.titre %></h4>
-              <% end %>
               <% if paragraph_ordering.instruction.present? %>
                 <p class="instruction-text"><%= paragraph_ordering.instruction %></p>
               <% else %>
@@ -208,9 +205,6 @@
               <span>Exercice d'association <%= exercise_elements.select { |e| e[:type] == 'column_association' }.index { |e| e[:content] == column_association } + 1 %></span>
             </div>
             <div class="card-body">
-              <% if column_association.title.present? %>
-                <h4 class="exercise-title"><%= column_association.title %></h4>
-              <% end %>
               <% if column_association.instruction.present? %>
                 <p class="instruction-text"><%= column_association.instruction %></p>
               <% end %>
@@ -2216,15 +2210,6 @@
      margin-bottom: 1rem;
      text-align: left;
      line-height: 1.6;
-   }
-
-   .exercise-title {
-     color: var(--primary-dark);
-     font-family: 'Raleway', sans-serif;
-     font-size: 1.3rem;
-     font-weight: 600;
-     margin-bottom: 1rem;
-     text-align: center;
    }
 
    .question-text {
