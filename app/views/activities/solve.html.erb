@@ -752,9 +752,9 @@
                     <p class="card-text"><strong>Votre réponse:</strong> 
                       ${item.selectedLetter ? `<span class="alternative-letter">${item.selectedLetter})</span> ` : ''}
                       ${item.selectedText}
-                      ${item.isCorrect ? 
-                        '<span class="badge bg-success">Correct</span>' : 
-                        `<span class="badge bg-danger">Incorrect</span><br><strong>Réponse correcte:</strong> <span class="alternative-letter">${item.correctLetter})</span> ${item.correctText}`}
+                      ${item.isCorrect ?
+                        '<span class="badge bg-success">Correct</span>' :
+                        `<span class="badge bg-danger">Incorrect</span><br><strong>Réponse correcte:</strong> ${item.correctLetter ? `<span class="alternative-letter">${item.correctLetter})</span> ` : ''}${item.correctText}`}
                     </p>
                   </div>
                 </div>
