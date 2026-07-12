@@ -2,14 +2,12 @@ class StudentsController < ApplicationController
   before_action :authenticate_student!
 
   def dashboard
-    @activities = Activity.all.order(:título)
-    
     # Dados de progresso do estudante com otimização
     @completed_activities = current_student.completed_activities
                                           .includes(activity: :activity_ratings)
                                           .order(created_at: :desc)
     @completed_count = @completed_activities.count
-    
+
     # Calcular score médio de forma mais robusta
     if @completed_activities.any?
       avg = @completed_activities.where.not(percentage: nil).average(:percentage)
@@ -17,7 +15,7 @@ class StudentsController < ApplicationController
     else
       @average_score = 0
     end
-    
+
     # IDs das atividades já completadas
     @completed_activity_ids = @completed_activities.pluck(:activity_id)
 
@@ -32,6 +30,23 @@ class StudentsController < ApplicationController
     @next_trophy = current_student.next_trophy_info
     @current_streak = current_student.current_streak
     @motivational_message = current_student.motivational_message
+
+    # Próxima atividade recomendada pro card "Continuer"
+    level_order = ApplicationHelper::CEFR_COLORS.keys
+    @next_activity = Activity.where.not(id: @completed_activity_ids)
+                              .sort_by { |a| [level_order.index(a.nível) || 99, a.título] }
+                              .first
+    @next_activity_is_retry = @next_activity.nil?
+    @next_activity ||= @completed_activities.first&.activity
+
+    # Progresso por nível CEFR pra grade de níveis
+    level_totals = Activity.group(:nível).count
+    level_completed = current_student.completed_activities.joins(:activity).group('activities.nível').count
+    @level_progress = level_order.map do |level|
+      total = level_totals[level] || 0
+      completed = level_completed[level] || 0
+      { level: level, total: total, completed: completed, pct: total.zero? ? 0 : (completed * 100.0 / total).round }
+    end
   end
 
   def activities

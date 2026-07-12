@@ -1,714 +1,221 @@
-<div class="student-dashboard">
-  <!-- Hero Section -->
-  <div class="hero-section">
-    <div class="hero-content">
-      <div class="welcome-card">
-        <div class="avatar-section">
-          <div class="student-avatar">
-            <i class="bi bi-person-badge-fill"></i>
-          </div>
-          <div class="welcome-text">
-            <h1>Bienvenue!</h1>
-            <p>Prêt à apprendre le français aujourd'hui ?</p>
-          </div>
-        </div>
+<% content_for :head do %>
+  <title>Tableau de bord · Practice-FR</title>
+<% end %>
+
+<div style="max-width:1100px; margin:0 auto; padding:28px 16px 60px;">
+
+  <%# Hero %>
+  <div style="margin-bottom:24px;">
+    <h1 style="font-family:'Raleway',sans-serif; font-size:1.6rem; font-weight:800; color:var(--brand-deep); margin:0 0 6px;">
+      Bienvenue !
+    </h1>
+    <p style="font-family:'Plus Jakarta Sans',sans-serif; font-size:0.92rem; color:var(--ink-soft); margin:0;">
+      Prêt à apprendre le français aujourd'hui ?
+    </p>
+  </div>
+
+  <%# Grade de 4 métricas %>
+  <div class="dash-metrics-grid" style="margin-bottom:24px;">
+    <div style="background:var(--surface); border:1px solid var(--line); border-radius:14px; padding:16px 18px;">
+      <div style="font-family:'DM Mono',monospace; font-size:0.68rem; font-weight:700; letter-spacing:0.05em; text-transform:uppercase; color:var(--ink-faint); margin-bottom:6px;">Séquence</div>
+      <div style="display:flex; align-items:baseline; gap:5px;">
+        <span style="font-family:'Raleway',sans-serif; font-size:1.7rem; font-weight:800; color:var(--action);"><%= @current_streak %></span>
+        <span style="font-size:1.1rem;">🔥</span>
       </div>
+      <div style="font-family:'Plus Jakarta Sans',sans-serif; font-size:0.78rem; color:var(--ink-soft);">jour<%= @current_streak > 1 ? 's' : '' %> d'affilée</div>
+    </div>
+
+    <div style="background:var(--surface); border:1px solid var(--line); border-radius:14px; padding:16px 18px;">
+      <div style="font-family:'DM Mono',monospace; font-size:0.68rem; font-weight:700; letter-spacing:0.05em; text-transform:uppercase; color:var(--ink-faint); margin-bottom:6px;">Terminées</div>
+      <span style="font-family:'Raleway',sans-serif; font-size:1.7rem; font-weight:800; color:var(--brand);"><%= @completed_count %></span>
+      <div style="font-family:'Plus Jakarta Sans',sans-serif; font-size:0.78rem; color:var(--ink-soft);">activité<%= @completed_count > 1 ? 's' : '' %></div>
+    </div>
+
+    <div style="background:var(--surface); border:1px solid var(--line); border-radius:14px; padding:16px 18px;">
+      <div style="font-family:'DM Mono',monospace; font-size:0.68rem; font-weight:700; letter-spacing:0.05em; text-transform:uppercase; color:var(--ink-faint); margin-bottom:6px;">Moyenne</div>
+      <span style="font-family:'Raleway',sans-serif; font-size:1.7rem; font-weight:800; color:var(--info);"><%= @average_score %>%</span>
+      <div style="font-family:'Plus Jakarta Sans',sans-serif; font-size:0.78rem; color:var(--ink-soft);">score moyen</div>
+    </div>
+
+    <div style="background:var(--surface); border:1px solid var(--line); border-radius:14px; padding:16px 18px;">
+      <div style="font-family:'DM Mono',monospace; font-size:0.68rem; font-weight:700; letter-spacing:0.05em; text-transform:uppercase; color:var(--ink-faint); margin-bottom:6px;">Trophée actuel</div>
+      <div style="display:flex; align-items:center; gap:6px;">
+        <span style="font-size:1.4rem;"><%= @current_trophy[:icon] %></span>
+        <span style="font-family:'Raleway',sans-serif; font-size:1rem; font-weight:700; color:var(--violet);"><%= @current_trophy[:name] %></span>
+      </div>
+      <% if @next_trophy[:needed] > 0 %>
+        <div style="font-family:'Plus Jakarta Sans',sans-serif; font-size:0.74rem; color:var(--ink-faint); margin-top:4px;">
+          <%= @next_trophy[:needed] %> jour<%= @next_trophy[:needed] > 1 ? 's' : '' %> pour <%= @next_trophy[:icon] %> <%= @next_trophy[:name] %>
+        </div>
+      <% else %>
+        <div style="font-family:'Plus Jakarta Sans',sans-serif; font-size:0.74rem; color:var(--success); margin-top:4px;">🎉 Niveau maximum</div>
+      <% end %>
     </div>
   </div>
 
-  <!-- Progress Section -->
-  <div class="progress-section">
-    <div class="stats-grid">
-      <div class="stat-card">
-        <div class="stat-icon">
-          <i class="bi bi-trophy-fill"></i>
-        </div>
-        <div class="stat-content">
-          <h3><%= @completed_count %></h3>
-          <p>Activités terminées</p>
-        </div>
-      </div>
-      
-      <div class="stat-card">
-        <div class="stat-icon">
-          <i class="bi bi-star-fill"></i>
-        </div>
-        <div class="stat-content">
-          <h3><%= @average_score %>%</h3>
-          <p>Score moyen</p>
-        </div>
-      </div>
+  <%# Seção do meio: continuar estudando + progresso por nível %>
+  <div class="dash-mid-grid" style="margin-bottom:32px;">
 
-      <div class="stat-card trophy-card">
-        <div class="stat-icon trophy-icon">
-          <span class="trophy-emoji"><%= @current_trophy[:icon] %></span>
-        </div>
-        <div class="stat-content">
-          <h3><%= @current_streak %> jours</h3>
-          <p>Assiduité actuelle</p>
-          <div class="trophy-info">
-            <span class="trophy-name"><%= @current_trophy[:name] %></span>
-            <div class="motivational-message">
-              <%= @motivational_message %>
-            </div>
-            <% if @next_trophy[:needed] > 0 %>
-              <div class="next-trophy">
-                <span class="next-trophy-text">Prochain: <%= @next_trophy[:icon] %> <%= @next_trophy[:name] %></span>
-                <div class="progress-bar">
-                  <div class="progress-fill" style="width: <%= (@next_trophy[:progress].to_f / @next_trophy[:target] * 100).round(1) %>%"></div>
-                </div>
-                <span class="progress-text"><%= @next_trophy[:needed] %> jour<%= @next_trophy[:needed] > 1 ? 's' : '' %> restant<%= @next_trophy[:needed] > 1 ? 's' : '' %></span>
-              </div>
+    <%# Card "Continuer" %>
+    <div style="background:var(--surface); border:1px solid var(--line); border-radius:14px; overflow:hidden;">
+      <div style="padding:12px 16px; border-bottom:1px solid var(--line-soft); font-family:'Plus Jakarta Sans',sans-serif; font-size:0.78rem; font-weight:700; color:var(--ink-soft); text-transform:uppercase; letter-spacing:0.04em;">
+        <%= @next_activity_is_retry ? "Continuer à progresser" : "Continuer" %>
+      </div>
+      <% if @next_activity %>
+        <% m = cefr_colors(@next_activity.nível) %>
+        <% cover = activity_cover(@next_activity) %>
+        <div style="display:flex; gap:0;">
+          <div style="width:120px; min-height:120px; flex-shrink:0; overflow:hidden; display:flex; align-items:center; justify-content:center;">
+            <% if cover[:type] == :image %>
+              <img src="<%= cover[:url] %>" alt="" style="width:100%; height:100%; object-fit:cover; display:block;">
             <% else %>
-              <span class="max-trophy">🎉 Niveau maximum atteint!</span>
+              <div style="width:100%; height:100%; background:linear-gradient(135deg, <%= m[:bg] %> 0%, color-mix(in srgb, <%= m[:border] %> 20%, transparent) 100%); display:flex; align-items:center; justify-content:center;">
+                <i class="bi <%= cover[:icon] %>" style="font-size:2.2rem; color:<%= m[:border] %>; opacity:0.55;"></i>
+              </div>
             <% end %>
           </div>
+          <div style="flex:1; min-width:0; padding:14px 16px; display:flex; flex-direction:column;">
+            <span style="align-self:flex-start; font-family:'DM Mono',monospace; font-size:0.68rem; font-weight:700; background:<%= m[:bg] %>; color:<%= m[:text] %>; border:1.5px solid <%= m[:border] %>; padding:2px 8px; border-radius:20px; margin-bottom:6px;">
+              <%= @next_activity.nível %>
+            </span>
+            <h3 style="font-family:'Raleway',sans-serif; font-size:0.95rem; font-weight:700; color:var(--ink); margin:0 0 auto 0; line-height:1.35;">
+              <%= @next_activity.título %>
+            </h3>
+            <div style="margin-top:10px;">
+              <%= link_to solve_activity_path(@next_activity),
+                    style: "font-family:'Plus Jakarta Sans',sans-serif; font-size:0.82rem; font-weight:700; padding:8px 16px; border-radius:9px; text-decoration:none; display:inline-flex; align-items:center; gap:6px; background:#{m[:border]}; color:var(--surface);" do %>
+                <% if @next_activity_is_retry %>
+                  <i class="bi bi-arrow-clockwise"></i> Refaire
+                <% else %>
+                  <i class="bi bi-play-fill"></i> Commencer
+                <% end %>
+              <% end %>
+            </div>
+          </div>
         </div>
+      <% else %>
+        <div style="padding:24px 16px; text-align:center;">
+          <span style="font-size:2rem; display:block; margin-bottom:8px;">🥐</span>
+          <p style="font-family:'Plus Jakarta Sans',sans-serif; color:var(--ink-soft); font-size:0.88rem; margin:0;">
+            Aucune activité disponible pour l'instant.
+          </p>
+        </div>
+      <% end %>
+    </div>
+
+    <%# Grade de progresso por nível %>
+    <div style="background:var(--surface); border:1px solid var(--line); border-radius:14px; padding:14px 16px;">
+      <div style="font-family:'Plus Jakarta Sans',sans-serif; font-size:0.78rem; font-weight:700; color:var(--ink-soft); text-transform:uppercase; letter-spacing:0.04em; margin-bottom:12px;">
+        Progression par niveau
       </div>
-    </div>
-  </div>
-
-  <!-- Activities Section -->
-  <div class="activities-section">
-    <div class="section-header">
-      <h2>Mes activités</h2>
-      <p>Vos activités récemment terminées</p>
-    </div>
-
-    <!-- My Activities Grid -->
-    <div class="my-activities-grid">
-      <% if @completed_activities.any? %>
-        <% @completed_activities.order(created_at: :desc).limit(6).each do |completed_activity| %>
-          <% activity = completed_activity.activity %>
-          <div class="my-activity-card">
-            <div class="card-header">
-              <div class="level-badge level-<%= activity.nível.downcase %>">
-                <%= activity.nível %>
-              </div>
-              <div class="completed-date">
-                <i class="bi bi-calendar3"></i>
-                <%= completed_activity.created_at.strftime("%d/%m/%Y") %>
-              </div>
+      <div class="dash-level-grid">
+        <% @level_progress.each do |lp| %>
+          <% m = cefr_colors(lp[:level]) %>
+          <div style="text-align:center;">
+            <span style="display:inline-block; font-family:'DM Mono',monospace; font-size:0.72rem; font-weight:700; background:<%= m[:bg] %>; color:<%= m[:text] %>; border:1.5px solid <%= m[:border] %>; padding:2px 8px; border-radius:20px; margin-bottom:6px;">
+              <%= lp[:level] %>
+            </span>
+            <div style="height:5px; background:<%= m[:bg] %>; border-radius:3px; overflow:hidden; margin-bottom:4px;">
+              <div style="height:100%; width:<%= lp[:pct] %>%; background:<%= m[:bar] %>;"></div>
             </div>
-            
-            <div class="card-body">
-              <h3 class="activity-title"><%= activity.título %></h3>
-              <% if activity.texto.present? %>
-                <p class="activity-description">
-                  <%= truncate(activity.texto, length: 100) %>
-                </p>
-              <% end %>
-              
-              <div class="activity-result">
-                <div class="score-circle">
-                  <span class="score-value"><%= completed_activity.percentage.round(1) %>%</span>
-                </div>
-                <div class="result-details">
-                  <div class="stat">
-                    <i class="bi bi-check-circle-fill"></i>
-                    <span>Terminée</span>
-                  </div>
-                  <div class="stat">
-                    <i class="bi bi-clock"></i>
-                    <% total_exercises = activity.questions.count + activity.fill_blanks.count + activity.sentence_orderings.count + activity.paragraph_orderings.count %>
-                    <span>~<%= [5, total_exercises * 2].max %> min</span>
-                  </div>
-                  <% if @student_ratings[activity.id] %>
-                    <div class="stat rating-stat">
-                      <div class="activity-stars">
-                        <% rating = @student_ratings[activity.id] %>
-                        <% if rating %>
-                          <% (1..5).each do |i| %>
-                            <i class="bi bi-star<%= i <= rating.stars ? '-fill' : '' %> star <%= i <= rating.stars ? 'filled' : 'empty' %>"></i>
-                          <% end %>
-                        <% end %>
-                      </div>
-                      <% if rating %>
-                        <span class="rating-text"><%= rating.stars %> étoile<%= rating.stars > 1 ? 's' : '' %></span>
-                      <% end %>
-                    </div>
-                  <% end %>
-                </div>
-              </div>
-            </div>
-            
-            <div class="card-footer">
-              <%= link_to solve_activity_path(activity), class: "btn-retry" do %>
-                <i class="bi bi-arrow-clockwise"></i>
-                Refaire
-              <% end %>
+            <div style="font-family:'Plus Jakarta Sans',sans-serif; font-size:0.7rem; color:var(--ink-faint);">
+              <%= lp[:completed] %>/<%= lp[:total] %>
             </div>
           </div>
         <% end %>
-      <% else %>
-        <div class="empty-state">
-          <div class="empty-icon">
-            <i class="bi bi-trophy"></i>
+      </div>
+    </div>
+  </div>
+
+  <%# Atividades recentes %>
+  <div style="margin-bottom:16px;">
+    <h2 style="font-family:'Raleway',sans-serif; font-size:1.2rem; font-weight:700; color:var(--ink); margin:0 0 4px;">
+      Activités récentes
+    </h2>
+    <p style="font-family:'Plus Jakarta Sans',sans-serif; font-size:0.85rem; color:var(--ink-soft); margin:0;">
+      Vos dernières activités terminées
+    </p>
+  </div>
+
+  <% if @completed_activities.any? %>
+    <div class="activities-grid">
+      <% @completed_activities.limit(6).each do |completed_activity| %>
+        <% activity = completed_activity.activity %>
+        <% m = cefr_colors(activity.nível) %>
+        <% cover = activity_cover(activity) %>
+        <% exercise_count = activity_exercise_count(activity) %>
+        <% rating = @student_ratings[activity.id] %>
+
+        <div class="activity-card">
+          <div class="activity-card-cover">
+            <% if cover[:type] == :image %>
+              <img src="<%= cover[:url] %>" alt="" loading="lazy">
+            <% else %>
+              <div style="width:100%; height:100%; background:linear-gradient(135deg, <%= m[:bg] %> 0%, color-mix(in srgb, <%= m[:border] %> 20%, transparent) 100%); display:flex; align-items:center; justify-content:center;">
+                <i class="bi <%= cover[:icon] %>" style="font-size:2.8rem; color:<%= m[:border] %>; opacity:0.55;"></i>
+              </div>
+            <% end %>
           </div>
-          <h3>Aucune activité terminée</h3>
-          <p>Commencez votre première activité pour voir vos résultats ici.</p>
+
+          <div style="padding:16px 18px; flex:1; display:flex; flex-direction:column;">
+            <div style="display:flex; align-items:center; justify-content:space-between; gap:8px; margin-bottom:8px;">
+              <span style="font-family:'DM Mono',monospace; font-size:0.72rem; font-weight:700; background:<%= m[:bg] %>; color:<%= m[:text] %>; border:1.5px solid <%= m[:border] %>; padding:3px 9px; border-radius:20px;">
+                <%= activity.nível %>
+              </span>
+              <span style="font-size:0.7rem; background:var(--brand-tint); color:var(--brand); border:1px solid var(--brand-bright); border-radius:99px; padding:2px 8px; font-family:'Plus Jakarta Sans',sans-serif; font-weight:700;">
+                ✓ Fait<%= " · #{completed_activity.percentage.round}%" if completed_activity.percentage %>
+              </span>
+            </div>
+
+            <h3 style="font-family:'Raleway',sans-serif; font-size:1rem; font-weight:700; color:var(--ink); margin:0 0 6px 0; line-height:1.35;">
+              <%= activity.título %>
+            </h3>
+
+            <p style="font-family:'Plus Jakarta Sans',sans-serif; font-size:0.83rem; color:var(--ink-soft); margin:0 0 12px 0; line-height:1.5; flex:1;">
+              <%= truncate(activity.texte.presence || activity.texto.presence || "Pratiquez le français avec des exercices interactifs.", length: 80) %>
+            </p>
+
+            <div style="display:flex; gap:12px; flex-wrap:wrap; margin-bottom:14px;">
+              <span style="font-family:'Plus Jakarta Sans',sans-serif; font-size:0.77rem; color:var(--ink-faint); display:flex; align-items:center; gap:4px;">
+                <i class="bi bi-patch-question" style="color:<%= m[:border] %>;"></i>
+                <%= exercise_count %> <%= exercise_count == 1 ? 'question' : 'questions' %>
+              </span>
+              <span style="font-family:'Plus Jakarta Sans',sans-serif; font-size:0.77rem; color:var(--ink-faint); display:flex; align-items:center; gap:4px;">
+                <i class="bi bi-calendar3" style="color:<%= m[:border] %>;"></i>
+                <%= completed_activity.created_at.strftime("%d/%m/%Y") %>
+              </span>
+              <% if rating %>
+                <span style="font-family:'DM Mono',monospace; font-size:0.77rem; font-weight:700; color:var(--action); display:flex; align-items:center; gap:3px;">
+                  <i class="bi bi-star-fill" style="font-size:0.68rem;"></i> <%= rating.stars %>
+                </span>
+              <% end %>
+            </div>
+
+            <div style="display:flex; justify-content:flex-end; padding-top:12px; border-top:1px solid var(--line-soft);">
+              <%= link_to solve_activity_path(activity),
+                    style: "flex-shrink:0; font-family:'Plus Jakarta Sans',sans-serif; font-size:0.85rem; font-weight:700; padding:9px 20px; border-radius:10px; text-decoration:none; display:inline-flex; align-items:center; gap:6px; background:var(--paper); color:var(--ink-soft); border:1.5px solid var(--line);" do %>
+                <i class="bi bi-arrow-clockwise"></i> Refaire
+              <% end %>
+            </div>
+          </div>
         </div>
       <% end %>
     </div>
-
-    <!-- More Activities Button -->
-    <div class="more-activities-section">
-      <%= link_to student_activities_path, class: "btn-more-activities" do %>
-        <i class="bi bi-plus-circle"></i>
-        + activités
-        <span class="btn-subtitle">Voir toutes les activités disponibles</span>
-      <% end %>
+  <% else %>
+    <div style="text-align:center; background:var(--brand-mist); border:2px dashed var(--brand-soft); border-radius:18px; padding:48px 20px;">
+      <span style="font-size:2.6rem; display:block; margin-bottom:10px;">🥐</span>
+      <p style="font-family:'Plus Jakarta Sans',sans-serif; color:var(--ink-soft); font-size:0.92rem; margin:0;">
+        <strong style="color:var(--brand-deep);">Aucune activité terminée pour l'instant…</strong><br>
+        Commencez votre première activité pour voir vos résultats ici.
+      </p>
     </div>
+  <% end %>
+
+  <div style="text-align:center; margin-top:28px;">
+    <%= link_to student_activities_path,
+          style: "font-family:'Plus Jakarta Sans',sans-serif; font-size:0.9rem; font-weight:700; padding:12px 24px; border-radius:12px; text-decoration:none; display:inline-flex; align-items:center; gap:8px; background:var(--brand); color:var(--surface);" do %>
+      <i class="bi bi-plus-circle"></i> Voir toutes les activités
+    <% end %>
   </div>
+
 </div>
-
-<style>
-  /* === STUDENT DASHBOARD === */
-  .student-dashboard {
-    font-family: 'Inter', sans-serif;
-    background: linear-gradient(135deg, #E8F4FD 0%, #F7FAFC 100%);
-    min-height: 100vh;
-    padding: 2rem 1rem;
-  }
-
-  /* === HERO SECTION === */
-  .hero-section {
-    margin-bottom: 3rem;
-  }
-
-  .welcome-card {
-    background: white;
-    border-radius: 20px;
-    padding: 2rem;
-    box-shadow: 0 8px 32px rgba(30, 61, 89, 0.1);
-    border: 1px solid rgba(30, 61, 89, 0.05);
-  }
-
-  .avatar-section {
-    display: flex;
-    align-items: center;
-    gap: 1.5rem;
-  }
-
-  .student-avatar {
-    width: 80px;
-    height: 80px;
-    background: linear-gradient(135deg, #4A90E2 0%, #1E3D59 100%);
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: white;
-    font-size: 2.5rem;
-  }
-
-  .welcome-text h1 {
-    font-family: 'Lora', serif;
-    color: #1E3D59;
-    margin: 0 0 0.5rem;
-    font-size: 2rem;
-    font-weight: 600;
-  }
-
-  .student-name {
-    color: #4A90E2;
-    text-transform: capitalize;
-  }
-
-  .welcome-text p {
-    color: #718096;
-    margin: 0;
-    font-size: 1.1rem;
-  }
-
-  /* === PROGRESS SECTION === */
-  .progress-section {
-    margin-bottom: 3rem;
-  }
-
-  .stats-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-    gap: 1.5rem;
-  }
-
-  .stat-card {
-    background: white;
-    border-radius: 16px;
-    padding: 1.5rem;
-    display: flex;
-    align-items: center;
-    gap: 1rem;
-    box-shadow: 0 4px 16px rgba(30, 61, 89, 0.08);
-    border: 1px solid rgba(30, 61, 89, 0.05);
-    transition: transform 0.2s ease;
-  }
-
-  .stat-card:hover {
-    transform: translateY(-2px);
-  }
-
-  .stat-icon {
-    width: 60px;
-    height: 60px;
-    border-radius: 12px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 1.5rem;
-    color: white;
-  }
-
-  .stat-card:nth-child(1) .stat-icon {
-    background: linear-gradient(135deg, #F6AD55 0%, #ED8936 100%);
-  }
-
-  .stat-card:nth-child(2) .stat-icon {
-    background: linear-gradient(135deg, #68D391 0%, #48BB78 100%);
-  }
-
-  .stat-card:nth-child(3) .stat-icon {
-    background: linear-gradient(135deg, #4A90E2 0%, #357ABD 100%);
-  }
-
-  .stat-content h3 {
-    font-size: 2rem;
-    font-weight: 700;
-    margin: 0;
-    color: #1E3D59;
-  }
-
-  .stat-content p {
-    margin: 0;
-    color: #718096;
-    font-size: 0.9rem;
-  }
-
-  /* === ACTIVITIES SECTION === */
-  .activities-section {
-    background: white;
-    border-radius: 20px;
-    padding: 2rem;
-    box-shadow: 0 8px 32px rgba(30, 61, 89, 0.1);
-    border: 1px solid rgba(30, 61, 89, 0.05);
-  }
-
-  .section-header {
-    text-align: center;
-    margin-bottom: 2rem;
-  }
-
-  .section-header h2 {
-    font-family: 'Lora', serif;
-    color: #1E3D59;
-    font-size: 2rem;
-    margin: 0 0 0.5rem;
-  }
-
-  .section-header p {
-    color: #718096;
-    margin: 0;
-    font-size: 1.1rem;
-  }
-
-  /* === MY ACTIVITIES GRID === */
-  .my-activities-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-    gap: 1.5rem;
-    margin-bottom: 2rem;
-  }
-
-  .my-activity-card {
-    background: #F7FAFC;
-    border: 1px solid #E2E8F0;
-    border-radius: 16px;
-    overflow: hidden;
-    transition: all 0.3s ease;
-  }
-
-  .my-activity-card:hover {
-    transform: translateY(-4px);
-    box-shadow: 0 12px 32px rgba(30, 61, 89, 0.15);
-    border-color: #4A90E2;
-  }
-
-  .my-activity-card .card-header {
-    background: white;
-    padding: 1rem;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    border-bottom: 1px solid #E2E8F0;
-  }
-
-  .level-badge {
-    padding: 0.25rem 0.75rem;
-    border-radius: 20px;
-    font-size: 0.8rem;
-    font-weight: 600;
-    color: white;
-  }
-
-  .level-badge.level-a1 { background: #68D391; }
-  .level-badge.level-a2 { background: #4FD1C7; }
-  .level-badge.level-b1 { background: #63B3ED; }
-  .level-badge.level-b2 { background: #7C3AED; }
-  .level-badge.level-c1 { background: #F56565; }
-  .level-badge.level-c2 { background: #ED8936; }
-
-  .completed-date {
-    display: flex;
-    align-items: center;
-    gap: 0.3rem;
-    color: #718096;
-    font-size: 0.8rem;
-  }
-
-  .completed-date i {
-    color: #4A90E2;
-  }
-
-  .my-activity-card .card-body {
-    padding: 1.5rem;
-  }
-
-  .activity-title {
-    font-family: 'Lora', serif;
-    color: #1E3D59;
-    font-size: 1.25rem;
-    margin: 0 0 0.75rem;
-    font-weight: 600;
-  }
-
-  .activity-description {
-    color: #4A5568;
-    line-height: 1.5;
-    margin: 0 0 1rem;
-    font-size: 0.9rem;
-  }
-
-  .activity-result {
-    display: flex;
-    align-items: center;
-    gap: 1rem;
-    margin-bottom: 1rem;
-  }
-
-  .score-circle {
-    width: 60px;
-    height: 60px;
-    border-radius: 50%;
-    background: linear-gradient(135deg, #22C55E 0%, #16A34A 100%);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: white;
-    font-weight: 700;
-    font-size: 0.9rem;
-    box-shadow: 0 4px 12px rgba(34, 197, 94, 0.3);
-  }
-
-  .result-details {
-    flex: 1;
-  }
-
-  .result-details .stat {
-    display: flex;
-    align-items: center;
-    gap: 0.3rem;
-    color: #718096;
-    font-size: 0.8rem;
-    margin-bottom: 0.25rem;
-  }
-
-  .result-details .stat i {
-    color: #22C55E;
-  }
-
-  .my-activity-card .card-footer {
-    padding: 0 1.5rem 1.5rem;
-  }
-
-  .btn-retry {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 0.5rem;
-    width: 100%;
-    background: linear-gradient(135deg, #F6AD55 0%, #ED8936 100%);
-    color: white;
-    padding: 0.75rem 1.5rem;
-    border-radius: 10px;
-    text-decoration: none;
-    font-weight: 600;
-    transition: all 0.2s ease;
-    border: none;
-  }
-
-  .btn-retry:hover {
-    transform: translateY(-1px);
-    box-shadow: 0 6px 20px rgba(246, 173, 85, 0.4);
-    color: white;
-    text-decoration: none;
-  }
-
-  /* === MORE ACTIVITIES SECTION === */
-  .more-activities-section {
-    text-align: center;
-    padding-top: 1.5rem;
-    border-top: 1px solid #E2E8F0;
-  }
-
-  .btn-more-activities {
-    display: inline-flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 0.5rem;
-    background: linear-gradient(135deg, #4A90E2 0%, #1E3D59 100%);
-    color: white;
-    padding: 1.5rem 2rem;
-    border-radius: 16px;
-    text-decoration: none;
-    font-weight: 600;
-    font-size: 1.1rem;
-    transition: all 0.3s ease;
-    border: none;
-    box-shadow: 0 8px 24px rgba(74, 144, 226, 0.3);
-  }
-
-  .btn-more-activities:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 12px 32px rgba(74, 144, 226, 0.4);
-    color: white;
-    text-decoration: none;
-  }
-
-  .btn-more-activities i {
-    font-size: 1.5rem;
-  }
-
-  .btn-subtitle {
-    font-size: 0.9rem;
-    opacity: 0.9;
-    font-weight: 400;
-  }
-
-  /* === EMPTY STATE === */
-  .empty-state {
-    text-align: center;
-    padding: 3rem 1rem;
-    color: #718096;
-  }
-
-  .empty-icon {
-    font-size: 4rem;
-    margin-bottom: 1rem;
-    opacity: 0.5;
-  }
-
-  .empty-state h3 {
-    color: #4A5568;
-    margin-bottom: 0.5rem;
-  }
-
-  /* === RESPONSIVIDADE === */
-  @media (max-width: 768px) {
-    .student-dashboard {
-      padding: 1rem 0.5rem;
-    }
-
-    .welcome-card {
-      padding: 1.5rem;
-    }
-
-    .avatar-section {
-      flex-direction: column;
-      text-align: center;
-      gap: 1rem;
-    }
-
-    .welcome-text h1 {
-      font-size: 1.5rem;
-    }
-
-    .stats-grid {
-      grid-template-columns: 1fr;
-    }
-
-    .my-activities-grid {
-      grid-template-columns: 1fr;
-    }
-
-    .activities-section {
-      padding: 1.5rem;
-    }
-
-    .section-header h2 {
-      font-size: 1.5rem;
-    }
-
-    .btn-more-activities {
-      padding: 1.25rem 1.5rem;
-      font-size: 1rem;
-    }
-
-    .trophy-card::before {
-      display: none;
-    }
-
-    .trophy-info {
-      margin-top: 0.3rem;
-    }
-
-    .trophy-name {
-      font-size: 0.8rem;
-    }
-
-    .next-trophy-text {
-      font-size: 0.7rem;
-    }
-
-    .progress-bar {
-      height: 4px;
-    }
-  }
-
-  /* === TROPHY CARD === */
-  .trophy-card {
-    position: relative;
-    overflow: visible;
-  }
-
-  .trophy-card::before {
-    content: '';
-    position: absolute;
-    top: -2px;
-    left: -2px;
-    right: -2px;
-    bottom: -2px;
-    background: linear-gradient(135deg, #FFD700, #FFA500, #FF6B6B, #4ECDC4);
-    border-radius: 18px;
-    z-index: -1;
-    opacity: 0.3;
-  }
-
-  .trophy-icon {
-    background: linear-gradient(135deg, #FFD700 0%, #FFA500 100%) !important;
-    position: relative;
-  }
-
-  .trophy-emoji {
-    font-size: 1.8rem;
-    filter: drop-shadow(0 2px 4px rgba(0,0,0,0.2));
-  }
-
-  .trophy-info {
-    margin-top: 0.5rem;
-  }
-
-  .trophy-name {
-    display: block;
-    font-weight: 600;
-    color: #1E3D59;
-    font-size: 0.9rem;
-    margin-bottom: 0.5rem;
-  }
-
-  .motivational-message {
-    font-size: 0.8rem;
-    color: #4A90E2;
-    font-style: italic;
-    margin-bottom: 0.5rem;
-    line-height: 1.3;
-  }
-
-  .next-trophy {
-    margin-top: 0.5rem;
-  }
-
-  .next-trophy-text {
-    font-size: 0.8rem;
-    color: #4A5568;
-    display: block;
-    margin-bottom: 0.3rem;
-  }
-
-  .progress-bar {
-    width: 100%;
-    height: 6px;
-    background: #E2E8F0;
-    border-radius: 3px;
-    overflow: hidden;
-    margin-bottom: 0.2rem;
-  }
-
-  .progress-fill {
-    height: 100%;
-    background: linear-gradient(135deg, #4A90E2 0%, #357ABD 100%);
-    border-radius: 3px;
-    transition: width 0.3s ease;
-  }
-
-  .progress-text {
-    font-size: 0.7rem;
-    color: #718096;
-  }
-
-  .max-trophy {
-    font-size: 0.8rem;
-    color: #22C55E;
-    font-weight: 600;
-  }
-
-  /* === ESTILOS DAS ESTRELAS DE AVALIAÇÃO === */
-  .rating-stat {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    background: rgba(255, 215, 0, 0.1);
-    padding: 0.5rem 0.75rem;
-    border-radius: 20px;
-    border: 1px solid rgba(255, 215, 0, 0.2);
-  }
-
-  .activity-stars {
-    display: flex;
-    gap: 0.2rem;
-  }
-
-  .activity-stars .star {
-    font-size: 1rem;
-    transition: color 0.2s ease;
-  }
-
-  .activity-stars .star.filled {
-    color: #FFD700;
-  }
-
-  .activity-stars .star.empty {
-    color: #E2E8F0;
-  }
-
-  .rating-text {
-    font-size: 0.85rem;
-    color: #B45309;
-    font-weight: 500;
-    white-space: nowrap;
-  }
-
-  /* Responsividade das estrelas */
-  @media (max-width: 768px) {
-    .rating-stat {
-      padding: 0.4rem 0.6rem;
-    }
-
-    .activity-stars .star {
-      font-size: 0.9rem;
-    }
-
-    .rating-text {
-      font-size: 0.8rem;
-    }
-  }
-</style> 

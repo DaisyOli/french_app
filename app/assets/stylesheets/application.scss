@@ -119,6 +119,38 @@
   border: 0;
 }
 
+/* ==============================================
+   📊 GRADES DO DASHBOARD DO ALUNO
+   (o app não roda o watcher do Tailwind por padrão — grid
+   responsivo vira CSS de verdade em vez de utilitário Tailwind)
+   ============================================== */
+.dash-metrics-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 12px;
+}
+
+.dash-mid-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+.dash-level-grid {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 8px;
+}
+
+@media (max-width: 900px) {
+  .dash-mid-grid { grid-template-columns: 1fr; }
+}
+
+@media (max-width: 640px) {
+  .dash-metrics-grid { grid-template-columns: repeat(2, 1fr); }
+  .dash-level-grid { grid-template-columns: repeat(3, 1fr); }
+}
+
 /* Base da franquia Practice — o resto vem do Tailwind + tokens */
 * {
   box-sizing: border-box;
