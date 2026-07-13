@@ -1,0 +1,40 @@
+<li style="background:var(--surface-2); border:1px solid var(--line-soft); border-radius:10px; padding:10px 12px;">
+  <div style="display:flex; align-items:center; justify-content:space-between; gap:10px;">
+    <div style="font-family:'Plus Jakarta Sans',sans-serif; font-size:0.88rem; color:var(--ink);">
+      <%= alternative.conteúdo %>
+      <% if alternative.correta %>
+        <span style="display:inline-block; margin-left:6px; font-family:'DM Mono',monospace; font-size:0.68rem; font-weight:700; background:var(--success-tint); color:var(--success-deep); border:1.5px solid var(--success-border); padding:1px 7px; border-radius:20px;">
+          <i class="bi bi-check-circle-fill"></i> Correcte
+        </span>
+      <% end %>
+    </div>
+    <div style="display:flex; gap:6px; flex-shrink:0;">
+      <button type="button" class="toggle-form" data-target="form-alternative-<%= alternative.id %>" title="Modifier"
+              style="font-family:'Plus Jakarta Sans',sans-serif; font-size:0.72rem; font-weight:700; padding:3px 8px; border-radius:7px; border:1.5px solid var(--brand-bright); background:var(--surface); color:var(--brand-deep); cursor:pointer;">
+        <i class="bi bi-pencil"></i>
+      </button>
+      <%= button_to activity_question_alternative_path(@activity, question, alternative), method: :delete,
+            form: { data: { turbo_confirm: t('common.confirm_delete') } },
+            style: "font-family:'Plus Jakarta Sans',sans-serif; font-size:0.72rem; font-weight:700; padding:3px 8px; border-radius:7px; border:1.5px solid var(--error-border); background:var(--error-tint); color:var(--error-deep); cursor:pointer;" do %>
+        <i class="bi bi-trash"></i>
+      <% end %>
+    </div>
+  </div>
+
+  <div id="form-alternative-<%= alternative.id %>" style="display:none; margin-top:10px;">
+    <%= form_with model: alternative, url: activity_question_alternative_path(@activity, question, alternative), method: :patch do |form| %>
+      <%= form.text_area :conteúdo, rows: 2,
+            style: "width:100%; font-family:'Plus Jakarta Sans',sans-serif; font-size:0.88rem; padding:8px 10px; border:1.5px solid var(--line); border-radius:9px; background:var(--surface); color:var(--ink);" %>
+      <label style="display:flex; align-items:center; gap:6px; margin-top:8px; font-family:'Plus Jakarta Sans',sans-serif; font-size:0.82rem; color:var(--ink-soft);">
+        <%= form.check_box :correta %> <%= t('common.alternative_correct') %>
+      </label>
+      <div style="display:flex; gap:8px; margin-top:8px;">
+        <%= form.submit "Enregistrer", style: "font-family:'Plus Jakarta Sans',sans-serif; font-size:0.8rem; font-weight:700; padding:7px 16px; border-radius:999px; border:none; background:var(--brand); color:var(--surface); cursor:pointer;" %>
+        <button type="button" onclick="document.getElementById('form-alternative-<%= alternative.id %>').style.display='none'"
+                style="font-family:'Plus Jakarta Sans',sans-serif; font-size:0.8rem; font-weight:700; padding:7px 16px; border-radius:999px; border:1.5px solid var(--line); background:var(--surface); color:var(--ink-soft); cursor:pointer;">
+          Annuler
+        </button>
+      </div>
+    <% end %>
+  </div>
+</li>

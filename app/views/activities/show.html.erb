@@ -1,1982 +1,454 @@
-<div class="container mt-4">
-  <div class="row">
-    <div class="col-lg-10 offset-lg-1">
-      <div class="paper-effect daisy-activity-view">
-        <div class="activity-header">
-          <div class="title-container">
-            <h1 class="activity-title"><%= @activity.título %></h1>
-            <span class="badge nivel-badge-show" data-nivel="<%= @activity.nível %>"><%= @activity.nível %></span>
+<% content_for :head do %>
+  <title><%= @activity.título %> · Practice-FR</title>
+<% end %>
+
+<% m = cefr_colors(@activity.nível) %>
+<div style="max-width:760px; margin:0 auto; padding:28px 16px 60px;">
+
+  <%# En-tête %>
+  <div style="display:flex; align-items:center; justify-content:space-between; gap:12px; margin-bottom:24px;">
+    <h1 style="font-family:'Raleway',sans-serif; font-size:1.5rem; font-weight:800; color:var(--brand-deep); margin:0;"><%= @activity.título %></h1>
+    <span style="font-family:'DM Mono',monospace; font-size:0.78rem; font-weight:700; background:<%= m[:bg] %>; color:<%= m[:text] %>; border:1.5px solid <%= m[:border] %>; padding:3px 12px; border-radius:20px; flex-shrink:0;">
+      <%= @activity.nível %>
+    </span>
+  </div>
+
+  <%# Description %>
+  <div style="background:var(--surface); border:1px solid var(--line); border-radius:14px; padding:18px 20px; margin-bottom:20px;">
+    <div style="font-family:'Plus Jakarta Sans',sans-serif; font-size:0.78rem; font-weight:700; color:var(--ink-soft); text-transform:uppercase; letter-spacing:0.04em; margin-bottom:10px;">
+      <i class="bi bi-info-circle"></i> <%= t('common.description') %>
+    </div>
+    <% if @activity.texto.present? %>
+      <div style="font-family:'Plus Jakarta Sans',sans-serif; font-size:0.9rem; color:var(--ink); white-space:pre-wrap; margin-bottom:10px;"><%= @activity.texto %></div>
+    <% else %>
+      <p style="font-family:'Plus Jakarta Sans',sans-serif; font-size:0.88rem; color:var(--ink-faint); margin:0 0 10px;"><%= t('common.no_description') %></p>
+    <% end %>
+    <button type="button" class="toggle-form" data-target="form-texto" title="<%= t('common.edit_description') %>"
+            style="font-family:'Plus Jakarta Sans',sans-serif; font-size:0.78rem; font-weight:700; padding:5px 10px; border-radius:8px; border:1.5px solid var(--brand-bright); background:var(--surface); color:var(--brand-deep); cursor:pointer;">
+      <i class="bi bi-pencil"></i>
+    </button>
+
+    <div id="form-texto" style="display:none; margin-top:14px; padding-top:14px; border-top:1px solid var(--line-soft);">
+      <%= form_with model: @activity, url: activity_path(@activity), method: :patch do |form| %>
+        <%= form.text_area :texto, rows: 5,
+              style: "width:100%; font-family:'Plus Jakarta Sans',sans-serif; font-size:0.9rem; padding:10px 12px; border:1.5px solid var(--line); border-radius:10px; background:var(--surface); color:var(--ink);" %>
+        <div style="display:flex; gap:8px; margin-top:10px;">
+          <%= form.submit t('common.save'), style: "font-family:'Plus Jakarta Sans',sans-serif; font-size:0.85rem; font-weight:700; padding:9px 20px; border-radius:999px; border:none; background:var(--brand); color:var(--surface); cursor:pointer;" %>
+          <button type="button" onclick="document.getElementById('form-texto').style.display='none'"
+                  style="font-family:'Plus Jakarta Sans',sans-serif; font-size:0.85rem; font-weight:700; padding:9px 20px; border-radius:999px; border:1.5px solid var(--line); background:var(--surface); color:var(--ink-soft); cursor:pointer;">
+            <%= t('helpers.actions.cancel') %>
+          </button>
+        </div>
+      <% end %>
+    </div>
+  </div>
+
+  <%# Vidéo, image et texte libre sont des champs de l'Activity elle-même
+      (pas des models séparés) — traités ici, à part du render polymorphique
+      des exercices ci-dessous. %>
+  <% if @activity.video_url.present? %>
+    <div id="video-section" style="background:var(--surface); border:1px solid var(--line); border-radius:14px; padding:18px 20px; margin-bottom:16px;">
+      <div style="display:flex; align-items:center; justify-content:space-between; gap:12px; margin-bottom:12px;">
+        <div style="display:flex; align-items:center; gap:8px; font-family:'Plus Jakarta Sans',sans-serif; font-size:0.85rem; font-weight:700; color:var(--ink-soft);">
+          <i class="bi bi-film" style="color:var(--brand);"></i> <%= t('common.video') %>
+        </div>
+        <%= form_with model: @activity, url: activity_path(@activity), method: :patch, html: { style: "display:flex; align-items:center; gap:4px;" } do |form| %>
+          <%= form.number_field :video_order, min: 1,
+                style: "width:52px; padding:4px 6px; border:1.5px solid var(--line); border-radius:6px; font-family:'DM Mono',monospace; font-size:0.8rem; text-align:center;" %>
+          <%= form.submit "✓", style: "border:1.5px solid var(--brand-bright); background:var(--brand-tint); color:var(--brand-deep); border-radius:6px; padding:4px 9px; cursor:pointer; font-weight:700;" %>
+        <% end %>
+      </div>
+
+      <%
+        video_id = nil
+        if @activity.video_url.include?('youtube.com/watch?v=')
+          video_id = @activity.video_url.split('watch?v=').last.split('&').first
+        elsif @activity.video_url.include?('youtu.be/')
+          video_id = @activity.video_url.split('youtu.be/').last
+        end
+        embed_url = video_id ? "https://www.youtube.com/embed/#{video_id}" : @activity.video_url
+      %>
+      <div style="position:relative; width:100%; padding-bottom:56.25%; margin-bottom:12px; border-radius:10px; overflow:hidden;">
+        <iframe src="<%= embed_url %>" allowfullscreen style="position:absolute; top:0; left:0; width:100%; height:100%; border:0;"></iframe>
+      </div>
+
+      <div style="display:flex; gap:8px;">
+        <button type="button" class="toggle-form" data-target="form-video" title="<%= t('common.edit_video') %>"
+                style="font-family:'Plus Jakarta Sans',sans-serif; font-size:0.78rem; font-weight:700; padding:5px 10px; border-radius:8px; border:1.5px solid var(--brand-bright); background:var(--surface); color:var(--brand-deep); cursor:pointer;">
+          <i class="bi bi-pencil"></i>
+        </button>
+        <%= button_to remove_video_activity_path(@activity), method: :delete,
+              form: { data: { turbo_confirm: t('common.confirm_delete_video') } },
+              style: "font-family:'Plus Jakarta Sans',sans-serif; font-size:0.78rem; font-weight:700; padding:5px 10px; border-radius:8px; border:1.5px solid var(--error-border); background:var(--error-tint); color:var(--error-deep); cursor:pointer;" do %>
+          <i class="bi bi-trash"></i>
+        <% end %>
+      </div>
+
+      <div id="form-video" style="display:none; margin-top:14px; padding-top:14px; border-top:1px solid var(--line-soft);">
+        <%= form_with model: @activity, url: activity_path(@activity), method: :patch do |form| %>
+          <%= form.text_field :video_url, placeholder: "https://www.youtube.com/watch?v=XXXX",
+                style: "width:100%; font-family:'Plus Jakarta Sans',sans-serif; font-size:0.9rem; padding:10px 12px; border:1.5px solid var(--line); border-radius:10px; background:var(--surface); color:var(--ink);" %>
+          <p style="font-family:'Plus Jakarta Sans',sans-serif; font-size:0.76rem; color:var(--ink-faint); margin:6px 0 0;">Lien YouTube. Ex : https://www.youtube.com/watch?v=XXXX ou https://youtu.be/XXXX</p>
+          <div style="display:flex; gap:8px; margin-top:10px;">
+            <%= form.submit t('common.save'), style: "font-family:'Plus Jakarta Sans',sans-serif; font-size:0.85rem; font-weight:700; padding:9px 20px; border-radius:999px; border:none; background:var(--brand); color:var(--surface); cursor:pointer;" %>
+            <button type="button" onclick="document.getElementById('form-video').style.display='none'"
+                    style="font-family:'Plus Jakarta Sans',sans-serif; font-size:0.85rem; font-weight:700; padding:9px 20px; border-radius:999px; border:1.5px solid var(--line); background:var(--surface); color:var(--ink-soft); cursor:pointer;">
+              <%= t('helpers.actions.cancel') %>
+            </button>
           </div>
-          <div class="decorative-line"></div>
-        </div>
-
-        <!-- Seção de Descrição -->
-        <div class="paper-section">
-          <h3><i class="bi bi-info-circle"></i> <%= t('common.description') %></h3>
-          <% if @activity.texto.present? %>
-            <div class="texto content-box">
-              <p class="preserve-format"><%= @activity.texto %></p>
-              <p>
-                <button type="button" class="btn btn-sm btn-outline-primary toggle-form edit-btn" data-target="form-texto" title="<%= t('common.edit_description') %>"><i class="bi bi-pencil"></i></button>
-              </p>
-            </div>
-          <% else %>
-            <p><%= t('common.no_description') %></p>
-            <p>
-              <button type="button" class="btn btn-sm btn-outline-primary toggle-form add-btn" data-target="form-texto" title="<%= t('common.add_description') %>"><i class="bi bi-plus"></i></button>
-            </p>
-          <% end %>
-          
-          <div id="form-texto" class="form-section" style="display: none;">
-            <%= form_with(model: @activity, url: activity_path(@activity), method: :patch) do |form| %>
-              <%= form.text_area :texto, rows: 5, class: "form-control" %>
-              <div class="form-actions mt-3">
-                <%= form.submit t('common.save'), class: "btn btn-primary" %>
-                <button type="button" class="btn btn-secondary" onclick="document.getElementById('form-texto').style.display='none'"><%= t('helpers.actions.cancel') %></button>
-              </div>
-            <% end %>
-          </div>
-        </div>
-
-        <!-- Seção de Elementos Sequenciais -->
-        <div id="sequential-elements">
-          <% activity_elements = [] %>
-          
-          <% # Coletar todos os elementos com suas ordens %>
-          <% if @activity.video_url.present? %>
-            <% activity_elements << {type: 'video', order: @activity.video_order || 1, content: @activity.video_url} %>
-          <% end %>
-          
-          <% if @activity.imagem_url.present? %>
-            <% activity_elements << {type: 'image', order: @activity.imagem_order || 2, content: @activity.imagem_url} %>
-          <% end %>
-          
-          <% if @activity.texte.present? %>
-            <% activity_elements << {type: 'texte', order: @activity.texte_order || 3, content: @activity.texte} %>
-          <% end %>
-          
-          <% @activity.statements.each do |statement| %>
-            <% activity_elements << {type: 'statement', order: statement.display_order || statement.id, content: statement, object: statement} %>
-          <% end %>
-          
-          <% @activity.questions.each do |question| %>
-            <% activity_elements << {type: 'question', order: question.display_order || question.id, content: question, object: question} %>
-          <% end %>
-          
-          <% @activity.suggestions.each do |suggestion| %>
-            <% activity_elements << {type: 'suggestion', order: suggestion.display_order || suggestion.id, content: suggestion, object: suggestion} %>
-          <% end %>
-          
-          <% @activity.fill_blanks.each do |fill_blank| %>
-            <% activity_elements << {type: 'fill_blank', order: fill_blank.display_order || fill_blank.id, content: fill_blank, object: fill_blank} %>
-          <% end %>
-          
-          <% @activity.sentence_orderings.each do |sentence_ordering| %>
-            <% activity_elements << {type: 'sentence_ordering', order: sentence_ordering.display_order || sentence_ordering.id, content: sentence_ordering, object: sentence_ordering} %>
-          <% end %>
-          
-          <% @activity.paragraph_orderings.each do |paragraph_ordering| %>
-            <% activity_elements << {type: 'paragraph_ordering', order: paragraph_ordering.display_order || paragraph_ordering.id, content: paragraph_ordering, object: paragraph_ordering} %>
-          <% end %>
-          
-          <% @activity.column_associations.each do |column_association| %>
-            <% activity_elements << {type: 'column_association', order: column_association.display_order || column_association.id, content: column_association, object: column_association} %>
-          <% end %>
-          
-          <% # Ordenar elementos por ordem explícita %>
-          <% activity_elements.sort_by! { |element| element[:order] } %>
-          
-          <% # Exibir elementos em ordem cronológica %>
-          <% activity_elements.each do |element| %>
-            <% case element[:type] %>
-            <% when 'video' %>
-              <div id="video-section" class="paper-section">
-                <h3>
-                  <div class="order-badge">
-                    <%= form_with(model: @activity, url: activity_path(@activity), method: :patch, class: "order-form") do |form| %>
-                      <%= form.number_field :video_order, min: 1, class: "order-input", title: "Ordem de exibição" %>
-                      <%= form.submit "✓", class: "order-submit" %>
-                    <% end %>
-                  </div>
-                  <i class="bi bi-film"></i> <%= t('common.video') %>
-                </h3>
-                <div class="video content-box position-relative">
-                  <div class="delete-button">
-                    <%= button_to remove_video_activity_path(@activity), 
-                                method: :delete,
-                                form: { data: { turbo_confirm: t('common.confirm_delete_video') } },
-                                class: "btn-delete-icon btn btn-outline-danger" do %>
-                      <i class="bi bi-trash"></i>
-                    <% end %>
-                  </div>
-                  
-                  <% 
-                    # Converter URL do YouTube para formato embed
-                    video_id = nil
-                    if @activity.video_url.include?('youtube.com/watch?v=')
-                      video_id = @activity.video_url.split('watch?v=').last.split('&').first
-                    elsif @activity.video_url.include?('youtu.be/')
-                      video_id = @activity.video_url.split('youtu.be/').last
-                    end
-                    
-                    embed_url = video_id ? "https://www.youtube.com/embed/#{video_id}" : @activity.video_url
-                  %>
-                  <div class="ratio ratio-16x9 mb-3 video-container">
-                    <iframe src="<%= embed_url %>" allowfullscreen></iframe>
-                  </div>
-                  <p>
-                    <button type="button" class="btn btn-sm btn-outline-primary toggle-form edit-btn" data-target="form-video" title="<%= t('common.edit_video') %>"><i class="bi bi-pencil"></i></button>
-                  </p>
-                  
-                  <!-- Formulário de vídeo inline -->
-                  <div id="form-video" class="form-section" style="display: none;">
-                    <%= form_with(model: @activity, url: activity_path(@activity), method: :patch) do |form| %>
-                      <div class="mb-3">
-                        <%= form.text_field :video_url, class: "form-control", placeholder: "Cole a URL do YouTube aqui (ex: https://www.youtube.com/watch?v=XXXX)" %>
-                        <small class="form-text text-muted">Insira o link do YouTube. Ex: https://www.youtube.com/watch?v=XXXX ou https://youtu.be/XXXX</small>
-                      </div>
-                      <div class="form-actions">
-                        <%= form.submit t('common.save'), class: "btn btn-primary" %>
-                        <button type="button" class="btn btn-secondary" onclick="document.getElementById('form-video').style.display='none'"><%= t('helpers.actions.cancel') %></button>
-                      </div>
-                    <% end %>
-                  </div>
-                </div>
-              </div>
-            <% when 'image' %>
-              <div id="image-section" class="paper-section">
-                <h3>
-                  <div class="order-badge">
-                    <%= form_with(model: @activity, url: activity_path(@activity), method: :patch, class: "order-form") do |form| %>
-                      <%= form.number_field :imagem_order, min: 1, class: "order-input", title: "Ordem de exibição" %>
-                      <%= form.submit "✓", class: "order-submit" %>
-                    <% end %>
-                  </div>
-                  <i class="bi bi-image"></i> <%= t('common.image') %>
-                </h3>
-                <div class="imagem content-box position-relative">
-                  <div class="delete-button">
-                    <%= button_to remove_image_activity_path(@activity), 
-                                method: :delete,
-                                form: { data: { turbo_confirm: t('common.confirm_delete_image') } },
-                                class: "btn-delete-icon btn btn-outline-danger" do %>
-                      <i class="bi bi-trash"></i>
-                    <% end %>
-                  </div>
-
-                  <div class="image-container">
-                    <img src="<%= @activity.imagem_url %>" alt="Imagem da atividade" class="img-fluid mb-3 rounded">
-                  </div>
-                  <p>
-                    <button type="button" class="btn btn-sm btn-outline-primary toggle-form edit-btn" data-target="form-imagem" title="<%= t('common.edit_image') %>"><i class="bi bi-pencil"></i></button>
-                  </p>
-                  
-                  <!-- Formulário de imagem inline -->
-                  <div id="form-imagem" class="form-section" style="display: none;">
-                    <%= form_with(model: @activity, url: activity_path(@activity), method: :patch) do |form| %>
-                      <div class="mb-3">
-                        <%= form.text_field :imagem_url, class: "form-control", placeholder: "Cole a URL da imagem aqui (ex: https://exemplo.com/imagem.jpg)" %>
-                        <small class="form-text text-muted">Insira o link direto para uma imagem. Ex: https://exemplo.com/imagem.jpg</small>
-                      </div>
-                      <div class="form-actions">
-                        <%= form.submit t('common.save'), class: "btn btn-primary" %>
-                        <button type="button" class="btn btn-secondary" onclick="document.getElementById('form-imagem').style.display='none'"><%= t('helpers.actions.cancel') %></button>
-                      </div>
-                    <% end %>
-                  </div>
-                </div>
-              </div>
-            <% when 'texte' %>
-              <div id="texte-section" class="paper-section">
-                <h3>
-                  <div class="order-badge">
-                    <%= form_with(model: @activity, url: activity_path(@activity), method: :patch, class: "order-form") do |form| %>
-                      <%= form.number_field :texte_order, min: 1, class: "order-input", title: "Ordem de exibição" %>
-                      <%= form.submit "✓", class: "order-submit" %>
-                    <% end %>
-                  </div>
-                  <i class="bi bi-file-text"></i> <%= t('common.texte') %>
-                </h3>
-                <div class="texte content-box">
-                  <p class="preserve-format"><%= @activity.texte %></p>
-                  <div class="item-actions">
-                    <button type="button" class="btn btn-sm btn-outline-primary toggle-form edit-btn" data-target="form-texte" title="<%= t('common.edit_texte') %>"><i class="bi bi-pencil"></i></button>
-                    <%= button_to remove_texte_activity_path(@activity), method: :delete, form: { data: { turbo_confirm: t('common.confirm_delete_texte') } }, class: "btn btn-sm btn-outline-danger", title: t('common.delete') do %>
-                      <i class="bi bi-trash"></i>
-                    <% end %>
-                  </div>
-                  
-                  <!-- Formulário de texte inline -->
-                  <div id="form-texte" class="form-section" style="display: none;">
-                    <%= form_with(model: @activity, url: activity_path(@activity), method: :patch) do |form| %>
-                      <%= form.text_area :texte, rows: 5, class: "form-control", placeholder: t('common.texte_placeholder') %>
-                      <div class="form-actions mt-3">
-                        <%= form.submit t('common.save'), class: "btn btn-primary" %>
-                        <button type="button" class="btn btn-secondary" onclick="document.getElementById('form-texte').style.display='none'"><%= t('helpers.actions.cancel') %></button>
-                      </div>
-                    <% end %>
-                  </div>
-                </div>
-              </div>
-            <% when 'statement' %>
-              <div id="statement-<%= element[:object].id %>" class="paper-section">
-                <h3>
-                  <div class="order-badge">
-                    <%= form_with(url: update_order_activity_statement_path(@activity, element[:object]), method: :patch, class: "order-form") do |form| %>
-                      <%= form.number_field :display_order, min: 1, value: element[:object].display_order, class: "order-input", title: "Ordem de exibição" %>
-                      <%= form.submit "✓", class: "order-submit" %>
-                    <% end %>
-                  </div>
-                  <i class="bi bi-list-ul"></i> <%= t('common.statement') %>
-                </h3>
-                <div class="content-box">
-                  <div class="item-content">
-                    <div class="preserve-format"><%= element[:object].conteúdo %></div>
-                    <div class="item-actions">
-                      <button type="button" class="btn btn-sm btn-outline-primary toggle-form edit-btn" data-target="form-statement-<%= element[:object].id %>" title="<%= t('common.edit') %>"><i class="bi bi-pencil"></i></button>
-                      <%= button_to activity_statement_path(@activity, element[:object]), method: :delete, form: { data: { turbo_confirm: t('common.confirm_delete') } }, class: "btn btn-sm btn-outline-danger", title: t('common.delete') do %>
-                        <i class="bi bi-trash"></i>
-                      <% end %>
-                    </div>
-                  </div>
-                  
-                  <div id="form-statement-<%= element[:object].id %>" class="form-section" style="display: none;">
-                    <%= form_with(model: element[:object], url: activity_statement_path(@activity, element[:object]), method: :patch) do |form| %>
-                      <%= form.text_area :conteúdo, rows: 3, class: "form-control" %>
-                      <div class="form-actions mt-3">
-                        <%= form.submit t('common.save'), class: "btn btn-primary" %>
-                        <button type="button" class="btn btn-secondary" onclick="document.getElementById('form-statement-<%= element[:object].id %>').style.display='none'"><%= t('helpers.actions.cancel') %></button>
-                      </div>
-                    <% end %>
-                  </div>
-                </div>
-              </div>
-            <% when 'question' %>
-              <div id="question-<%= element[:object].id %>" class="paper-section">
-                <h3>
-                  <div class="order-badge">
-                    <%= form_with(url: update_order_activity_question_path(@activity, element[:object]), method: :patch, class: "order-form") do |form| %>
-                      <%= form.number_field :display_order, min: 1, value: element[:object].display_order, class: "order-input", title: "Ordem de exibição" %>
-                      <%= form.submit "✓", class: "order-submit" %>
-                    <% end %>
-                  </div>
-                  <i class="bi bi-question-circle"></i> <%= t('common.question') %>
-                </h3>
-                <div class="content-box">
-                  <div class="item-content">
-                    <strong class="preserve-format"><%= element[:object].conteúdo %></strong>
-                    <div class="item-actions">
-                      <button type="button" class="btn btn-sm btn-outline-primary toggle-form edit-btn" data-target="form-question-<%= element[:object].id %>" title="<%= t('common.edit') %>"><i class="bi bi-pencil"></i></button>
-                      <%= button_to activity_question_path(@activity, element[:object]), method: :delete, form: { data: { turbo_confirm: t('common.confirm_delete') } }, class: "btn btn-sm btn-outline-danger", title: t('common.delete') do %>
-                        <i class="bi bi-trash"></i>
-                      <% end %>
-                    </div>
-                  </div>
-                  
-                  <div id="form-question-<%= element[:object].id %>" class="form-section" style="display: none;">
-                    <%= form_with(model: element[:object], url: activity_question_path(@activity, element[:object]), method: :patch) do |form| %>
-                      <%= form.text_area :conteúdo, rows: 3, class: "form-control" %>
-                      <div class="form-actions mt-3">
-                        <%= form.submit t('common.save'), class: "btn btn-primary" %>
-                        <button type="button" class="btn btn-secondary" onclick="document.getElementById('form-question-<%= element[:object].id %>').style.display='none'"><%= t('helpers.actions.cancel') %></button>
-                      </div>
-                    <% end %>
-                  </div>
-                  
-                  <!-- Alternativas da Questão -->
-                  <% if element[:object].alternatives.any? %>
-                    <ul class="alternatives-list">
-                      <% element[:object].alternatives.each do |alternative| %>
-                        <li>
-                          <div class="item-content">
-                            <%= alternative.conteúdo %> 
-                            <% if alternative.correta %>
-                              <span class="correct-badge"><i class="bi bi-check-circle-fill"></i> Correta</span>
-                            <% end %>
-                            <div class="item-actions">
-                              <button type="button" class="btn btn-sm btn-outline-primary toggle-form edit-btn" data-target="form-alternative-<%= alternative.id %>" title="<%= t('common.edit') %>"><i class="bi bi-pencil"></i></button>
-                              <%= button_to activity_question_alternative_path(@activity, element[:object], alternative), method: :delete, form: { data: { turbo_confirm: t('common.confirm_delete') } }, class: "btn btn-sm btn-outline-danger", title: t('common.delete') do %>
-                                <i class="bi bi-trash"></i>
-                              <% end %>
-                            </div>
-                          </div>
-                          
-                          <div id="form-alternative-<%= alternative.id %>" class="form-section" style="display: none;">
-                            <%= form_with(model: alternative, url: activity_question_alternative_path(@activity, element[:object], alternative), method: :patch) do |form| %>
-                              <%= form.text_area :conteúdo, rows: 2, class: "form-control" %>
-                              <div class="checkbox-field">
-                                <%= form.check_box :correta %>
-                                <%= form.label :correta, t('common.alternative_correct') %>
-                              </div>
-                              <div class="form-actions mt-3">
-                                <%= form.submit t('common.save'), class: "btn btn-primary" %>
-                                <button type="button" class="btn btn-secondary" onclick="document.getElementById('form-alternative-<%= alternative.id %>').style.display='none'"><%= t('helpers.actions.cancel') %></button>
-                              </div>
-                            <% end %>
-                          </div>
-                        </li>
-                      <% end %>
-                    </ul>
-                  <% else %>
-                    <p><%= t('common.no_alternatives') %></p>
-                  <% end %>
-                  
-                  <p>
-                    <button type="button" class="btn btn-sm btn-outline-primary toggle-form add-btn" data-target="form-new-alternative-<%= element[:object].id %>" title="<%= t('common.add_alternative') %>"><i class="bi bi-plus"></i></button>
-                  </p>
-                  
-                  <div id="form-new-alternative-<%= element[:object].id %>" class="form-section" style="display: none;">
-                    <%= form_with(model: [@activity, element[:object], Alternative.new], url: activity_question_alternatives_path(@activity, element[:object])) do |form| %>
-                      <%= form.text_area :conteúdo, rows: 2, class: "form-control", placeholder: t('common.alternative_placeholder') %>
-                      <div class="checkbox-field">
-                        <%= form.check_box :correta %>
-                        <%= form.label :correta, t('common.alternative_correct') %>
-                      </div>
-                      <div class="form-actions mt-3">
-                        <%= form.submit t('common.save'), class: "btn btn-primary" %>
-                        <button type="button" class="btn btn-secondary" onclick="document.getElementById('form-new-alternative-<%= element[:object].id %>').style.display='none'"><%= t('helpers.actions.cancel') %></button>
-                      </div>
-                    <% end %>
-                  </div>
-                </div>
-              </div>
-            <% when 'suggestion' %>
-              <div id="suggestion-<%= element[:object].id %>" class="paper-section">
-                <h3>
-                  <div class="order-badge">
-                    <%= form_with(url: update_order_activity_suggestion_path(@activity, element[:object]), method: :patch, class: "order-form") do |form| %>
-                      <%= form.number_field :display_order, min: 1, value: element[:object].display_order, class: "order-input", title: "Ordem de exibição" %>
-                      <%= form.submit "✓", class: "order-submit" %>
-                    <% end %>
-                  </div>
-                  <i class="bi bi-lightbulb"></i> <%= t('common.suggestion') %>
-                </h3>
-                <div class="content-box">
-                  <div class="item-content">
-                    <div class="preserve-format"><%= element[:object].conteúdo %></div>
-                    <div class="item-actions">
-                      <button type="button" class="btn btn-sm btn-outline-primary toggle-form edit-btn" data-target="form-suggestion-<%= element[:object].id %>" title="<%= t('common.edit') %>"><i class="bi bi-pencil"></i></button>
-                      <%= button_to activity_suggestion_path(@activity, element[:object]), method: :delete, form: { data: { turbo_confirm: t('common.confirm_delete') } }, class: "btn btn-sm btn-outline-danger", title: t('common.delete') do %>
-                        <i class="bi bi-trash"></i>
-                      <% end %>
-                    </div>
-                  </div>
-                  
-                  <div id="form-suggestion-<%= element[:object].id %>" class="form-section" style="display: none;">
-                    <%= form_with(model: element[:object], url: activity_suggestion_path(@activity, element[:object]), method: :patch) do |form| %>
-                      <%= form.text_area :conteúdo, rows: 3, class: "form-control" %>
-                      <div class="form-actions mt-3">
-                        <%= form.submit t('common.save'), class: "btn btn-primary" %>
-                        <button type="button" class="btn btn-secondary" onclick="document.getElementById('form-suggestion-<%= element[:object].id %>').style.display='none'"><%= t('helpers.actions.cancel') %></button>
-                      </div>
-                    <% end %>
-                  </div>
-                </div>
-              </div>
-            <% when 'fill_blank' %>
-              <div id="fill-blank-<%= element[:object].id %>" class="paper-section">
-                <h3>
-                  <div class="order-badge">
-                    <%= form_with(url: update_order_activity_fill_blank_path(@activity, element[:object]), method: :patch, class: "order-form") do |form| %>
-                      <%= form.number_field :display_order, min: 1, value: element[:object].display_order, class: "order-input", title: "Ordem de exibição" %>
-                      <%= form.submit "✓", class: "order-submit" %>
-                    <% end %>
-                  </div>
-                  <i class="bi bi-dash-square"></i> Exercício de Lacunas
-                </h3>
-                <div class="content-box">
-                  <div class="item-content">
-                    <div class="fill-blank-preview">
-                      <strong>Texto com lacunas:</strong>
-                      <div class="preserve-format"><%= element[:object].text_with_numbered_blanks.html_safe %></div>
-                    </div>
-                    <div class="item-actions">
-                      <button type="button" class="btn btn-sm btn-outline-primary toggle-form edit-btn" data-target="form-fill-blank-<%= element[:object].id %>" title="Editar exercício"><i class="bi bi-pencil"></i></button>
-                      <%= button_to activity_fill_blank_path(@activity, element[:object]), method: :delete, form: { data: { turbo_confirm: "Tem certeza que deseja remover este exercício de lacunas?" } }, class: "btn btn-sm btn-outline-danger", title: "Remover exercício" do %>
-                        <i class="bi bi-trash"></i>
-                      <% end %>
-                    </div>
-                  </div>
-                  
-                  <div id="form-fill-blank-<%= element[:object].id %>" class="form-section" style="display: none;">
-                    <%= form_with(model: element[:object], url: activity_fill_blank_path(@activity, element[:object]), method: :patch) do |form| %>
-                      <%= form.text_area :conteúdo, rows: 4, class: "form-control", placeholder: "Digite o texto com lacunas. Use ___ para marcar onde devem ficar as lacunas.\n\nExemplo: O gato ___ na mesa e o cachorro ___ no jardim." %>
-                      <small class="form-text text-muted">Use <strong>___</strong> (três underscores) para marcar as lacunas no texto.</small>
-                      <div class="form-actions mt-3">
-                        <%= form.submit "Salvar", class: "btn btn-primary" %>
-                        <button type="button" class="btn btn-secondary" onclick="document.getElementById('form-fill-blank-<%= element[:object].id %>').style.display='none'">Cancelar</button>
-                      </div>
-                    <% end %>
-                  </div>
-                  
-                  <!-- Respostas das Lacunas -->
-                  <% if element[:object].blanks.any? %>
-                    <div class="blanks-answers mt-3">
-                      <strong>Respostas das lacunas:</strong>
-                      <div class="blanks-list">
-                        <% element[:object].blanks.order(:position).each do |blank| %>
-                          <div class="blank-item">
-                            <div class="item-content">
-                              <span class="blank-number">[<%= blank.position %>]</span>
-                              <span class="blank-answer"><%= blank.correct_answer.present? ? blank.correct_answer : "Não definida" %></span>
-                              <div class="item-actions">
-                                <button type="button" class="btn btn-sm btn-outline-primary toggle-form edit-btn" data-target="form-blank-<%= blank.id %>" title="Editar resposta"><i class="bi bi-pencil"></i></button>
-                              </div>
-                            </div>
-                            
-                            <div id="form-blank-<%= blank.id %>" class="form-section" style="display: none;">
-                              <%= form_with(model: blank, url: activity_fill_blank_blank_path(@activity, element[:object], blank), method: :patch) do |form| %>
-                                <%= form.text_field :correct_answer, class: "form-control", placeholder: "Digite a resposta correta para a lacuna [#{blank.position}]" %>
-                                <div class="form-actions mt-2">
-                                  <%= form.submit "Salvar", class: "btn btn-primary btn-sm" %>
-                                  <button type="button" class="btn btn-secondary btn-sm" onclick="document.getElementById('form-blank-<%= blank.id %>').style.display='none'">Cancelar</button>
-                                </div>
-                              <% end %>
-                            </div>
-                          </div>
-                        <% end %>
-                      </div>
-                    </div>
-                  <% else %>
-                    <p class="text-muted mt-3">Nenhuma lacuna encontrada. Edite o texto e use ___ para criar lacunas.</p>
-                  <% end %>
-                </div>
-              </div>
-            <% when 'sentence_ordering' %>
-              <div id="sentence-ordering-<%= element[:object].id %>" class="paper-section">
-                <h3>
-                  <div class="order-badge">
-                    <%= form_with(url: update_order_activity_sentence_ordering_path(@activity, element[:object]), method: :patch, class: "order-form") do |form| %>
-                      <%= form.number_field :display_order, min: 1, value: element[:object].display_order, class: "order-input", title: "Ordem de exibição" %>
-                      <%= form.submit "✓", class: "order-submit" %>
-                    <% end %>
-                  </div>
-                  <i class="bi bi-arrows-move"></i> Organisation de mots
-                </h3>
-                <div class="content-box">
-                  <div class="item-content">
-                    <div class="sentence-original">
-                      <strong>Phrase originale:</strong> <%= element[:object].conteúdo %>
-                    </div>
-                    <div class="words-preview mt-3">
-                      <strong>Mots à organiser:</strong>
-                      <div class="words-list">
-                        <% element[:object].sentence_words.order(:correct_position).each do |word| %>
-                          <span class="word-badge"><%= word.word %></span>
-                        <% end %>
-                      </div>
-                    </div>
-                    <div class="item-actions">
-                      <button type="button" class="btn btn-sm btn-outline-primary toggle-form edit-btn" data-target="form-sentence-ordering-<%= element[:object].id %>" title="Modifier l'exercice"><i class="bi bi-pencil"></i></button>
-                      <%= button_to activity_sentence_ordering_path(@activity, element[:object]), method: :delete, form: { data: { turbo_confirm: "Êtes-vous sûr de vouloir supprimer cet exercice d'organisation de mots?" } }, class: "btn btn-sm btn-outline-danger", title: "Supprimer l'exercice" do %>
-                        <i class="bi bi-trash"></i>
-                      <% end %>
-                    </div>
-                  </div>
-                  
-                  <div id="form-sentence-ordering-<%= element[:object].id %>" class="form-section" style="display: none;">
-                    <%= form_with(model: element[:object], url: activity_sentence_ordering_path(@activity, element[:object]), method: :patch) do |form| %>
-                      <%= form.text_area :conteúdo, rows: 2, class: "form-control", placeholder: "Tapez la phrase complète. Ex: Le chat mange la souris." %>
-                      <small class="form-text text-muted">Tapez une phrase complète. Les mots seront automatiquement séparés pour l'exercice.</small>
-                      <div class="form-actions mt-3">
-                        <%= form.submit "Sauvegarder", class: "btn btn-primary" %>
-                        <button type="button" class="btn btn-secondary" onclick="document.getElementById('form-sentence-ordering-<%= element[:object].id %>').style.display='none'">Annuler</button>
-                      </div>
-                    <% end %>
-                  </div>
-                </div>
-              </div>
-            <% when 'paragraph_ordering' %>
-              <div id="paragraph-ordering-<%= element[:object].id %>" class="paper-section">
-                <h3>
-                  <div class="order-badge">
-                    <%= form_with(url: update_order_activity_paragraph_ordering_path(@activity, element[:object]), method: :patch, class: "order-form") do |form| %>
-                      <%= form.number_field :display_order, min: 1, value: element[:object].display_order, class: "order-input", title: "Ordem de exibição" %>
-                      <%= form.submit "✓", class: "order-submit" %>
-                    <% end %>
-                  </div>
-                  <i class="bi bi-list-ol"></i> Organisation de phrases
-                </h3>
-                <div class="content-box">
-                  <div class="item-content">
-                    <div class="paragraph-info">
-                      <% if element[:object].titre.present? %>
-                        <strong>Titre:</strong> <%= element[:object].titre %><br>
-                      <% end %>
-                      <% if element[:object].instruction.present? %>
-                        <strong>Instructions:</strong> <%= element[:object].instruction %>
-                      <% end %>
-                    </div>
-                    <div class="item-actions">
-                      <button type="button" class="btn btn-sm btn-outline-primary toggle-form edit-btn" data-target="form-paragraph-ordering-<%= element[:object].id %>" title="Modifier l'exercice"><i class="bi bi-pencil"></i></button>
-                      <%= button_to activity_paragraph_ordering_path(@activity, element[:object]), method: :delete, form: { data: { turbo_confirm: "Êtes-vous sûr de vouloir supprimer cet exercice d'organisation de phrases?" } }, class: "btn btn-sm btn-outline-danger", title: "Supprimer l'exercice" do %>
-                        <i class="bi bi-trash"></i>
-                      <% end %>
-                    </div>
-                  </div>
-                  
-                  <div id="form-paragraph-ordering-<%= element[:object].id %>" class="form-section" style="display: none;">
-                    <%= form_with(model: element[:object], url: activity_paragraph_ordering_path(@activity, element[:object]), method: :patch) do |form| %>
-                      <%= form.text_field :titre, class: "form-control mb-3", placeholder: "Titre de l'exercice" %>
-                      <%= form.text_area :instruction, rows: 2, class: "form-control", placeholder: "Instructions pour l'étudiant" %>
-                      <div class="form-actions mt-3">
-                        <%= form.submit "Sauvegarder", class: "btn btn-primary" %>
-                        <button type="button" class="btn btn-secondary" onclick="document.getElementById('form-paragraph-ordering-<%= element[:object].id %>').style.display='none'">Annuler</button>
-                      </div>
-                    <% end %>
-                  </div>
-                  
-                  <!-- Sentenças do Parágrafo -->
-                  <% if element[:object].paragraph_sentences.any? %>
-                    <div class="sentences-list mt-3">
-                      <strong>Phrases à organiser:</strong>
-                      <div class="sentences-container">
-                        <% element[:object].paragraph_sentences.order(:correct_position).each do |sentence| %>
-                          <div class="sentence-item">
-                            <div class="item-content">
-                              <span class="sentence-number">[<%= sentence.correct_position %>]</span>
-                              <span class="sentence-text"><%= sentence.sentence %></span>
-                              <div class="item-actions">
-                                <button type="button" class="btn btn-sm btn-outline-primary toggle-form edit-btn" data-target="form-sentence-<%= sentence.id %>" title="Modifier la phrase"><i class="bi bi-pencil"></i></button>
-                                <%= button_to activity_paragraph_ordering_paragraph_sentence_path(@activity, element[:object], sentence), method: :delete, form: { data: { turbo_confirm: "Supprimer cette phrase?" } }, class: "btn btn-sm btn-outline-danger", title: "Supprimer la phrase" do %>
-                                  <i class="bi bi-trash"></i>
-                                <% end %>
-                              </div>
-                            </div>
-                            
-                            <div id="form-sentence-<%= sentence.id %>" class="form-section" style="display: none;">
-                              <%= form_with(model: sentence, url: activity_paragraph_ordering_paragraph_sentence_path(@activity, element[:object], sentence), method: :patch) do |form| %>
-                                <%= form.text_area :sentence, rows: 2, class: "form-control", placeholder: "Tapez la phrase complète" %>
-                                <div class="form-actions mt-2">
-                                  <%= form.submit "Sauvegarder", class: "btn btn-primary btn-sm" %>
-                                  <button type="button" class="btn btn-secondary btn-sm" onclick="document.getElementById('form-sentence-<%= sentence.id %>').style.display='none'">Annuler</button>
-                                </div>
-                              <% end %>
-                            </div>
-                          </div>
-                        <% end %>
-                      </div>
-                    </div>
-                  <% else %>
-                    <p class="text-muted mt-3">Aucune phrase ajoutée. Ajoutez des phrases pour créer l'exercice.</p>
-                  <% end %>
-                  
-                  <p class="mt-3">
-                    <button type="button" class="btn btn-sm btn-outline-primary toggle-form add-btn" data-target="form-new-sentence-<%= element[:object].id %>" title="Ajouter une phrase"><i class="bi bi-plus"></i> Ajouter une phrase</button>
-                  </p>
-                  
-                  <div id="form-new-sentence-<%= element[:object].id %>" class="form-section" style="display: none;">
-                    <%= form_with(model: [element[:object], ParagraphSentence.new], url: activity_paragraph_ordering_paragraph_sentences_path(@activity, element[:object])) do |form| %>
-                      <%= form.text_area :sentence, rows: 2, class: "form-control", placeholder: "Tapez une phrase complète" %>
-                      <div class="form-actions mt-3">
-                        <%= form.submit "Ajouter", class: "btn btn-primary" %>
-                        <button type="button" class="btn btn-secondary" onclick="document.getElementById('form-new-sentence-<%= element[:object].id %>').style.display='none'">Annuler</button>
-                      </div>
-                    <% end %>
-                  </div>
-                </div>
-              </div>
-            <% when 'column_association' %>
-              <div id="column-association-<%= element[:object].id %>" class="paper-section">
-                <h3>
-                  <div class="order-badge">
-                    <%= form_with(url: update_order_activity_column_association_path(@activity, element[:object]), method: :patch, class: "order-form") do |form| %>
-                      <%= form.number_field :display_order, min: 1, value: element[:object].display_order, class: "order-input", title: "Ordem de exibição" %>
-                      <%= form.submit "✓", class: "order-submit" %>
-                    <% end %>
-                  </div>
-                  <i class="bi bi-diagram-3"></i> Exercice d'association
-                </h3>
-                <div class="content-box">
-                  <div class="item-content">
-                    <div class="association-info">
-                      <strong>Titre:</strong> <%= element[:object].title %><br>
-                      <% if element[:object].instruction.present? %>
-                        <strong>Instructions:</strong> <%= element[:object].instruction %><br>
-                      <% end %>
-                      <strong>Colonnes:</strong> <%= element[:object].column_a_title %> ↔ <%= element[:object].column_b_title %>
-                    </div>
-                    <div class="item-actions">
-                      <button type="button" class="btn btn-sm btn-outline-primary toggle-form edit-btn" data-target="form-column-association-<%= element[:object].id %>" title="Modifier l'exercice"><i class="bi bi-pencil"></i></button>
-                      <%= button_to activity_column_association_path(@activity, element[:object]), method: :delete, form: { data: { turbo_confirm: "Êtes-vous sûr de vouloir supprimer cet exercice d'association?" } }, class: "btn btn-sm btn-outline-danger", title: "Supprimer l'exercice" do %>
-                        <i class="bi bi-trash"></i>
-                      <% end %>
-                    </div>
-                  </div>
-                  
-                  <div id="form-column-association-<%= element[:object].id %>" class="form-section" style="display: none;">
-                    <%= form_with(model: element[:object], url: activity_column_association_path(@activity, element[:object]), method: :patch) do |form| %>
-                      <%= form.text_field :title, class: "form-control mb-3", placeholder: "Titre de l'exercice" %>
-                      <%= form.text_area :instruction, rows: 2, class: "form-control mb-3", placeholder: "Instructions pour l'étudiant" %>
-                      <div class="row">
-                        <div class="col-md-6">
-                          <%= form.text_field :column_a_title, class: "form-control", placeholder: "Première colonne" %>
-                        </div>
-                        <div class="col-md-6">
-                          <%= form.text_field :column_b_title, class: "form-control", placeholder: "Seconde colonne" %>
-                        </div>
-                      </div>
-                      <div class="form-actions mt-3">
-                        <%= form.submit "Sauvegarder", class: "btn btn-primary" %>
-                        <button type="button" class="btn btn-secondary" onclick="document.getElementById('form-column-association-<%= element[:object].id %>').style.display='none'">Annuler</button>
-                      </div>
-                    <% end %>
-                  </div>
-                  
-                  <!-- Paires d'association -->
-                  <% if element[:object].association_pairs.any? %>
-                    <div class="association-pairs-list mt-3">
-                      <strong>Paires d'association:</strong>
-                      <div class="association-preview">
-                        <div class="preview-columns">
-                          <div class="preview-column">
-                            <h5><%= element[:object].column_a_title %></h5>
-                            <div class="preview-items">
-                              <% element[:object].association_pairs.ordered.each do |pair| %>
-                                <div class="association-pair-item">
-                                  <span class="pair-number">[<%= pair.pair_order %>]</span>
-                                  <span class="pair-text"><%= pair.item_a %></span>
-                                  <div class="item-actions">
-                                    <button type="button" class="btn btn-sm btn-outline-primary toggle-form edit-btn" data-target="form-pair-<%= pair.id %>" title="Modifier la paire"><i class="bi bi-pencil"></i></button>
-                                    <%= button_to activity_column_association_association_pair_path(@activity, element[:object], pair), method: :delete, form: { data: { turbo_confirm: "Supprimer cette paire?" } }, class: "btn btn-sm btn-outline-danger", title: "Supprimer la paire" do %>
-                                      <i class="bi bi-trash"></i>
-                                    <% end %>
-                                  </div>
-                                </div>
-                                
-                                <div id="form-pair-<%= pair.id %>" class="form-section" style="display: none;">
-                                  <%= form_with(model: pair, url: activity_column_association_association_pair_path(@activity, element[:object], pair), method: :patch) do |form| %>
-                                    <div class="row">
-                                      <div class="col-md-6">
-                                        <%= form.text_field :item_a, class: "form-control", placeholder: element[:object].column_a_title %>
-                                      </div>
-                                      <div class="col-md-6">
-                                        <%= form.text_field :item_b, class: "form-control", placeholder: element[:object].column_b_title %>
-                                      </div>
-                                    </div>
-                                    <div class="form-actions mt-2">
-                                      <%= form.submit "Sauvegarder", class: "btn btn-primary btn-sm" %>
-                                      <button type="button" class="btn btn-secondary btn-sm" onclick="document.getElementById('form-pair-<%= pair.id %>').style.display='none'">Annuler</button>
-                                    </div>
-                                  <% end %>
-                                </div>
-                              <% end %>
-                            </div>
-                          </div>
-                          <div class="preview-separator">↔</div>
-                          <div class="preview-column">
-                            <h5><%= element[:object].column_b_title %></h5>
-                            <div class="preview-items">
-                              <% element[:object].association_pairs.ordered.each do |pair| %>
-                                <div class="association-pair-item">
-                                  <span class="pair-number">[<%= pair.pair_order %>]</span>
-                                  <span class="pair-text"><%= pair.item_b %></span>
-                                </div>
-                              <% end %>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  <% else %>
-                    <p class="text-muted mt-3">Aucune paire ajoutée. Ajoutez des paires pour créer l'exercice.</p>
-                  <% end %>
-                  
-                  <p class="mt-3">
-                    <button type="button" class="btn btn-sm btn-outline-primary toggle-form add-btn" data-target="form-new-pair-<%= element[:object].id %>" title="Ajouter une paire"><i class="bi bi-plus"></i> Ajouter une paire</button>
-                  </p>
-                  
-                  <div id="form-new-pair-<%= element[:object].id %>" class="form-section" style="display: none;">
-                    <%= form_with(model: [element[:object], AssociationPair.new], url: activity_column_association_association_pairs_path(@activity, element[:object])) do |form| %>
-                      <div class="row">
-                        <div class="col-md-6">
-                          <%= form.text_field :item_a, class: "form-control", placeholder: element[:object].column_a_title %>
-                        </div>
-                        <div class="col-md-6">
-                          <%= form.text_field :item_b, class: "form-control", placeholder: element[:object].column_b_title %>
-                        </div>
-                      </div>
-                      <%= form.hidden_field :pair_order, value: (element[:object].association_pairs.maximum(:pair_order) || 0) + 1 %>
-                      <div class="form-actions mt-3">
-                        <%= form.submit "Ajouter", class: "btn btn-primary" %>
-                        <button type="button" class="btn btn-secondary" onclick="document.getElementById('form-new-pair-<%= element[:object].id %>').style.display='none'">Annuler</button>
-                      </div>
-                    <% end %>
-                  </div>
-                </div>
-              </div>
-            <% end %>
-          <% end %>
-        </div>
-
-        <!-- Buttons para adicionar novos elementos -->
-        <div class="paper-section">
-          <h3><i class="bi bi-plus-circle"></i> <%= t('common.add_elements') %></h3>
-          <div class="add-buttons">
-            <% if !@activity.video_url.present? %>
-              <button type="button" class="btn btn-outline-primary toggle-form add-btn" data-target="form-video-add" title="<%= t('common.add_video') %>"><i class="bi bi-film"></i></button>
-            <% end %>
-            
-            <% if !@activity.imagem_url.present? %>
-              <button type="button" class="btn btn-outline-primary toggle-form add-btn" data-target="form-imagem-add" title="<%= t('common.add_image') %>"><i class="bi bi-image"></i></button>
-            <% end %>
-            
-            <% if !@activity.texte.present? %>
-              <button type="button" class="btn btn-outline-primary toggle-form add-btn" data-target="form-texte-add" title="<%= t('common.add_texte') %>"><i class="bi bi-file-text"></i></button>
-            <% end %>
-            
-            <button type="button" class="btn btn-outline-primary toggle-form add-btn" data-target="form-new-statement" title="<%= t('common.add_statement') %>"><i class="bi bi-list-ul"></i></button>
-            
-            <button type="button" class="btn btn-outline-primary toggle-form add-btn" data-target="form-new-question" title="<%= t('common.add_question') %>"><i class="bi bi-question-circle"></i></button>
-            
-            <button type="button" class="btn btn-outline-primary toggle-form add-btn" data-target="form-new-fill-blank" title="Adicionar exercício de lacunas"><i class="bi bi-dash-square"></i></button>
-            
-            <button type="button" class="btn btn-outline-primary toggle-form add-btn" data-target="form-new-sentence-ordering" title="Organiser les mots"><i class="bi bi-arrows-move"></i></button>
-            
-            <button type="button" class="btn btn-outline-primary toggle-form add-btn" data-target="form-new-paragraph-ordering" title="Organiser les phrases"><i class="bi bi-list-ol"></i></button>
-            
-            <button type="button" class="btn btn-outline-primary toggle-form add-btn" data-target="form-new-column-association" title="Associer colonnes"><i class="bi bi-diagram-3"></i></button>
-            
-            <button type="button" class="btn btn-outline-primary toggle-form add-btn" data-target="form-new-suggestion" title="<%= t('common.add_suggestion') %>"><i class="bi bi-lightbulb"></i></button>
-          </div>
-        </div>
-
-        <!-- Formulários para adicionar novos elementos -->
-        <!-- Formulário de vídeo para adicionar -->
-        <div id="form-video-add" class="form-section" style="display: none;">
-          <%= form_with(model: @activity, url: activity_path(@activity), method: :patch) do |form| %>
-            <div class="mb-3">
-              <%= form.text_field :video_url, class: "form-control", placeholder: "Cole a URL do YouTube aqui (ex: https://www.youtube.com/watch?v=XXXX)" %>
-              <small class="form-text text-muted">Insira o link do YouTube. Ex: https://www.youtube.com/watch?v=XXXX ou https://youtu.be/XXXX</small>
-            </div>
-            <div class="form-actions">
-              <%= form.submit t('common.save'), class: "btn btn-primary" %>
-              <button type="button" class="btn btn-secondary" onclick="document.getElementById('form-video-add').style.display='none'"><%= t('helpers.actions.cancel') %></button>
-            </div>
-          <% end %>
-        </div>
-
-        <!-- Formulário de imagem para adicionar -->
-        <div id="form-imagem-add" class="form-section" style="display: none;">
-          <%= form_with(model: @activity, url: activity_path(@activity), method: :patch) do |form| %>
-            <div class="mb-3">
-              <%= form.text_field :imagem_url, class: "form-control", placeholder: "Cole a URL da imagem aqui (ex: https://exemplo.com/imagem.jpg)" %>
-              <small class="form-text text-muted">Insira o link direto para uma imagem. Ex: https://exemplo.com/imagem.jpg</small>
-            </div>
-            <div class="form-actions">
-              <%= form.submit t('common.save'), class: "btn btn-primary" %>
-              <button type="button" class="btn btn-secondary" onclick="document.getElementById('form-imagem-add').style.display='none'"><%= t('helpers.actions.cancel') %></button>
-            </div>
-          <% end %>
-        </div>
-
-        <!-- Formulário de texte para adicionar -->
-        <div id="form-texte-add" class="form-section" style="display: none;">
-          <%= form_with(model: @activity, url: activity_path(@activity), method: :patch) do |form| %>
-            <%= form.text_area :texte, rows: 5, class: "form-control", placeholder: t('common.texte_placeholder') %>
-            <div class="form-actions mt-3">
-              <%= form.submit t('common.save'), class: "btn btn-primary" %>
-              <button type="button" class="btn btn-secondary" onclick="document.getElementById('form-texte-add').style.display='none'"><%= t('helpers.actions.cancel') %></button>
-            </div>
-          <% end %>
-        </div>
-
-        <!-- Formulário para novo enunciado -->
-        <div id="form-new-statement" class="form-section" style="display: none;">
-          <%= form_with(model: [@activity, Statement.new], url: activity_statements_path(@activity)) do |form| %>
-            <%= form.text_area :conteúdo, rows: 3, class: "form-control", placeholder: t('common.statement_placeholder') %>
-            <div class="form-actions mt-3">
-              <%= form.submit t('common.save'), class: "btn btn-primary" %>
-              <button type="button" class="btn btn-secondary" onclick="document.getElementById('form-new-statement').style.display='none'"><%= t('helpers.actions.cancel') %></button>
-            </div>
-          <% end %>
-        </div>
-
-        <!-- Formulário para nova questão -->
-        <div id="form-new-question" class="form-section" style="display: none;">
-          <%= form_with(model: [@activity, Question.new], url: activity_questions_path(@activity)) do |form| %>
-            <%= form.text_area :conteúdo, rows: 3, class: "form-control", placeholder: t('common.question_placeholder') %>
-            <%= form.hidden_field :tipo, value: "multipla_escolha" %>
-            <div class="form-actions mt-3">
-              <%= form.submit t('common.save'), class: "btn btn-primary" %>
-              <button type="button" class="btn btn-secondary" onclick="document.getElementById('form-new-question').style.display='none'"><%= t('helpers.actions.cancel') %></button>
-            </div>
-          <% end %>
-        </div>
-
-        <!-- Formulário para novo exercício de lacunas -->
-        <div id="form-new-fill-blank" class="form-section" style="display: none;">
-          <%= form_with(model: [@activity, FillBlank.new], url: activity_fill_blanks_path(@activity)) do |form| %>
-            <%= form.text_area :conteúdo, rows: 4, class: "form-control", placeholder: "Digite o texto com lacunas. Use ___ para marcar onde devem ficar as lacunas.\n\nExemplo: O gato ___ na mesa e o cachorro ___ no jardim." %>
-            <small class="form-text text-muted">Use <strong>___</strong> (três underscores) para marcar as lacunas no texto. Após salvar, você poderá definir as respostas corretas.</small>
-            <div class="form-actions mt-3">
-              <%= form.submit "Criar exercício", class: "btn btn-primary" %>
-              <button type="button" class="btn btn-secondary" onclick="document.getElementById('form-new-fill-blank').style.display='none'">Cancelar</button>
-            </div>
-          <% end %>
-        </div>
-
-        <!-- Formulário para novo exercício de organização de palavras -->
-        <div id="form-new-sentence-ordering" class="form-section" style="display: none;">
-          <%= form_with(model: [@activity, SentenceOrdering.new], url: activity_sentence_orderings_path(@activity)) do |form| %>
-            <%= form.text_area :conteúdo, rows: 2, class: "form-control", placeholder: "Tapez la phrase complète. Ex: Le chat mange la souris." %>
-            <small class="form-text text-muted">Tapez une phrase complète. Les mots seront automatiquement séparés pour l'exercice.</small>
-            <div class="form-actions mt-3">
-              <%= form.submit "Créer l'exercice", class: "btn btn-primary" %>
-              <button type="button" class="btn btn-secondary" onclick="document.getElementById('form-new-sentence-ordering').style.display='none'">Annuler</button>
-            </div>
-          <% end %>
-        </div>
-
-        <!-- Formulário para novo exercício de organização de frases -->
-        <div id="form-new-paragraph-ordering" class="form-section" style="display: none;">
-          <%= form_with(model: [@activity, ParagraphOrdering.new], url: activity_paragraph_orderings_path(@activity)) do |form| %>
-            <%= form.text_field :titre, class: "form-control mb-3", placeholder: "Titre de l'exercice (ex: Remettre les phrases en ordre)" %>
-            <%= form.text_area :instruction, rows: 2, class: "form-control", placeholder: "Instructions pour l'étudiant (ex: Remettez ces phrases dans l'ordre pour former un paragraphe cohérent)" %>
-            <div class="form-actions mt-3">
-              <%= form.submit "Créer l'exercice", class: "btn btn-primary" %>
-              <button type="button" class="btn btn-secondary" onclick="document.getElementById('form-new-paragraph-ordering').style.display='none'">Annuler</button>
-            </div>
-          <% end %>
-        </div>
-
-        <!-- Formulário para novo exercício de associação de colunas -->
-        <div id="form-new-column-association" class="form-section" style="display: none;">
-          <%= form_with(model: [@activity, ColumnAssociation.new], url: activity_column_associations_path(@activity)) do |form| %>
-            <%= form.text_field :title, class: "form-control mb-3", placeholder: "Titre de l'exercice (ex: Vocabulaire de base)" %>
-            <%= form.text_area :instruction, rows: 2, class: "form-control mb-3", placeholder: "Instructions pour l'étudiant (ex: Associez les mots français avec leur traduction)" %>
-            <div class="row">
-              <div class="col-md-6">
-                <%= form.text_field :column_a_title, class: "form-control", placeholder: "Première colonne (ex: Português)" %>
-              </div>
-              <div class="col-md-6">
-                <%= form.text_field :column_b_title, class: "form-control", placeholder: "Seconde colonne (ex: Français)" %>
-              </div>
-            </div>
-            <small class="form-text text-muted">Après création, vous pourrez ajouter les paires d'association.</small>
-            <div class="form-actions mt-3">
-              <%= form.submit "Créer l'exercice", class: "btn btn-primary" %>
-              <button type="button" class="btn btn-secondary" onclick="document.getElementById('form-new-column-association').style.display='none'">Annuler</button>
-            </div>
-          <% end %>
-        </div>
-
-        <!-- Formulário para nova sugestão -->
-        <div id="form-new-suggestion" class="form-section" style="display: none;">
-          <%= form_with(model: [@activity, Suggestion.new], url: activity_suggestions_path(@activity)) do |form| %>
-            <%= form.text_area :conteúdo, rows: 3, class: "form-control", placeholder: t('common.suggestion_placeholder') %>
-            <div class="form-actions mt-3">
-              <%= form.submit t('common.save'), class: "btn btn-primary" %>
-              <button type="button" class="btn btn-secondary" onclick="document.getElementById('form-new-suggestion').style.display='none'"><%= t('helpers.actions.cancel') %></button>
-            </div>
-          <% end %>
-        </div>
-
-        <div class="actions-bar">
-          <%= link_to solve_activity_path(@activity), class: "btn btn-resoudre" do %>
-            <i class="bi bi-play-circle-fill"></i> Résoudre
-          <% end %>
-          <%= link_to edit_activity_path(@activity), class: "btn btn-modifier" do %>
-            <i class="bi bi-palette-fill"></i> Retoucher
-          <% end %>
-          <%= link_to activities_path, class: "btn btn-retour" do %>
-            <i class="bi bi-arrow-left-circle-fill"></i> Mes créations
-          <% end %>
-          <%= button_to activity_path(@activity), 
-                method: :delete, 
-                data: { confirm: "Es-tu sûre de vouloir supprimer cette création?" },
-                form: { class: "d-inline-block" },
-                class: "btn btn-supprimer ml-auto" do %>
-            <i class="bi bi-archive-fill"></i> Archiver
-          <% end %>
-        </div>
+        <% end %>
       </div>
     </div>
+  <% end %>
+
+  <% if @activity.imagem_url.present? %>
+    <div id="image-section" style="background:var(--surface); border:1px solid var(--line); border-radius:14px; padding:18px 20px; margin-bottom:16px;">
+      <div style="display:flex; align-items:center; justify-content:space-between; gap:12px; margin-bottom:12px;">
+        <div style="display:flex; align-items:center; gap:8px; font-family:'Plus Jakarta Sans',sans-serif; font-size:0.85rem; font-weight:700; color:var(--ink-soft);">
+          <i class="bi bi-image" style="color:var(--brand);"></i> <%= t('common.image') %>
+        </div>
+        <%= form_with model: @activity, url: activity_path(@activity), method: :patch, html: { style: "display:flex; align-items:center; gap:4px;" } do |form| %>
+          <%= form.number_field :imagem_order, min: 1,
+                style: "width:52px; padding:4px 6px; border:1.5px solid var(--line); border-radius:6px; font-family:'DM Mono',monospace; font-size:0.8rem; text-align:center;" %>
+          <%= form.submit "✓", style: "border:1.5px solid var(--brand-bright); background:var(--brand-tint); color:var(--brand-deep); border-radius:6px; padding:4px 9px; cursor:pointer; font-weight:700;" %>
+        <% end %>
+      </div>
+
+      <img src="<%= @activity.imagem_url %>" alt="Image de l'activité" style="width:100%; border-radius:10px; margin-bottom:12px;">
+
+      <div style="display:flex; gap:8px;">
+        <button type="button" class="toggle-form" data-target="form-imagem" title="<%= t('common.edit_image') %>"
+                style="font-family:'Plus Jakarta Sans',sans-serif; font-size:0.78rem; font-weight:700; padding:5px 10px; border-radius:8px; border:1.5px solid var(--brand-bright); background:var(--surface); color:var(--brand-deep); cursor:pointer;">
+          <i class="bi bi-pencil"></i>
+        </button>
+        <%= button_to remove_image_activity_path(@activity), method: :delete,
+              form: { data: { turbo_confirm: t('common.confirm_delete_image') } },
+              style: "font-family:'Plus Jakarta Sans',sans-serif; font-size:0.78rem; font-weight:700; padding:5px 10px; border-radius:8px; border:1.5px solid var(--error-border); background:var(--error-tint); color:var(--error-deep); cursor:pointer;" do %>
+          <i class="bi bi-trash"></i>
+        <% end %>
+      </div>
+
+      <div id="form-imagem" style="display:none; margin-top:14px; padding-top:14px; border-top:1px solid var(--line-soft);">
+        <%= form_with model: @activity, url: activity_path(@activity), method: :patch do |form| %>
+          <%= form.text_field :imagem_url, placeholder: "https://exemple.com/image.jpg",
+                style: "width:100%; font-family:'Plus Jakarta Sans',sans-serif; font-size:0.9rem; padding:10px 12px; border:1.5px solid var(--line); border-radius:10px; background:var(--surface); color:var(--ink);" %>
+          <p style="font-family:'Plus Jakarta Sans',sans-serif; font-size:0.76rem; color:var(--ink-faint); margin:6px 0 0;">Lien direct vers une image.</p>
+          <div style="display:flex; gap:8px; margin-top:10px;">
+            <%= form.submit t('common.save'), style: "font-family:'Plus Jakarta Sans',sans-serif; font-size:0.85rem; font-weight:700; padding:9px 20px; border-radius:999px; border:none; background:var(--brand); color:var(--surface); cursor:pointer;" %>
+            <button type="button" onclick="document.getElementById('form-imagem').style.display='none'"
+                    style="font-family:'Plus Jakarta Sans',sans-serif; font-size:0.85rem; font-weight:700; padding:9px 20px; border-radius:999px; border:1.5px solid var(--line); background:var(--surface); color:var(--ink-soft); cursor:pointer;">
+              <%= t('helpers.actions.cancel') %>
+            </button>
+          </div>
+        <% end %>
+      </div>
+    </div>
+  <% end %>
+
+  <% if @activity.texte.present? %>
+    <div id="texte-section" style="background:var(--surface); border:1px solid var(--line); border-radius:14px; padding:18px 20px; margin-bottom:16px;">
+      <div style="display:flex; align-items:center; justify-content:space-between; gap:12px; margin-bottom:12px;">
+        <div style="display:flex; align-items:center; gap:8px; font-family:'Plus Jakarta Sans',sans-serif; font-size:0.85rem; font-weight:700; color:var(--ink-soft);">
+          <i class="bi bi-file-text" style="color:var(--brand);"></i> <%= t('common.texte') %>
+        </div>
+        <%= form_with model: @activity, url: activity_path(@activity), method: :patch, html: { style: "display:flex; align-items:center; gap:4px;" } do |form| %>
+          <%= form.number_field :texte_order, min: 1,
+                style: "width:52px; padding:4px 6px; border:1.5px solid var(--line); border-radius:6px; font-family:'DM Mono',monospace; font-size:0.8rem; text-align:center;" %>
+          <%= form.submit "✓", style: "border:1.5px solid var(--brand-bright); background:var(--brand-tint); color:var(--brand-deep); border-radius:6px; padding:4px 9px; cursor:pointer; font-weight:700;" %>
+        <% end %>
+      </div>
+
+      <div style="font-family:'Plus Jakarta Sans',sans-serif; font-size:0.9rem; color:var(--ink); white-space:pre-wrap; margin-bottom:12px;"><%= @activity.texte %></div>
+
+      <div style="display:flex; gap:8px;">
+        <button type="button" class="toggle-form" data-target="form-texte" title="<%= t('common.edit_texte') %>"
+                style="font-family:'Plus Jakarta Sans',sans-serif; font-size:0.78rem; font-weight:700; padding:5px 10px; border-radius:8px; border:1.5px solid var(--brand-bright); background:var(--surface); color:var(--brand-deep); cursor:pointer;">
+          <i class="bi bi-pencil"></i>
+        </button>
+        <%= button_to remove_texte_activity_path(@activity), method: :delete,
+              form: { data: { turbo_confirm: t('common.confirm_delete_texte') } },
+              style: "font-family:'Plus Jakarta Sans',sans-serif; font-size:0.78rem; font-weight:700; padding:5px 10px; border-radius:8px; border:1.5px solid var(--error-border); background:var(--error-tint); color:var(--error-deep); cursor:pointer;" do %>
+          <i class="bi bi-trash"></i>
+        <% end %>
+      </div>
+
+      <div id="form-texte" style="display:none; margin-top:14px; padding-top:14px; border-top:1px solid var(--line-soft);">
+        <%= form_with model: @activity, url: activity_path(@activity), method: :patch do |form| %>
+          <%= form.text_area :texte, rows: 5, placeholder: t('common.texte_placeholder'),
+                style: "width:100%; font-family:'Plus Jakarta Sans',sans-serif; font-size:0.9rem; padding:10px 12px; border:1.5px solid var(--line); border-radius:10px; background:var(--surface); color:var(--ink);" %>
+          <div style="display:flex; gap:8px; margin-top:10px;">
+            <%= form.submit t('common.save'), style: "font-family:'Plus Jakarta Sans',sans-serif; font-size:0.85rem; font-weight:700; padding:9px 20px; border-radius:999px; border:none; background:var(--brand); color:var(--surface); cursor:pointer;" %>
+            <button type="button" onclick="document.getElementById('form-texte').style.display='none'"
+                    style="font-family:'Plus Jakarta Sans',sans-serif; font-size:0.85rem; font-weight:700; padding:9px 20px; border-radius:999px; border:1.5px solid var(--line); background:var(--surface); color:var(--ink-soft); cursor:pointer;">
+              <%= t('helpers.actions.cancel') %>
+            </button>
+          </div>
+        <% end %>
+      </div>
+    </div>
+  <% end %>
+
+  <%# Exercices — render polymorphique: cada tipo resolve seu próprio
+      partial (app/views/statements/_statement.html.erb etc.) a partir do
+      nome da classe do objeto. Substitui o case/when de ~670 linhas que
+      existia aqui antes do redesenho. %>
+  <%= render @activity.ordered_elements %>
+
+  <%# Ajouter un nouvel élément %>
+  <div style="background:var(--surface); border:1px solid var(--line); border-radius:14px; padding:18px 20px; margin-bottom:16px;">
+    <div style="font-family:'Plus Jakarta Sans',sans-serif; font-size:0.78rem; font-weight:700; color:var(--ink-soft); text-transform:uppercase; letter-spacing:0.04em; margin-bottom:12px;">
+      <i class="bi bi-plus-circle"></i> <%= t('common.add_elements') %>
+    </div>
+    <div style="display:flex; flex-wrap:wrap; gap:8px;">
+      <% unless @activity.video_url.present? %>
+        <button type="button" class="toggle-form add-btn" data-target="form-video-add" title="<%= t('common.add_video') %>"><i class="bi bi-film"></i></button>
+      <% end %>
+      <% unless @activity.imagem_url.present? %>
+        <button type="button" class="toggle-form add-btn" data-target="form-imagem-add" title="<%= t('common.add_image') %>"><i class="bi bi-image"></i></button>
+      <% end %>
+      <% unless @activity.texte.present? %>
+        <button type="button" class="toggle-form add-btn" data-target="form-texte-add" title="<%= t('common.add_texte') %>"><i class="bi bi-file-text"></i></button>
+      <% end %>
+      <button type="button" class="toggle-form add-btn" data-target="form-new-statement" title="<%= t('common.add_statement') %>"><i class="bi bi-list-ul"></i></button>
+      <button type="button" class="toggle-form add-btn" data-target="form-new-question" title="<%= t('common.add_question') %>"><i class="bi bi-question-circle"></i></button>
+      <button type="button" class="toggle-form add-btn" data-target="form-new-fill-blank" title="Ajouter un exercice à trous"><i class="bi bi-dash-square"></i></button>
+      <button type="button" class="toggle-form add-btn" data-target="form-new-sentence-ordering" title="Organiser les mots"><i class="bi bi-arrows-move"></i></button>
+      <button type="button" class="toggle-form add-btn" data-target="form-new-paragraph-ordering" title="Organiser les phrases"><i class="bi bi-list-ol"></i></button>
+      <button type="button" class="toggle-form add-btn" data-target="form-new-column-association" title="Associer colonnes"><i class="bi bi-diagram-3"></i></button>
+      <button type="button" class="toggle-form add-btn" data-target="form-new-suggestion" title="<%= t('common.add_suggestion') %>"><i class="bi bi-lightbulb"></i></button>
+    </div>
+  </div>
+
+  <div id="form-video-add" style="display:none; background:var(--surface); border:1px solid var(--line); border-radius:14px; padding:18px 20px; margin-bottom:16px;">
+    <%= form_with model: @activity, url: activity_path(@activity), method: :patch do |form| %>
+      <%= form.text_field :video_url, placeholder: "https://www.youtube.com/watch?v=XXXX",
+            style: "width:100%; font-family:'Plus Jakarta Sans',sans-serif; font-size:0.9rem; padding:10px 12px; border:1.5px solid var(--line); border-radius:10px; background:var(--surface); color:var(--ink);" %>
+      <p style="font-family:'Plus Jakarta Sans',sans-serif; font-size:0.76rem; color:var(--ink-faint); margin:6px 0 0;">Lien YouTube. Ex : https://www.youtube.com/watch?v=XXXX ou https://youtu.be/XXXX</p>
+      <div style="display:flex; gap:8px; margin-top:10px;">
+        <%= form.submit t('common.save'), style: "font-family:'Plus Jakarta Sans',sans-serif; font-size:0.85rem; font-weight:700; padding:9px 20px; border-radius:999px; border:none; background:var(--brand); color:var(--surface); cursor:pointer;" %>
+        <button type="button" onclick="document.getElementById('form-video-add').style.display='none'"
+                style="font-family:'Plus Jakarta Sans',sans-serif; font-size:0.85rem; font-weight:700; padding:9px 20px; border-radius:999px; border:1.5px solid var(--line); background:var(--surface); color:var(--ink-soft); cursor:pointer;">
+          <%= t('helpers.actions.cancel') %>
+        </button>
+      </div>
+    <% end %>
+  </div>
+
+  <div id="form-imagem-add" style="display:none; background:var(--surface); border:1px solid var(--line); border-radius:14px; padding:18px 20px; margin-bottom:16px;">
+    <%= form_with model: @activity, url: activity_path(@activity), method: :patch do |form| %>
+      <%= form.text_field :imagem_url, placeholder: "https://exemple.com/image.jpg",
+            style: "width:100%; font-family:'Plus Jakarta Sans',sans-serif; font-size:0.9rem; padding:10px 12px; border:1.5px solid var(--line); border-radius:10px; background:var(--surface); color:var(--ink);" %>
+      <p style="font-family:'Plus Jakarta Sans',sans-serif; font-size:0.76rem; color:var(--ink-faint); margin:6px 0 0;">Lien direct vers une image.</p>
+      <div style="display:flex; gap:8px; margin-top:10px;">
+        <%= form.submit t('common.save'), style: "font-family:'Plus Jakarta Sans',sans-serif; font-size:0.85rem; font-weight:700; padding:9px 20px; border-radius:999px; border:none; background:var(--brand); color:var(--surface); cursor:pointer;" %>
+        <button type="button" onclick="document.getElementById('form-imagem-add').style.display='none'"
+                style="font-family:'Plus Jakarta Sans',sans-serif; font-size:0.85rem; font-weight:700; padding:9px 20px; border-radius:999px; border:1.5px solid var(--line); background:var(--surface); color:var(--ink-soft); cursor:pointer;">
+          <%= t('helpers.actions.cancel') %>
+        </button>
+      </div>
+    <% end %>
+  </div>
+
+  <div id="form-texte-add" style="display:none; background:var(--surface); border:1px solid var(--line); border-radius:14px; padding:18px 20px; margin-bottom:16px;">
+    <%= form_with model: @activity, url: activity_path(@activity), method: :patch do |form| %>
+      <%= form.text_area :texte, rows: 5, placeholder: t('common.texte_placeholder'),
+            style: "width:100%; font-family:'Plus Jakarta Sans',sans-serif; font-size:0.9rem; padding:10px 12px; border:1.5px solid var(--line); border-radius:10px; background:var(--surface); color:var(--ink);" %>
+      <div style="display:flex; gap:8px; margin-top:10px;">
+        <%= form.submit t('common.save'), style: "font-family:'Plus Jakarta Sans',sans-serif; font-size:0.85rem; font-weight:700; padding:9px 20px; border-radius:999px; border:none; background:var(--brand); color:var(--surface); cursor:pointer;" %>
+        <button type="button" onclick="document.getElementById('form-texte-add').style.display='none'"
+                style="font-family:'Plus Jakarta Sans',sans-serif; font-size:0.85rem; font-weight:700; padding:9px 20px; border-radius:999px; border:1.5px solid var(--line); background:var(--surface); color:var(--ink-soft); cursor:pointer;">
+          <%= t('helpers.actions.cancel') %>
+        </button>
+      </div>
+    <% end %>
+  </div>
+
+  <div id="form-new-statement" style="display:none; background:var(--surface); border:1px solid var(--line); border-radius:14px; padding:18px 20px; margin-bottom:16px;">
+    <%= form_with model: [@activity, Statement.new], url: activity_statements_path(@activity) do |form| %>
+      <%= form.text_area :conteúdo, rows: 3, placeholder: t('common.statement_placeholder'),
+            style: "width:100%; font-family:'Plus Jakarta Sans',sans-serif; font-size:0.9rem; padding:10px 12px; border:1.5px solid var(--line); border-radius:10px; background:var(--surface); color:var(--ink);" %>
+      <div style="display:flex; gap:8px; margin-top:10px;">
+        <%= form.submit t('common.save'), style: "font-family:'Plus Jakarta Sans',sans-serif; font-size:0.85rem; font-weight:700; padding:9px 20px; border-radius:999px; border:none; background:var(--brand); color:var(--surface); cursor:pointer;" %>
+        <button type="button" onclick="document.getElementById('form-new-statement').style.display='none'"
+                style="font-family:'Plus Jakarta Sans',sans-serif; font-size:0.85rem; font-weight:700; padding:9px 20px; border-radius:999px; border:1.5px solid var(--line); background:var(--surface); color:var(--ink-soft); cursor:pointer;">
+          <%= t('helpers.actions.cancel') %>
+        </button>
+      </div>
+    <% end %>
+  </div>
+
+  <div id="form-new-question" style="display:none; background:var(--surface); border:1px solid var(--line); border-radius:14px; padding:18px 20px; margin-bottom:16px;">
+    <%= form_with model: [@activity, Question.new], url: activity_questions_path(@activity) do |form| %>
+      <%= form.text_area :conteúdo, rows: 3, placeholder: t('common.question_placeholder'),
+            style: "width:100%; font-family:'Plus Jakarta Sans',sans-serif; font-size:0.9rem; padding:10px 12px; border:1.5px solid var(--line); border-radius:10px; background:var(--surface); color:var(--ink);" %>
+      <%= form.hidden_field :tipo, value: "multipla_escolha" %>
+      <div style="display:flex; gap:8px; margin-top:10px;">
+        <%= form.submit t('common.save'), style: "font-family:'Plus Jakarta Sans',sans-serif; font-size:0.85rem; font-weight:700; padding:9px 20px; border-radius:999px; border:none; background:var(--brand); color:var(--surface); cursor:pointer;" %>
+        <button type="button" onclick="document.getElementById('form-new-question').style.display='none'"
+                style="font-family:'Plus Jakarta Sans',sans-serif; font-size:0.85rem; font-weight:700; padding:9px 20px; border-radius:999px; border:1.5px solid var(--line); background:var(--surface); color:var(--ink-soft); cursor:pointer;">
+          <%= t('helpers.actions.cancel') %>
+        </button>
+      </div>
+    <% end %>
+  </div>
+
+  <div id="form-new-fill-blank" style="display:none; background:var(--surface); border:1px solid var(--line); border-radius:14px; padding:18px 20px; margin-bottom:16px;">
+    <%= form_with model: [@activity, FillBlank.new], url: activity_fill_blanks_path(@activity) do |form| %>
+      <%= form.text_area :conteúdo, rows: 4, placeholder: "Utilisez ___ pour marquer les trous.\n\nEx: Le chat ___ sur la table et le chien ___ dans le jardin.",
+            style: "width:100%; font-family:'Plus Jakarta Sans',sans-serif; font-size:0.9rem; padding:10px 12px; border:1.5px solid var(--line); border-radius:10px; background:var(--surface); color:var(--ink);" %>
+      <p style="font-family:'Plus Jakarta Sans',sans-serif; font-size:0.76rem; color:var(--ink-faint); margin:6px 0 0;">Utilisez <strong>___</strong> (trois tirets bas) pour marquer les trous. Après enregistrement, vous pourrez définir les bonnes réponses.</p>
+      <div style="display:flex; gap:8px; margin-top:10px;">
+        <%= form.submit "Créer l'exercice", style: "font-family:'Plus Jakarta Sans',sans-serif; font-size:0.85rem; font-weight:700; padding:9px 20px; border-radius:999px; border:none; background:var(--brand); color:var(--surface); cursor:pointer;" %>
+        <button type="button" onclick="document.getElementById('form-new-fill-blank').style.display='none'"
+                style="font-family:'Plus Jakarta Sans',sans-serif; font-size:0.85rem; font-weight:700; padding:9px 20px; border-radius:999px; border:1.5px solid var(--line); background:var(--surface); color:var(--ink-soft); cursor:pointer;">
+          Annuler
+        </button>
+      </div>
+    <% end %>
+  </div>
+
+  <div id="form-new-sentence-ordering" style="display:none; background:var(--surface); border:1px solid var(--line); border-radius:14px; padding:18px 20px; margin-bottom:16px;">
+    <%= form_with model: [@activity, SentenceOrdering.new], url: activity_sentence_orderings_path(@activity) do |form| %>
+      <%= form.text_area :conteúdo, rows: 2, placeholder: "Tapez la phrase complète. Ex : Le chat mange la souris.",
+            style: "width:100%; font-family:'Plus Jakarta Sans',sans-serif; font-size:0.9rem; padding:10px 12px; border:1.5px solid var(--line); border-radius:10px; background:var(--surface); color:var(--ink);" %>
+      <p style="font-family:'Plus Jakarta Sans',sans-serif; font-size:0.76rem; color:var(--ink-faint); margin:6px 0 0;">Les mots seront automatiquement séparés pour l'exercice.</p>
+      <div style="display:flex; gap:8px; margin-top:10px;">
+        <%= form.submit "Créer l'exercice", style: "font-family:'Plus Jakarta Sans',sans-serif; font-size:0.85rem; font-weight:700; padding:9px 20px; border-radius:999px; border:none; background:var(--brand); color:var(--surface); cursor:pointer;" %>
+        <button type="button" onclick="document.getElementById('form-new-sentence-ordering').style.display='none'"
+                style="font-family:'Plus Jakarta Sans',sans-serif; font-size:0.85rem; font-weight:700; padding:9px 20px; border-radius:999px; border:1.5px solid var(--line); background:var(--surface); color:var(--ink-soft); cursor:pointer;">
+          Annuler
+        </button>
+      </div>
+    <% end %>
+  </div>
+
+  <div id="form-new-paragraph-ordering" style="display:none; background:var(--surface); border:1px solid var(--line); border-radius:14px; padding:18px 20px; margin-bottom:16px;">
+    <%= form_with model: [@activity, ParagraphOrdering.new], url: activity_paragraph_orderings_path(@activity) do |form| %>
+      <%= form.text_field :titre, placeholder: "Titre de l'exercice (ex : Remettre les phrases en ordre)",
+            style: "width:100%; font-family:'Plus Jakarta Sans',sans-serif; font-size:0.9rem; padding:10px 12px; border:1.5px solid var(--line); border-radius:10px; background:var(--surface); color:var(--ink); margin-bottom:8px;" %>
+      <%= form.text_area :instruction, rows: 2, placeholder: "Instructions pour l'étudiant",
+            style: "width:100%; font-family:'Plus Jakarta Sans',sans-serif; font-size:0.9rem; padding:10px 12px; border:1.5px solid var(--line); border-radius:10px; background:var(--surface); color:var(--ink);" %>
+      <div style="display:flex; gap:8px; margin-top:10px;">
+        <%= form.submit "Créer l'exercice", style: "font-family:'Plus Jakarta Sans',sans-serif; font-size:0.85rem; font-weight:700; padding:9px 20px; border-radius:999px; border:none; background:var(--brand); color:var(--surface); cursor:pointer;" %>
+        <button type="button" onclick="document.getElementById('form-new-paragraph-ordering').style.display='none'"
+                style="font-family:'Plus Jakarta Sans',sans-serif; font-size:0.85rem; font-weight:700; padding:9px 20px; border-radius:999px; border:1.5px solid var(--line); background:var(--surface); color:var(--ink-soft); cursor:pointer;">
+          Annuler
+        </button>
+      </div>
+    <% end %>
+  </div>
+
+  <div id="form-new-column-association" style="display:none; background:var(--surface); border:1px solid var(--line); border-radius:14px; padding:18px 20px; margin-bottom:16px;">
+    <%= form_with model: [@activity, ColumnAssociation.new], url: activity_column_associations_path(@activity) do |form| %>
+      <%= form.text_field :title, placeholder: "Titre de l'exercice (ex : Vocabulaire de base)",
+            style: "width:100%; font-family:'Plus Jakarta Sans',sans-serif; font-size:0.9rem; padding:10px 12px; border:1.5px solid var(--line); border-radius:10px; background:var(--surface); color:var(--ink); margin-bottom:8px;" %>
+      <%= form.text_area :instruction, rows: 2, placeholder: "Instructions pour l'étudiant",
+            style: "width:100%; font-family:'Plus Jakarta Sans',sans-serif; font-size:0.9rem; padding:10px 12px; border:1.5px solid var(--line); border-radius:10px; background:var(--surface); color:var(--ink); margin-bottom:8px;" %>
+      <div style="display:flex; gap:10px;">
+        <%= form.text_field :column_a_title, placeholder: "Première colonne (ex : Français)",
+              style: "flex:1; font-family:'Plus Jakarta Sans',sans-serif; font-size:0.9rem; padding:10px 12px; border:1.5px solid var(--line); border-radius:10px; background:var(--surface); color:var(--ink);" %>
+        <%= form.text_field :column_b_title, placeholder: "Seconde colonne (ex : Anglais)",
+              style: "flex:1; font-family:'Plus Jakarta Sans',sans-serif; font-size:0.9rem; padding:10px 12px; border:1.5px solid var(--line); border-radius:10px; background:var(--surface); color:var(--ink);" %>
+      </div>
+      <p style="font-family:'Plus Jakarta Sans',sans-serif; font-size:0.76rem; color:var(--ink-faint); margin:6px 0 0;">Après création, vous pourrez ajouter les paires d'association.</p>
+      <div style="display:flex; gap:8px; margin-top:10px;">
+        <%= form.submit "Créer l'exercice", style: "font-family:'Plus Jakarta Sans',sans-serif; font-size:0.85rem; font-weight:700; padding:9px 20px; border-radius:999px; border:none; background:var(--brand); color:var(--surface); cursor:pointer;" %>
+        <button type="button" onclick="document.getElementById('form-new-column-association').style.display='none'"
+                style="font-family:'Plus Jakarta Sans',sans-serif; font-size:0.85rem; font-weight:700; padding:9px 20px; border-radius:999px; border:1.5px solid var(--line); background:var(--surface); color:var(--ink-soft); cursor:pointer;">
+          Annuler
+        </button>
+      </div>
+    <% end %>
+  </div>
+
+  <div id="form-new-suggestion" style="display:none; background:var(--surface); border:1px solid var(--line); border-radius:14px; padding:18px 20px; margin-bottom:16px;">
+    <%= form_with model: [@activity, Suggestion.new], url: activity_suggestions_path(@activity) do |form| %>
+      <%= form.text_area :conteúdo, rows: 3, placeholder: t('common.suggestion_placeholder'),
+            style: "width:100%; font-family:'Plus Jakarta Sans',sans-serif; font-size:0.9rem; padding:10px 12px; border:1.5px solid var(--line); border-radius:10px; background:var(--surface); color:var(--ink);" %>
+      <div style="display:flex; gap:8px; margin-top:10px;">
+        <%= form.submit t('common.save'), style: "font-family:'Plus Jakarta Sans',sans-serif; font-size:0.85rem; font-weight:700; padding:9px 20px; border-radius:999px; border:none; background:var(--brand); color:var(--surface); cursor:pointer;" %>
+        <button type="button" onclick="document.getElementById('form-new-suggestion').style.display='none'"
+                style="font-family:'Plus Jakarta Sans',sans-serif; font-size:0.85rem; font-weight:700; padding:9px 20px; border-radius:999px; border:1.5px solid var(--line); background:var(--surface); color:var(--ink-soft); cursor:pointer;">
+          <%= t('helpers.actions.cancel') %>
+        </button>
+      </div>
+    <% end %>
+  </div>
+
+  <%# Barre d'actions %>
+  <div style="display:flex; flex-wrap:wrap; gap:10px; margin-top:8px;">
+    <%= link_to solve_activity_path(@activity),
+          style: "font-family:'Plus Jakarta Sans',sans-serif; font-size:0.88rem; font-weight:700; padding:10px 22px; border-radius:999px; text-decoration:none; display:inline-flex; align-items:center; gap:8px; background:var(--brand); color:var(--surface);" do %>
+      <i class="bi bi-play-circle-fill"></i> Résoudre
+    <% end %>
+    <%= link_to edit_activity_path(@activity),
+          style: "font-family:'Plus Jakarta Sans',sans-serif; font-size:0.88rem; font-weight:700; padding:10px 22px; border-radius:999px; text-decoration:none; display:inline-flex; align-items:center; gap:8px; background:var(--surface); color:var(--ink-soft); border:1.5px solid var(--line);" do %>
+      <i class="bi bi-palette-fill"></i> Retoucher
+    <% end %>
+    <%= link_to activities_path,
+          style: "font-family:'Plus Jakarta Sans',sans-serif; font-size:0.88rem; font-weight:700; padding:10px 22px; border-radius:999px; text-decoration:none; display:inline-flex; align-items:center; gap:8px; background:var(--surface); color:var(--ink-soft); border:1.5px solid var(--line);" do %>
+      <i class="bi bi-arrow-left-circle-fill"></i> Mes créations
+    <% end %>
+    <%= button_to activity_path(@activity), method: :delete,
+          form: { data: { turbo_confirm: "Es-tu sûre de vouloir supprimer cette création ?" }, style: "margin-left:auto;" },
+          style: "font-family:'Plus Jakarta Sans',sans-serif; font-size:0.88rem; font-weight:700; padding:10px 22px; border-radius:999px; border:1.5px solid var(--error-border); background:var(--error-tint); color:var(--error-deep); cursor:pointer; display:inline-flex; align-items:center; gap:8px;" do %>
+      <i class="bi bi-archive-fill"></i> Archiver
+    <% end %>
   </div>
 </div>
 
-<script type="text/javascript">
-  // Adicionar manipuladores de evento para botões toggle-form
-  document.addEventListener('DOMContentLoaded', function() {
-    // Seleciona todos os botões com a classe toggle-form
-    const toggleButtons = document.querySelectorAll('.toggle-form');
-    
-    // Adiciona evento de clique para cada botão
-    toggleButtons.forEach(function(button) {
-      button.addEventListener('click', function() {
-        // Obtém o ID do alvo do atributo data-target
-        const targetId = this.getAttribute('data-target');
-        // Busca o elemento alvo
-        const targetElement = document.getElementById(targetId);
-        
-        // Alterna a visibilidade do elemento alvo
-        if (targetElement) {
-          if (targetElement.style.display === 'none' || targetElement.style.display === '') {
-            targetElement.style.display = 'block';
-          } else {
-            targetElement.style.display = 'none';
-          }
-        }
-      });
-    });
-    
-    // Aplicar cores aos botões de adicionar e editar
-    const addButtons = document.querySelectorAll('.add-btn');
-    const editButtons = document.querySelectorAll('.edit-btn');
-    
-    // Aplicar estilo a botões de adicionar
-    addButtons.forEach(function(button) {
-      button.style.color = 'var(--violet-deep)';
-      button.style.borderColor = 'var(--violet)';
-      button.style.borderRadius = '8px';
-      button.style.transition = 'all 0.3s ease';
-      button.style.fontWeight = '500';
-    });
-    
-    // Aplicar estilo a botões de editar
-    editButtons.forEach(function(button) {
-      button.style.color = 'var(--violet-deep)';
-      button.style.borderColor = 'var(--violet)';
-      button.style.borderRadius = '8px';
-      button.style.transition = 'all 0.3s ease';
-      button.style.fontWeight = '500';
-    });
-    
-    // Aplicar hover via JavaScript
-    function applyHoverEffect(buttons) {
-      buttons.forEach(function(button) {
-        button.addEventListener('mouseover', function() {
-          this.style.backgroundColor = 'var(--violet)';
-          this.style.color = 'white';
-          this.style.transform = 'translateY(-1px)';
-          this.style.boxShadow = '0 4px 12px color-mix(in srgb, var(--violet) 30%, transparent)';
-        });
-        
-        button.addEventListener('mouseout', function() {
-          this.style.backgroundColor = '';
-          this.style.color = 'var(--violet-deep)';
-          this.style.transform = '';
-          this.style.boxShadow = '';
-        });
-      });
-    }
-    
-    applyHoverEffect(addButtons);
-    applyHoverEffect(editButtons);
-    
-    // Aplicar cores aos badges de nível
-    const nivelBadges = document.querySelectorAll('.nivel-badge');
-    const nivelBadgeShow = document.querySelectorAll('.nivel-badge-show');
-    
-    // Mapear níveis para as mesmas cores do badge CEFR usado no resto do app
-    // (ApplicationHelper::CEFR_COLORS, não dá pra chamar o helper Ruby aqui)
-    const nivelColors = {
-      'A1': 'var(--brand-bright)',
-      'A2': 'var(--info)',
-      'B1': 'var(--violet)',
-      'B2': 'var(--warning)',
-      'C1': 'var(--neutral-ink)',
-      'C2': 'var(--ink-soft)'
-    };
-    
-    // Aplicar aos badges pequenos (nivel-badge)
-    nivelBadges.forEach(function(badge) {
-      const nivel = badge.getAttribute('data-nivel');
-      if (nivelColors[nivel]) {
-        badge.style.backgroundColor = nivelColors[nivel];
-        badge.style.color = 'white';
-      } else {
-        badge.style.backgroundColor = 'var(--brand)'; // Cor padrão rosa
-        badge.style.color = 'white';
-      }
-      // Adicionar um pouco de padding e border-radius para melhor aparência
-      badge.style.padding = '0.35em 0.65em';
-      badge.style.fontWeight = '600';
-    });
-    
-    // Aplicar aos badges grandes da view show (nivel-badge-show)
-    nivelBadgeShow.forEach(function(badge) {
-      const nivel = badge.getAttribute('data-nivel');
-      if (nivelColors[nivel]) {
-        // Usar a mesma cor do nível, mas com gradiente sutil para elegância
-        const baseColor = nivelColors[nivel];
-        badge.style.background = `linear-gradient(135deg, ${baseColor} 0%, color-mix(in srgb, ${baseColor} 85%, black) 100%)`;
-        badge.style.color = 'white';
-      } else {
-        badge.style.background = 'linear-gradient(135deg, var(--brand) 0%, color-mix(in srgb, var(--brand) 85%, black) 100%)';
-        badge.style.color = 'white';
-      }
-    });
-  });
-  
-  // Função para fechar qualquer formulário modal
-  function closeFormModal() {
-    const forms = document.querySelectorAll('.form-section');
-    forms.forEach(function(form) {
-      form.style.display = 'none';
-    });
+<style>
+  .add-btn {
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-size: 1.1rem;
+    padding: 10px 14px;
+    border-radius: 10px;
+    border: 1.5px solid var(--brand-bright);
+    background: var(--surface);
+    color: var(--brand-deep);
+    cursor: pointer;
   }
 
-  // Função para rolar até o elemento recém-adicionado
+  .highlight-new-element {
+    animation: highlight-pulse 3s ease-out;
+  }
+
+  @keyframes highlight-pulse {
+    0% { box-shadow: 0 0 0 3px var(--brand-bright); }
+    100% { box-shadow: none; }
+  }
+</style>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
+    document.querySelectorAll('.toggle-form').forEach(function (button) {
+      button.addEventListener('click', function () {
+        const target = document.getElementById(this.getAttribute('data-target'));
+        if (!target) return;
+        target.style.display = (target.style.display === 'none' || target.style.display === '') ? 'block' : 'none';
+      });
+    });
+  });
+
+  // Rola a tela até o elemento indicado por ?scroll_to= (usado depois de
+  // criar/apagar exercícios) e destaca ele por 3s.
   function scrollToHighlightElement() {
-    console.log("Verificando se há elemento para destacar...");
-    // Verifica se há um elemento marcado para rolagem na URL
-    const params = new URLSearchParams(window.location.search);
-    const scrollToElement = params.get('scroll_to');
-    
-    if (scrollToElement) {
-      console.log("Elemento para destacar:", scrollToElement);
-      const element = document.getElementById(scrollToElement);
-      if (element) {
-        console.log("Elemento encontrado, rolando para ele...");
-        // Usar setTimeout para garantir que a rolagem ocorre após a renderização completa
-        setTimeout(() => {
-          element.scrollIntoView({ behavior: 'smooth', block: 'center' });
-          
-          // Adicionar um destaque temporário
-          element.classList.add('highlight-new-element');
-          console.log("Classe highlight adicionada");
-          
-          setTimeout(function() {
-            element.classList.remove('highlight-new-element');
-            console.log("Classe highlight removida");
-          }, 3000);
-        }, 300);
-      } else {
-        console.log("Elemento não encontrado:", scrollToElement);
-      }
-    }
+    const scrollToId = new URLSearchParams(window.location.search).get('scroll_to');
+    if (!scrollToId) return;
+
+    const element = document.getElementById(scrollToId);
+    if (!element) return;
+
+    setTimeout(() => {
+      element.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      element.classList.add('highlight-new-element');
+      setTimeout(() => element.classList.remove('highlight-new-element'), 3000);
+    }, 300);
   }
 
-  // Executar quando o DOM estiver pronto (para carregamentos normais)
-  document.addEventListener('DOMContentLoaded', function() {
-    console.log("DOMContentLoaded disparado");
-    scrollToHighlightElement();
-  });
-  
-  // Para aplicações Rails com Turbolinks
-  if (typeof Turbolinks !== 'undefined') {
-    document.addEventListener('turbolinks:load', function() {
-      console.log("turbolinks:load disparado");
-      scrollToHighlightElement();
-    });
-  }
-  
-  // Para aplicações Rails com Turbo
-  if (typeof Turbo !== 'undefined') {
-    document.addEventListener('turbo:load', function() {
-      console.log("turbo:load disparado");
-      scrollToHighlightElement();
-    });
-    
-    document.addEventListener('turbo:render', function() {
-      console.log("turbo:render disparado");
-      scrollToHighlightElement();
-    });
-  }
-  
-  // Executar imediatamente caso a página já esteja carregada
+  document.addEventListener('DOMContentLoaded', scrollToHighlightElement);
+  document.addEventListener('turbo:load', scrollToHighlightElement);
   if (document.readyState === 'complete' || document.readyState === 'interactive') {
-    console.log("Documento já carregado, executando imediatamente");
     setTimeout(scrollToHighlightElement, 100);
   }
 </script>
-
-<style>
-  /* Estilizar o botão de exclusão para ficar inline com outros botões */
-  form.button_to {
-    display: inline-block;
-    margin: 0;
-  }
-  
-  .item-actions .button_to button {
-    margin: 0;
-    padding: 0.25rem 0.5rem;
-    font-size: 0.875rem;
-    line-height: 1.5;
-  }
-  
-  /* Estilos para os botões de adicionar na seção de botões */
-  .add-buttons {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 10px;
-    margin-top: 15px;
-  }
-  
-  /* Estilo para a barra de ações */
-  .actions-bar {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 10px;
-    justify-content: flex-start;
-    align-items: center;
-    margin-top: 20px;
-  }
-  
-  .actions-bar .btn-supprimer {
-    margin-left: auto;
-  }
-  
-  /* Preservar formatação de texto (quebras de linha e espaços) */
-  .preserve-format {
-    white-space: pre-wrap;
-    word-wrap: break-word;
-  }
-  
-  /* Estilos para os botões de ação */
-  .btn-resoudre {
-    background-color: var(--violet);
-    border-color: var(--violet);
-    color: white;
-    padding: 0.4rem 1rem;
-    transition: all 0.2s ease;
-  }
-  
-  .btn-resoudre:hover {
-    background-color: var(--violet-deep);
-    border-color: var(--violet-deep);
-    color: white;
-  }
-  
-  .btn-modifier {
-    background-color: white;
-    border: 2px solid var(--brand);
-    color: var(--brand);
-    padding: 0.4rem 1rem;
-    transition: all 0.2s ease;
-  }
-  
-  .btn-modifier:hover {
-    background-color: var(--brand);
-    color: white;
-  }
-  
-  .btn-retour {
-    background-color: var(--ink-soft);
-    border-color: var(--ink-soft);
-    color: white;
-    padding: 0.4rem 1rem;
-    transition: all 0.2s ease;
-  }
-  
-  .btn-retour:hover {
-    background-color: var(--ink);
-    border-color: var(--ink);
-    color: white;
-  }
-  
-  .btn-supprimer {
-    background-color: var(--error);
-    border-color: var(--error);
-    color: white;
-    padding: 0.4rem 1rem;
-    transition: all 0.2s ease;
-  }
-  
-  .btn-supprimer:hover {
-    background-color: var(--error-deep);
-    border-color: var(--error-deep);
-    color: white;
-  }
-  
-  .btn-voir {
-    background-color: var(--violet);
-    border-color: var(--violet);
-    color: white;
-    transition: all 0.2s ease;
-  }
-  
-  .btn-voir:hover {
-    background-color: var(--violet-deep);
-    border-color: var(--violet-deep);
-    color: white;
-  }
-  
-  /* Estilos para o badge de ordem */
-  .order-badge {
-    display: inline-block;
-    margin-right: 15px;
-    vertical-align: middle;
-    position: relative;
-  }
-  
-  .order-form {
-    display: inline-flex;
-    align-items: center;
-  }
-  
-  .order-input {
-    width: 50px;
-    height: 38px;
-    border: 2px solid var(--brand);
-    border-radius: 20px;
-    text-align: center;
-    font-weight: bold;
-    color: var(--brand);
-    background-color: white;
-    padding: 0 5px;
-  }
-  
-  .order-submit {
-    background-color: var(--brand);
-    color: white;
-    border: none;
-    border-radius: 50%;
-    width: 25px;
-    height: 25px;
-    font-size: 12px;
-    padding: 0;
-    margin-left: -15px;
-    position: relative;
-    top: 0;
-    cursor: pointer;
-    opacity: 0.3;
-    transition: opacity 0.3s ease;
-  }
-  
-  .order-input:focus + .order-submit,
-  .order-input:hover + .order-submit,
-  .order-submit:hover,
-  .order-form:hover .order-submit {
-    opacity: 1;
-  }
-  
-  /* Estilos para contêineres de vídeo e imagem */
-  .video-container {
-    max-width: 75%;
-    margin: 0 auto;
-  }
-  
-  .image-container {
-    max-width: 75%;
-    margin: 0 auto;
-    text-align: center;
-  }
-  
-  /* Media queries para responsividade */
-  @media (max-width: 768px) {
-    .video-container,
-    .image-container {
-      max-width: 100%;
-    }
-  }
-
-  /* Ajustar outros elementos que usavam o lavanda */
-  .paper-section h3 {
-    color: var(--violet-deep);
-  }
-
-  .decorative-line {
-    background: linear-gradient(to right, var(--brand), var(--brand-bright), var(--violet));
-  }
-
-  /* Highlight para elementos novos */
-  .highlight-new-element {
-    animation: highlightFade 3s ease-out;
-  }
-
-  @keyframes highlightFade {
-    0% { background-color: color-mix(in srgb, var(--brand) 20%, transparent); }
-    100% { background-color: transparent; }
-  }
-
-  /* Estilo para alternativa correta */
-  .correct-badge {
-    background-color: var(--brand);
-    color: white;
-    padding: 0.25em 0.5em;
-    border-radius: 4px;
-    margin-left: 0.5em;
-  }
-
-  /* === TÍTULO E BADGE DA ATIVIDADE === */
-  .title-container {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 1rem;
-    margin-bottom: 1rem;
-    flex-wrap: wrap;
-    text-align: center;
-  }
-
-  .activity-title {
-    background: linear-gradient(135deg, var(--violet-deep) 0%, var(--brand) 100%);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-    font-size: 2.5rem !important;
-    font-weight: 700 !important;
-    margin: 0 !important;
-    line-height: 1.2;
-    text-shadow: none;
-  }
-
-  .nivel-badge-show {
-    color: white !important;
-    font-size: 1.1rem !important;
-    font-weight: 700 !important;
-    padding: 0.6rem 1.2rem !important;
-    border-radius: 20px !important;
-    border: 3px solid rgba(255, 255, 255, 0.3) !important;
-    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15) !important;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-    position: relative;
-    overflow: hidden;
-  }
-
-  .nivel-badge-show::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: -100%;
-    width: 100%;
-    height: 100%;
-    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
-    transition: left 0.5s;
-  }
-
-  .nivel-badge-show:hover::before {
-    left: 100%;
-  }
-
-     /* Responsividade para título */
-   @media (max-width: 768px) {
-     .title-container {
-       flex-direction: column;
-       align-items: center;
-       gap: 0.75rem;
-     }
-    
-    .activity-title {
-      font-size: 2rem !important;
-    }
-    
-    .nivel-badge-show {
-      font-size: 1rem !important;
-      padding: 0.5rem 1rem !important;
-    }
-  }
-
-  @media (max-width: 480px) {
-    .activity-title {
-      font-size: 1.75rem !important;
-    }
-  }
-
-  /* === ESTILO DAISY MINIMALISTA === */
-  .daisy-activity-view {
-    background: linear-gradient(135deg, rgba(255, 255, 255, 0.98) 0%, rgba(255, 248, 250, 0.98) 100%) !important;
-    border: 2px solid color-mix(in srgb, var(--brand) 20%, transparent) !important;
-    box-shadow: 0 8px 32px color-mix(in srgb, var(--brand) 10%, transparent) !important;
-  }
-
-  .daisy-activity-view .activity-header h1 {
-    background: linear-gradient(135deg, var(--violet-deep) 0%, var(--brand) 100%);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-    font-weight: 600 !important;
-  }
-
-  .daisy-activity-view .decorative-line {
-    background: linear-gradient(to right, transparent, var(--brand), var(--brand-bright), var(--violet), transparent) !important;
-    height: 4px !important;
-  }
-
-  .daisy-activity-view .paper-section {
-    background: linear-gradient(135deg, rgba(255, 255, 255, 0.9) 0%, rgba(253, 244, 255, 0.9) 100%) !important;
-    border: 1px solid color-mix(in srgb, var(--brand) 15%, transparent) !important;
-    border-radius: 16px !important;
-  }
-
-  .daisy-activity-view .paper-section h3 {
-    color: var(--violet-deep) !important;
-    border-bottom: 2px solid color-mix(in srgb, var(--brand) 25%, transparent) !important;
-    font-weight: 500 !important;
-  }
-
-  .daisy-activity-view .content-box {
-    background: rgba(255, 255, 255, 0.95) !important;
-    border: 1px solid color-mix(in srgb, var(--brand) 12%, transparent) !important;
-    border-radius: 12px !important;
-    box-shadow: 0 4px 16px color-mix(in srgb, var(--violet) 8%, transparent) !important;
-  }
-
-  .daisy-activity-view .form-section {
-    background: linear-gradient(135deg, rgba(253, 244, 255, 0.9) 0%, rgba(250, 232, 255, 0.9) 100%) !important;
-    border: 1px solid color-mix(in srgb, var(--brand) 20%, transparent) !important;
-    border-radius: 12px !important;
-  }
-
-  .daisy-activity-view .btn-primary {
-    background: linear-gradient(135deg, var(--brand) 0%, var(--brand-bright) 100%) !important;
-    border: none !important;
-    border-radius: 8px !important;
-    box-shadow: 0 4px 12px color-mix(in srgb, var(--brand) 30%, transparent) !important;
-    color: white !important;
-  }
-
-  .daisy-activity-view .btn-primary:hover {
-    background: linear-gradient(135deg, var(--brand-deep) 0%, var(--brand) 100%) !important;
-    transform: translateY(-1px) !important;
-    box-shadow: 0 6px 16px color-mix(in srgb, var(--brand) 40%, transparent) !important;
-    color: white !important;
-  }
-
-  .daisy-activity-view .btn-secondary {
-    background: rgba(255, 255, 255, 0.9) !important;
-    border: 2px solid color-mix(in srgb, var(--violet) 40%, transparent) !important;
-    color: var(--violet-deep) !important;
-    border-radius: 8px !important;
-  }
-
-  .daisy-activity-view .btn-secondary:hover {
-    background: rgba(253, 244, 255, 0.9) !important;
-    border-color: var(--violet) !important;
-    color: var(--violet-deep) !important;
-  }
-
-  .daisy-activity-view .order-input {
-    border: 2px solid color-mix(in srgb, var(--violet) 40%, transparent) !important;
-    color: var(--violet-deep) !important;
-    background: rgba(255, 255, 255, 0.95) !important;
-  }
-
-  .daisy-activity-view .order-input:focus {
-    border-color: var(--violet) !important;
-    box-shadow: 0 0 0 0.2rem color-mix(in srgb, var(--violet) 25%, transparent) !important;
-  }
-
-  .daisy-activity-view .order-submit {
-    background: linear-gradient(135deg, var(--brand) 0%, var(--brand-bright) 100%) !important;
-  }
-
-  .daisy-activity-view .correct-badge {
-    background: linear-gradient(135deg, var(--success) 0%, var(--success-deep) 100%) !important;
-    border-radius: 12px !important;
-    box-shadow: 0 2px 8px color-mix(in srgb, var(--success) 30%, transparent) !important;
-  }
-
-  .daisy-activity-view .alternatives-list li {
-    background: rgba(253, 244, 255, 0.6) !important;
-    border: 1px solid color-mix(in srgb, var(--brand) 12%, transparent) !important;
-    border-radius: 8px !important;
-  }
-
-  .daisy-activity-view .video-container {
-    border-radius: 16px !important;
-    overflow: hidden !important;
-    box-shadow: 0 8px 24px color-mix(in srgb, var(--violet) 15%, transparent) !important;
-  }
-
-  .daisy-activity-view .image-container img {
-    border-radius: 12px !important;
-    box-shadow: 0 8px 24px color-mix(in srgb, var(--violet) 15%, transparent) !important;
-  }
-
-  .daisy-activity-view .actions-bar .btn-resoudre {
-    background: linear-gradient(135deg, var(--violet) 0%, var(--violet-deep) 100%) !important;
-    border: none !important;
-    border-radius: 12px !important;
-    box-shadow: 0 4px 12px color-mix(in srgb, var(--violet) 30%, transparent) !important;
-    color: white !important;
-  }
-
-  .daisy-activity-view .actions-bar .btn-resoudre:hover {
-    background: linear-gradient(135deg, var(--violet-deep) 0%, var(--violet-deep) 100%) !important;
-    transform: translateY(-2px) !important;
-    box-shadow: 0 6px 16px color-mix(in srgb, var(--violet) 40%, transparent) !important;
-    color: white !important;
-  }
-
-  .daisy-activity-view .actions-bar .btn-modifier {
-    background: rgba(255, 255, 255, 0.9) !important;
-    border: 2px solid var(--brand) !important;
-    color: var(--brand) !important;
-    border-radius: 12px !important;
-  }
-
-  .daisy-activity-view .actions-bar .btn-modifier:hover {
-    background: linear-gradient(135deg, var(--brand) 0%, var(--brand-bright) 100%) !important;
-    color: white !important;
-    transform: translateY(-2px) !important;
-  }
-
-  .daisy-activity-view .actions-bar .btn-retour {
-    background: rgba(255, 255, 255, 0.9) !important;
-    border: 2px solid var(--ink-faint) !important;
-    color: var(--ink-soft) !important;
-    border-radius: 12px !important;
-  }
-
-  .daisy-activity-view .actions-bar .btn-retour:hover {
-    background: var(--ink-faint) !important;
-    color: white !important;
-    transform: translateY(-2px) !important;
-  }
-
-  .daisy-activity-view .actions-bar .btn-supprimer {
-    background: linear-gradient(135deg, var(--ink-faint) 0%, var(--ink-soft) 100%) !important;
-    border: none !important;
-    border-radius: 12px !important;
-    box-shadow: 0 4px 12px color-mix(in srgb, var(--ink-faint) 30%, transparent) !important;
-  }
-
-  .daisy-activity-view .actions-bar .btn-supprimer:hover {
-    background: linear-gradient(135deg, var(--ink-faint) 0%, var(--ink) 100%) !important;
-    transform: translateY(-2px) !important;
-    box-shadow: 0 6px 16px color-mix(in srgb, var(--ink-faint) 40%, transparent) !important;
-  }
-
-  /* Efeito hover suave para seções */
-  .daisy-activity-view .paper-section:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 8px 24px color-mix(in srgb, var(--violet) 12%, transparent);
-    transition: all 0.3s ease;
-  }
-
-  /* Melhorar o highlight de novos elementos */
-  .daisy-activity-view .highlight-new-element {
-    background: linear-gradient(135deg, color-mix(in srgb, var(--violet) 8%, transparent) 0%, color-mix(in srgb, var(--brand) 8%, transparent) 100%) !important;
-    border: 2px solid color-mix(in srgb, var(--violet) 25%, transparent) !important;
-  }
-
-  /* Melhorar textos e conteúdo */
-  .daisy-activity-view .preserve-format,
-  .daisy-activity-view .item-content,
-  .daisy-activity-view p {
-    color: var(--ink) !important;
-    line-height: 1.6 !important;
-  }
-
-  .daisy-activity-view .form-control {
-    border: 2px solid color-mix(in srgb, var(--violet) 20%, transparent) !important;
-    color: var(--ink) !important;
-  }
-
-  .daisy-activity-view .form-control:focus {
-    border-color: var(--violet) !important;
-    box-shadow: 0 0 0 0.2rem color-mix(in srgb, var(--violet) 25%, transparent) !important;
-  }
-
-  /* === ESTILOS PARA BOTÕES ANTIGOS (fora do .daisy-activity-view) === */
-  .btn-outline-primary {
-    border-color: var(--brand) !important;
-    color: var(--brand-deep) !important;
-    border-radius: 8px !important;
-    transition: all 0.3s ease !important;
-    font-weight: 500 !important;
-  }
-
-  .btn-outline-primary:hover {
-    background-color: var(--brand) !important;
-    border-color: var(--brand) !important;
-    color: white !important;
-    transform: translateY(-1px) !important;
-    box-shadow: 0 4px 12px color-mix(in srgb, var(--brand) 30%, transparent) !important;
-  }
-
-  .btn-outline-danger {
-    border-color: var(--error) !important;
-    color: var(--error-deep) !important;
-    border-radius: 8px !important;
-    transition: all 0.3s ease !important;
-    font-weight: 500 !important;
-  }
-
-  .btn-outline-danger:hover {
-    background-color: var(--error) !important;
-    border-color: var(--error) !important;
-    color: white !important;
-    transform: translateY(-1px) !important;
-    box-shadow: 0 4px 12px color-mix(in srgb, var(--error) 30%, transparent) !important;
-  }
-
-  .btn-primary {
-    background: linear-gradient(135deg, var(--brand) 0%, var(--brand-deep) 100%) !important;
-    border: none !important;
-    border-radius: 8px !important;
-    color: white !important;
-    font-weight: 500 !important;
-    transition: all 0.3s ease !important;
-    box-shadow: 0 4px 12px color-mix(in srgb, var(--brand) 30%, transparent) !important;
-  }
-
-  .btn-primary:hover {
-    background: linear-gradient(135deg, var(--brand-deep) 0%, var(--brand-deep) 100%) !important;
-    transform: translateY(-1px) !important;
-    box-shadow: 0 6px 16px color-mix(in srgb, var(--brand) 40%, transparent) !important;
-    color: white !important;
-  }
-
-  .btn-secondary {
-    background: rgba(255, 255, 255, 0.9) !important;
-    border: 2px solid color-mix(in srgb, var(--violet) 40%, transparent) !important;
-    color: var(--violet-deep) !important;
-    border-radius: 8px !important;
-    font-weight: 500 !important;
-    transition: all 0.3s ease !important;
-  }
-
-  .btn-secondary:hover {
-    background: rgba(253, 244, 255, 0.9) !important;
-    border-color: var(--violet) !important;
-    color: var(--violet-deep) !important;
-    transform: translateY(-1px) !important;
-  }
-
-  /* === ESTILOS PARA EXERCÍCIOS DE ORGANIZAÇÃO === */
-  .words-list {
-    display: flex !important;
-    flex-wrap: wrap !important;
-    gap: 0.5rem !important;
-    margin-top: 0.5rem !important;
-  }
-
-  .word-badge {
-    background: linear-gradient(135deg, var(--info-deep) 0%, var(--info) 100%) !important;
-    color: white !important;
-    padding: 0.25rem 0.75rem !important;
-    border-radius: 20px !important;
-    font-size: 0.875rem !important;
-    font-weight: 500 !important;
-    box-shadow: 0 2px 8px color-mix(in srgb, var(--info) 30%, transparent) !important;
-  }
-
-  .sentences-container {
-    margin-top: 0.75rem !important;
-  }
-
-  .sentence-item {
-    background: rgba(253, 244, 255, 0.6) !important;
-    border: 1px solid color-mix(in srgb, var(--violet) 15%, transparent) !important;
-    border-radius: 8px !important;
-    padding: 0.75rem !important;
-    margin-bottom: 0.5rem !important;
-    transition: all 0.3s ease !important;
-  }
-
-  .sentence-item:hover {
-    transform: translateY(-1px) !important;
-    box-shadow: 0 4px 12px color-mix(in srgb, var(--info) 10%, transparent) !important;
-  }
-
-  .sentence-number {
-    background: linear-gradient(135deg, var(--info-deep) 0%, var(--info) 100%) !important;
-    color: white !important;
-    padding: 0.25rem 0.5rem !important;
-    border-radius: 6px !important;
-    font-weight: 600 !important;
-    font-size: 0.875rem !important;
-    margin-right: 0.75rem !important;
-    display: inline-block !important;
-  }
-
-  .sentence-text {
-    color: var(--ink) !important;
-    font-weight: 500 !important;
-    line-height: 1.5 !important;
-  }
-
-  .paragraph-info {
-    background: linear-gradient(135deg, rgba(253, 244, 255, 0.8) 0%, rgba(250, 232, 255, 0.8) 100%) !important;
-    border: 2px solid color-mix(in srgb, var(--violet) 20%, transparent) !important;
-    border-radius: 12px !important;
-    padding: 1rem !important;
-    margin-bottom: 1rem !important;
-    color: var(--ink) !important;
-    line-height: 1.6 !important;
-  }
-
-  /* Melhorar formulários antigos */
-  .form-control {
-    border: 2px solid color-mix(in srgb, var(--violet) 20%, transparent) !important;
-    border-radius: 8px !important;
-    color: var(--ink) !important;
-    transition: all 0.3s ease !important;
-  }
-
-  .form-control:focus {
-    border-color: var(--violet) !important;
-    box-shadow: 0 0 0 0.2rem color-mix(in srgb, var(--violet) 25%, transparent) !important;
-  }
-
-  /* Melhorar badges de nível antigos */
-  .badge {
-    border-radius: 12px !important;
-    font-weight: 600 !important;
-    padding: 0.4em 0.8em !important;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1) !important;
-  }
-
-  /* Melhorar seções antigas */
-  .paper-section {
-    background: linear-gradient(135deg, rgba(255, 255, 255, 0.9) 0%, rgba(253, 244, 255, 0.9) 100%) !important;
-    border: 1px solid color-mix(in srgb, var(--brand) 15%, transparent) !important;
-    border-radius: 16px !important;
-    transition: all 0.3s ease !important;
-  }
-
-  .paper-section:hover {
-    transform: translateY(-2px) !important;
-    box-shadow: 0 8px 24px color-mix(in srgb, var(--violet) 12%, transparent) !important;
-  }
-
-  .paper-section h3 {
-    color: var(--violet-deep) !important;
-    border-bottom: 2px solid color-mix(in srgb, var(--brand) 25%, transparent) !important;
-    font-weight: 500 !important;
-  }
-
-  .content-box {
-    background: rgba(255, 255, 255, 0.95) !important;
-    border: 1px solid color-mix(in srgb, var(--brand) 12%, transparent) !important;
-    border-radius: 12px !important;
-    box-shadow: 0 4px 16px color-mix(in srgb, var(--violet) 8%, transparent) !important;
-  }
-
-  .form-section {
-    background: linear-gradient(135deg, rgba(253, 244, 255, 0.9) 0%, rgba(250, 232, 255, 0.9) 100%) !important;
-    border: 1px solid color-mix(in srgb, var(--brand) 20%, transparent) !important;
-    border-radius: 12px !important;
-  }
-
-  /* === BOTÕES APENAS COM ÍCONES === */
-  .btn-sm {
-    min-width: 32px !important;
-    height: 32px !important;
-    display: inline-flex !important;
-    align-items: center !important;
-    justify-content: center !important;
-    padding: 0.375rem !important;
-  }
-
-  .btn-sm i {
-    font-size: 0.875rem !important;
-    margin: 0 !important;
-  }
-
-  /* Melhorar espaçamento dos botões de ação */
-  .item-actions {
-    display: flex !important;
-    gap: 8px !important;
-    align-items: center !important;
-    margin-top: 0.5rem !important;
-  }
-
-  .add-buttons {
-    display: flex !important;
-    flex-wrap: wrap !important;
-    gap: 12px !important;
-    margin-top: 15px !important;
-  }
-
-  .add-buttons .btn {
-    min-width: 45px !important;
-    height: 45px !important;
-    display: inline-flex !important;
-    align-items: center !important;
-    justify-content: center !important;
-    padding: 0.75rem !important;
-  }
-
-  .add-buttons .btn i {
-    font-size: 1.2rem !important;
-  }
-
-  /* === ESTILOS PARA EXERCÍCIOS DE LACUNAS === */
-  .fill-blank-preview {
-    background: linear-gradient(135deg, rgba(253, 244, 255, 0.8) 0%, rgba(250, 232, 255, 0.8) 100%) !important;
-    border: 2px solid color-mix(in srgb, var(--violet) 20%, transparent) !important;
-    border-radius: 12px !important;
-    padding: 1rem !important;
-    margin-bottom: 1rem !important;
-  }
-
-  .blanks-answers {
-    background: linear-gradient(135deg, rgba(255, 255, 255, 0.9) 0%, rgba(253, 244, 255, 0.9) 100%) !important;
-    border: 1px solid color-mix(in srgb, var(--brand) 15%, transparent) !important;
-    border-radius: 12px !important;
-    padding: 1rem !important;
-  }
-
-  .blanks-list {
-    display: flex !important;
-    flex-direction: column !important;
-    gap: 0.75rem !important;
-    margin-top: 0.75rem !important;
-  }
-
-  .blank-item {
-    background: rgba(255, 255, 255, 0.95) !important;
-    border: 1px solid color-mix(in srgb, var(--violet) 15%, transparent) !important;
-    border-radius: 8px !important;
-    padding: 0.75rem !important;
-    transition: all 0.3s ease !important;
-  }
-
-  .blank-item:hover {
-    transform: translateY(-1px) !important;
-    box-shadow: 0 4px 12px color-mix(in srgb, var(--violet) 10%, transparent) !important;
-  }
-
-  .blank-number {
-    background: linear-gradient(135deg, var(--info-deep) 0%, var(--info) 100%) !important;
-    color: white !important;
-    padding: 0.25rem 0.5rem !important;
-    border-radius: 6px !important;
-    font-weight: 600 !important;
-    font-size: 0.875rem !important;
-    margin-right: 0.75rem !important;
-    display: inline-block !important;
-  }
-
-  /* === ESTILOS PARA EXERCÍCIOS DE ASSOCIAÇÃO === */
-  .association-info {
-    background: linear-gradient(135deg, rgba(253, 244, 255, 0.8) 0%, rgba(250, 232, 255, 0.8) 100%) !important;
-    border: 2px solid color-mix(in srgb, var(--violet) 20%, transparent) !important;
-    border-radius: 12px !important;
-    padding: 1rem !important;
-    margin-bottom: 1rem !important;
-    color: var(--ink) !important;
-    line-height: 1.6 !important;
-  }
-
-  .association-preview {
-    background: rgba(255, 255, 255, 0.95) !important;
-    border: 1px solid color-mix(in srgb, var(--brand) 12%, transparent) !important;
-    border-radius: 12px !important;
-    padding: 1rem !important;
-    margin-top: 0.75rem !important;
-  }
-
-  .preview-columns {
-    display: grid !important;
-    grid-template-columns: 1fr auto 1fr !important;
-    gap: 1rem !important;
-    align-items: start !important;
-  }
-
-  .preview-column {
-    background: linear-gradient(135deg, rgba(253, 244, 255, 0.6) 0%, rgba(250, 232, 255, 0.6) 100%) !important;
-    border: 1px solid color-mix(in srgb, var(--violet) 15%, transparent) !important;
-    border-radius: 8px !important;
-    padding: 0.75rem !important;
-  }
-
-  .preview-column h5 {
-    color: var(--violet-deep) !important;
-    font-weight: 600 !important;
-    margin-bottom: 0.75rem !important;
-    font-size: 1rem !important;
-    text-align: center !important;
-    border-bottom: 1px solid color-mix(in srgb, var(--violet) 20%, transparent) !important;
-    padding-bottom: 0.5rem !important;
-  }
-
-  .preview-separator {
-    display: flex !important;
-    align-items: center !important;
-    justify-content: center !important;
-    font-size: 1.5rem !important;
-    color: var(--violet) !important;
-    font-weight: bold !important;
-  }
-
-  /* A grade de 3 colunas (Français | ↔ | Portugais) do exercício de
-     associação nunca teve breakpoint mobile e vazava da tela — empilha
-     as colunas e some com o separador central abaixo de 768px. */
-  @media (max-width: 768px) {
-    .preview-columns {
-      grid-template-columns: 1fr !important;
-    }
-
-    .preview-separator {
-      display: none !important;
-    }
-  }
-
-  .association-pair-item {
-    background: rgba(255, 255, 255, 0.8) !important;
-    border: 1px solid color-mix(in srgb, var(--violet) 15%, transparent) !important;
-    border-radius: 8px !important;
-    padding: 0.5rem !important;
-    margin-bottom: 0.5rem !important;
-    display: flex !important;
-    align-items: center !important;
-    gap: 0.5rem !important;
-    transition: all 0.3s ease !important;
-  }
-
-  .association-pair-item:hover {
-    transform: translateY(-1px) !important;
-    box-shadow: 0 4px 12px color-mix(in srgb, var(--info) 10%, transparent) !important;
-  }
-
-  .pair-number {
-    background: linear-gradient(135deg, var(--info-deep) 0%, var(--info) 100%) !important;
-    color: white !important;
-    padding: 0.25rem 0.5rem !important;
-    border-radius: 6px !important;
-    font-weight: 600 !important;
-    font-size: 0.75rem !important;
-    min-width: 2rem !important;
-    text-align: center !important;
-  }
-
-  .pair-text {
-    flex: 1 !important;
-    color: var(--ink) !important;
-    font-weight: 500 !important;
-  }
-
-  .blank-answer {
-    color: var(--ink) !important;
-    font-weight: 500 !important;
-    font-style: italic !important;
-  }
-
-  .blank-input {
-    border: 2px solid color-mix(in srgb, var(--violet) 30%, transparent) !important;
-    border-radius: 6px !important;
-    padding: 0.375rem 0.75rem !important;
-    background: rgba(255, 255, 255, 0.95) !important;
-    color: var(--ink) !important;
-    font-weight: 500 !important;
-    transition: all 0.3s ease !important;
-    min-width: 100px !important;
-    display: inline-block !important;
-    margin: 0 0.25rem !important;
-  }
-
-  .blank-input:focus {
-    border-color: var(--violet) !important;
-    box-shadow: 0 0 0 0.2rem color-mix(in srgb, var(--violet) 25%, transparent) !important;
-    outline: none !important;
-  }
-
-  .blank-input::placeholder {
-    color: var(--ink-faint) !important;
-    font-style: italic !important;
-  }
-
-  /* === FORMULÁRIOS INLINE === */
-  .form-section {
-    margin-top: 1rem !important;
-    animation: slideDown 0.3s ease-out !important;
-  }
-
-  @keyframes slideDown {
-    from {
-      opacity: 0;
-      transform: translateY(-10px);
-    }
-    to {
-      opacity: 1;
-      transform: translateY(0);
-    }
-  }
-</style>

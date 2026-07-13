@@ -1,0 +1,26 @@
+<div style="background:var(--surface-2); border:1px solid var(--line-soft); border-radius:10px; padding:10px 12px;">
+  <div style="display:flex; align-items:center; justify-content:space-between; gap:10px;">
+    <div style="font-family:'Plus Jakarta Sans',sans-serif; font-size:0.88rem; color:var(--ink);">
+      <span style="font-family:'DM Mono',monospace; font-weight:700; color:var(--info);">[<%= blank.position %>]</span>
+      <%= blank.correct_answer.presence || "Non définie" %>
+    </div>
+    <button type="button" class="toggle-form" data-target="form-blank-<%= blank.id %>" title="Modifier la réponse"
+            style="font-family:'Plus Jakarta Sans',sans-serif; font-size:0.72rem; font-weight:700; padding:3px 8px; border-radius:7px; border:1.5px solid var(--brand-bright); background:var(--surface); color:var(--brand-deep); cursor:pointer; flex-shrink:0;">
+      <i class="bi bi-pencil"></i>
+    </button>
+  </div>
+
+  <div id="form-blank-<%= blank.id %>" style="display:none; margin-top:10px;">
+    <%= form_with model: blank, url: activity_fill_blank_blank_path(@activity, fill_blank, blank), method: :patch do |form| %>
+      <%= form.text_field :correct_answer, placeholder: "Réponse correcte pour le trou [#{blank.position}]",
+            style: "width:100%; font-family:'Plus Jakarta Sans',sans-serif; font-size:0.88rem; padding:8px 10px; border:1.5px solid var(--line); border-radius:9px; background:var(--surface); color:var(--ink);" %>
+      <div style="display:flex; gap:8px; margin-top:8px;">
+        <%= form.submit "Enregistrer", style: "font-family:'Plus Jakarta Sans',sans-serif; font-size:0.8rem; font-weight:700; padding:7px 16px; border-radius:999px; border:none; background:var(--brand); color:var(--surface); cursor:pointer;" %>
+        <button type="button" onclick="document.getElementById('form-blank-<%= blank.id %>').style.display='none'"
+                style="font-family:'Plus Jakarta Sans',sans-serif; font-size:0.8rem; font-weight:700; padding:7px 16px; border-radius:999px; border:1.5px solid var(--line); background:var(--surface); color:var(--ink-soft); cursor:pointer;">
+          Annuler
+        </button>
+      </div>
+    <% end %>
+  </div>
+</div>

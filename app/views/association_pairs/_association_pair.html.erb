@@ -1,0 +1,37 @@
+<div style="background:var(--surface-2); border:1px solid var(--line-soft); border-radius:10px; padding:10px 12px;">
+  <div style="display:flex; align-items:center; justify-content:space-between; gap:10px;">
+    <div style="font-family:'Plus Jakarta Sans',sans-serif; font-size:0.88rem; color:var(--ink);">
+      <span style="font-family:'DM Mono',monospace; font-weight:700; color:var(--warning);">[<%= association_pair.pair_order %>]</span>
+      <%= association_pair.item_a %>
+    </div>
+    <div style="display:flex; gap:6px; flex-shrink:0;">
+      <button type="button" class="toggle-form" data-target="form-pair-<%= association_pair.id %>" title="Modifier la paire"
+              style="font-family:'Plus Jakarta Sans',sans-serif; font-size:0.72rem; font-weight:700; padding:3px 8px; border-radius:7px; border:1.5px solid var(--brand-bright); background:var(--surface); color:var(--brand-deep); cursor:pointer;">
+        <i class="bi bi-pencil"></i>
+      </button>
+      <%= button_to activity_column_association_association_pair_path(@activity, column_association, association_pair), method: :delete,
+            form: { data: { turbo_confirm: "Supprimer cette paire ?" } },
+            style: "font-family:'Plus Jakarta Sans',sans-serif; font-size:0.72rem; font-weight:700; padding:3px 8px; border-radius:7px; border:1.5px solid var(--error-border); background:var(--error-tint); color:var(--error-deep); cursor:pointer;" do %>
+        <i class="bi bi-trash"></i>
+      <% end %>
+    </div>
+  </div>
+
+  <div id="form-pair-<%= association_pair.id %>" style="display:none; margin-top:10px;">
+    <%= form_with model: association_pair, url: activity_column_association_association_pair_path(@activity, column_association, association_pair), method: :patch do |form| %>
+      <div style="display:flex; gap:8px;">
+        <%= form.text_field :item_a, placeholder: column_association.column_a_title,
+              style: "flex:1; font-family:'Plus Jakarta Sans',sans-serif; font-size:0.88rem; padding:8px 10px; border:1.5px solid var(--line); border-radius:9px; background:var(--surface); color:var(--ink);" %>
+        <%= form.text_field :item_b, placeholder: column_association.column_b_title,
+              style: "flex:1; font-family:'Plus Jakarta Sans',sans-serif; font-size:0.88rem; padding:8px 10px; border:1.5px solid var(--line); border-radius:9px; background:var(--surface); color:var(--ink);" %>
+      </div>
+      <div style="display:flex; gap:8px; margin-top:8px;">
+        <%= form.submit "Enregistrer", style: "font-family:'Plus Jakarta Sans',sans-serif; font-size:0.8rem; font-weight:700; padding:7px 16px; border-radius:999px; border:none; background:var(--brand); color:var(--surface); cursor:pointer;" %>
+        <button type="button" onclick="document.getElementById('form-pair-<%= association_pair.id %>').style.display='none'"
+                style="font-family:'Plus Jakarta Sans',sans-serif; font-size:0.8rem; font-weight:700; padding:7px 16px; border-radius:999px; border:1.5px solid var(--line); background:var(--surface); color:var(--ink-soft); cursor:pointer;">
+          Annuler
+        </button>
+      </div>
+    <% end %>
+  </div>
+</div>
