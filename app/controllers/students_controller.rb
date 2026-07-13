@@ -4,7 +4,9 @@ class StudentsController < ApplicationController
   def dashboard
     # Dados de progresso do estudante com otimização
     @completed_activities = current_student.completed_activities
-                                          .includes(activity: :activity_ratings)
+                                          .includes(activity: [:activity_ratings, :questions, :fill_blanks,
+                                                                :sentence_orderings, :paragraph_orderings,
+                                                                :column_associations])
                                           .order(created_at: :desc)
     @completed_count = @completed_activities.count
 
@@ -58,7 +60,8 @@ class StudentsController < ApplicationController
   def activities
     # Buscar todas as atividades com avaliações pré-carregadas, só as que o
     # aluno pode acessar (nível dele e abaixo; sem nível definido = tudo)
-    all_activities = Activity.includes(:activity_ratings)
+    all_activities = Activity.includes(:activity_ratings, :questions, :fill_blanks,
+                                        :sentence_orderings, :paragraph_orderings, :column_associations)
                               .where(nível: current_student.accessible_levels)
                               .order(:título)
     

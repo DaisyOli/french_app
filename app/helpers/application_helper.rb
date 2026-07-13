@@ -50,11 +50,14 @@ module ApplicationHelper
 
   # Total de exercícios da atividade (a view antiga esquecia as associações
   # de colunas — por isso alguns cards mostravam "0 questions").
+  # .size (não .count): usa o array já carregado quando o controller faz
+  # .includes(...) nessas associações, em vez de bater 5 queries por
+  # atividade sempre que essa helper é chamada dentro de um .each.
   def activity_exercise_count(activity)
-    activity.questions.count +
-      activity.fill_blanks.count +
-      activity.sentence_orderings.count +
-      activity.paragraph_orderings.count +
-      activity.column_associations.count
+    activity.questions.size +
+      activity.fill_blanks.size +
+      activity.sentence_orderings.size +
+      activity.paragraph_orderings.size +
+      activity.column_associations.size
   end
 end
