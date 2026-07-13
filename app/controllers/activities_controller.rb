@@ -1,11 +1,13 @@
 class ActivitiesController < ApplicationController
   before_action :authenticate_user_or_student!
-  before_action :authenticate_user!, only: [:new, :create, :edit, :update, :destroy, :remove_video, :remove_image, :remove_texte]
+  before_action :authenticate_user!, only: [:index, :new, :create, :edit, :update, :destroy, :remove_video, :remove_image, :remove_texte]
   before_action :set_activity, only: [:show, :edit, :update, :destroy, :remove_video, :remove_image, :remove_texte, :solve, :save_result]
+  before_action :ensure_owner!, only: [:show, :edit, :update, :destroy, :remove_video, :remove_image, :remove_texte]
 
   def index
-    # Otimização: carregar todas as associações necessárias de uma vez
-    @activities = Activity.includes(
+    # Só as atividades do professor logado — a listagem antiga mostrava
+    # Activity.all (todos os professores), sem isolar por dono.
+    @activities = current_user.activities.includes(
       :activity_ratings,
       :statements,
       :questions,
@@ -13,26 +15,37 @@ class ActivitiesController < ApplicationController
       :fill_blanks,
       :sentence_orderings,
       :paragraph_orderings,
-      :column_associations,
-      :user
-    ).all
-    
+      :column_associations
+    )
+
+    @activities = @activities.where("título ILIKE ?", "%#{params[:search]}%") if params[:search].present?
+    @activities = @activities.where(nível: params[:nível]) if params[:nível].present?
+    @activities = case params[:sort]
+                  when 'title' then @activities.order(:título)
+                  when 'oldest' then @activities.order(created_at: :asc)
+                  else @activities.order(created_at: :desc)
+                  end
+
     # Cache da consulta pesada por 10 minutos para reduzir pressão no Redis
-    @activities_stats = Rails.cache.fetch("activities_dashboard_stats", expires_in: 10.minutes) do
+    # (chave por professor agora que a listagem é escopada por dono)
+    @activities_stats = Rails.cache.fetch("activities_dashboard_stats_#{current_user.id}", expires_in: 10.minutes) do
+      my_activities = current_user.activities
       {
-        activities_with_ratings: @activities.select { |activity| activity.activity_ratings.any? },
-        total_ratings: ActivityRating.count,
-        average_rating_overall: ActivityRating.count > 0 ? ActivityRating.average(:stars).round(1) : 0
+        activities_with_ratings: my_activities.select { |activity| activity.activity_ratings.any? },
+        total_ratings: ActivityRating.where(activity: my_activities).count,
+        average_rating_overall: (avg = ActivityRating.where(activity: my_activities).average(:stars)) ? avg.round(1) : 0
       }
     end
-    
+
     @activities_with_ratings = @activities_stats[:activities_with_ratings]
     @total_ratings = @activities_stats[:total_ratings]
     @average_rating_overall = @activities_stats[:average_rating_overall]
-    
+
     # Avaliações recentes com limite reduzido para otimizar
-    @recent_ratings = Rails.cache.fetch("recent_ratings", expires_in: 5.minutes) do
-      ActivityRating.includes(:student, :activity)
+    @recent_ratings = Rails.cache.fetch("recent_ratings_#{current_user.id}", expires_in: 5.minutes) do
+      ActivityRating.joins(:activity)
+                    .where(activities: { user_id: current_user.id })
+                    .includes(:student, :activity)
                     .recent
                     .limit(5) # Reduzido de 10 para 5
     end
@@ -279,6 +292,15 @@ class ActivitiesController < ApplicationController
   private
     def set_activity
       @activity = Activity.find_by_param(params[:id])
+    end
+
+    # set_activity busca por slug/id sem checar dono — sem isso, qualquer
+    # professor logado conseguia editar/apagar a atividade de outro só
+    # sabendo o link.
+    def ensure_owner!
+      return if @activity.user == current_user
+
+      redirect_to activities_path, alert: "Vous n'avez pas accès à cette activité."
     end
 
     def activity_params

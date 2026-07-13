@@ -1,1957 +1,248 @@
-<div class="daisy-dashboard">
-  <!-- Hero Section Personalizado -->
-  <div class="hero-section">
-    <div class="hero-content">
-      <div class="daisy-welcome-card">
-        <div class="avatar-section">
-          <div class="daisy-avatar-hero">
-            <span class="daisy-initial-hero">D</span>
-            <div class="daisy-sparkles">*</div>
-          </div>
-          <div class="welcome-text">
-            <h1>Mes petites créations</h1>
-            <p>Tes activités pédagogiques avec amour</p>
-            <div class="daisy-mood-indicator">
-              <span class="mood-emoji">♥</span>
-              <span class="mood-text">Mode créatif activé!</span>
-            </div>
-          </div>
-        </div>
-        <div class="header-actions">
-          <div class="action-buttons">
-            <%= link_to new_activity_path, class: "btn-new-activity-daisy" do %>
-              <i class="bi bi-magic"></i>
-              <span>Nouvelle idée magique</span>
-              <div class="btn-sparkle">*</div>
-            <% end %>
-            <%= link_to new_student_invitation_path, class: "btn-invite-student-daisy" do %>
-              <i class="bi bi-envelope-heart-fill"></i>
-              <span>Inviter un étudiant</span>
-              <div class="btn-sparkle">✨</div>
-            <% end %>
-          </div>
-        </div>
-      </div>
+<% content_for :head do %>
+  <title>Mes activités · Practice-FR</title>
+<% end %>
+
+<div style="max-width:1100px; margin:0 auto; padding:28px 16px 60px;">
+
+  <%# Header %>
+  <div style="display:flex; align-items:baseline; justify-content:space-between; flex-wrap:wrap; gap:10px; margin-bottom:20px;">
+    <div>
+      <%= link_to teacher_dashboard_path,
+            style: "font-family:'Plus Jakarta Sans',sans-serif; font-size:0.8rem; font-weight:600; color:var(--ink-soft); text-decoration:none; display:inline-flex; align-items:center; gap:4px; margin-bottom:6px;" do %>
+        <i class="bi bi-arrow-left"></i> Tableau de bord
+      <% end %>
+      <h1 style="font-family:'Raleway',sans-serif; font-size:1.5rem; font-weight:800; color:var(--brand-deep); margin:0;">
+        Mes activités
+      </h1>
+    </div>
+    <div style="display:flex; gap:8px;">
+      <%= link_to new_student_invitation_path,
+            style: "font-family:'Plus Jakarta Sans',sans-serif; font-size:0.85rem; font-weight:700; padding:9px 18px; border-radius:999px; text-decoration:none; display:inline-flex; align-items:center; gap:6px; background:var(--surface); color:var(--ink-soft); border:1.5px solid var(--line);" do %>
+        <i class="bi bi-envelope"></i> Inviter un étudiant
+      <% end %>
+      <%= link_to new_activity_path,
+            style: "font-family:'Plus Jakarta Sans',sans-serif; font-size:0.85rem; font-weight:700; padding:9px 18px; border-radius:999px; text-decoration:none; display:inline-flex; align-items:center; gap:6px; background:var(--brand); color:var(--surface);" do %>
+        <i class="bi bi-plus-circle"></i> Nouvelle activité
+      <% end %>
     </div>
   </div>
 
-  <!-- Statistiques mignonnes -->
-  <div class="daisy-stats-section">
-    <div class="stats-container">
-      <div class="stat-card">
-        <div class="stat-icon"><i class="bi bi-palette-fill"></i></div>
-        <div class="stat-content">
-          <span class="stat-number"><%= @activities.count %></span>
-          <span class="stat-label">créations</span>
-        </div>
-      </div>
-      <div class="stat-card">
-        <div class="stat-icon"><i class="bi bi-book-fill"></i></div>
-        <div class="stat-content">
-          <span class="stat-number"><%= @activities.sum { |a| a.questions.count + a.fill_blanks.count + a.sentence_orderings.count + a.paragraph_orderings.count } %></span>
-          <span class="stat-label">questions</span>
-        </div>
-      </div>
-      <div class="stat-card stat-card-clickable" onclick="toggleRatingsModal()" style="cursor: pointer;">
-        <div class="stat-icon"><i class="bi bi-star-fill"></i></div>
-        <div class="stat-content">
-          <span class="stat-number"><%= @total_ratings %></span>
-          <span class="stat-label">évaluations</span>
+  <%# Métricas %>
+  <div style="display:flex; gap:12px; flex-wrap:wrap; margin-bottom:20px;">
+    <div style="flex:1; min-width:150px; background:var(--surface); border:1px solid var(--line); border-radius:14px; padding:14px 18px;">
+      <div style="font-family:'Raleway',sans-serif; font-size:1.5rem; font-weight:800; color:var(--brand-deep);"><%= @activities.count %></div>
+      <div style="font-family:'Plus Jakarta Sans',sans-serif; font-size:0.8rem; color:var(--ink-soft);">activités</div>
+    </div>
+    <div style="flex:1; min-width:150px; background:var(--surface); border:1px solid var(--line); border-radius:14px; padding:14px 18px;">
+      <div style="font-family:'Raleway',sans-serif; font-size:1.5rem; font-weight:800; color:var(--info);"><%= @activities.sum { |a| activity_exercise_count(a) } %></div>
+      <div style="font-family:'Plus Jakarta Sans',sans-serif; font-size:0.8rem; color:var(--ink-soft);">questions</div>
+    </div>
+    <button type="button" onclick="toggleRatingsModal()"
+            style="flex:1; min-width:150px; background:var(--surface); border:1px solid var(--line); border-radius:14px; padding:14px 18px; text-align:left; cursor:pointer; font:inherit;">
+      <div style="display:flex; align-items:center; justify-content:space-between;">
+        <div>
+          <div style="font-family:'Raleway',sans-serif; font-size:1.5rem; font-weight:800; color:var(--action);"><%= @total_ratings %></div>
+          <div style="font-family:'Plus Jakarta Sans',sans-serif; font-size:0.8rem; color:var(--ink-soft);">évaluations</div>
         </div>
         <% if @total_ratings > 0 %>
-          <div class="stat-arrow">
-            <i class="bi bi-chevron-right"></i>
-          </div>
+          <i class="bi bi-chevron-right" style="color:var(--ink-faint);"></i>
         <% end %>
       </div>
-    </div>
+    </button>
   </div>
 
-  <!-- Filtros por nível com estilo fofo -->
-  <div class="filters-section">
-    <div class="filter-header">
-      <h3><i class="bi bi-funnel-fill"></i> Filtrer par niveau</h3>
-      <p>Trouve tes créations par difficulté</p>
+  <%# Busca e filtros — GET tradicional, sem JS, igual ao practice-br %>
+  <%= form_with url: activities_path, method: :get,
+        style: "background:var(--surface); border:1px solid var(--line); border-radius:14px; padding:14px 16px; margin-bottom:24px; display:flex; gap:10px; flex-wrap:wrap; align-items:flex-end;" do %>
+    <div style="flex:2; min-width:180px;">
+      <label style="display:block; font-family:'DM Mono',monospace; font-size:0.68rem; font-weight:700; text-transform:uppercase; letter-spacing:0.04em; color:var(--ink-faint); margin-bottom:6px;">Rechercher</label>
+      <input type="text" name="search" value="<%= params[:search] %>" placeholder="Titre de l'activité..."
+             style="width:100%; font-family:'Plus Jakarta Sans',sans-serif; font-size:0.88rem; padding:9px 12px; border:1.5px solid var(--line); border-radius:9px; background:var(--surface); color:var(--ink);">
     </div>
-  <div class="niveau-filters">
-      <button class="filter-btn active" data-niveau="tous">
-        <i class="bi bi-rainbow"></i>
-        Tous mes niveaux
-      </button>
-      <button class="filter-btn filter-a1" data-niveau="A1">
-        <i class="bi bi-circle-fill"></i>
-        A1
-      </button>
-      <button class="filter-btn filter-a2" data-niveau="A2">
-        <i class="bi bi-circle-fill"></i>
-        A2
-      </button>
-      <button class="filter-btn filter-b1" data-niveau="B1">
-        <i class="bi bi-circle-fill"></i>
-        B1
-      </button>
-      <button class="filter-btn filter-b2" data-niveau="B2">
-        <i class="bi bi-circle-fill"></i>
-        B2
-      </button>
-      <button class="filter-btn filter-c1" data-niveau="C1">
-        <i class="bi bi-circle-fill"></i>
-        C1
-      </button>
-      <button class="filter-btn filter-c2" data-niveau="C2">
-        <i class="bi bi-circle-fill"></i>
-        C2
-      </button>
+    <div style="flex:1; min-width:130px;">
+      <label style="display:block; font-family:'DM Mono',monospace; font-size:0.68rem; font-weight:700; text-transform:uppercase; letter-spacing:0.04em; color:var(--ink-faint); margin-bottom:6px;">Niveau</label>
+      <select name="nível" style="width:100%; font-family:'Plus Jakarta Sans',sans-serif; font-size:0.88rem; padding:9px 12px; border:1.5px solid var(--line); border-radius:9px; background:var(--surface); color:var(--ink);">
+        <option value="">Tous</option>
+        <% %w[A1 A2 B1 B2 C1 C2].each do |level| %>
+          <option value="<%= level %>" <%= 'selected' if params[:nível] == level %>><%= level %></option>
+        <% end %>
+      </select>
     </div>
-  </div>
+    <div style="flex:1; min-width:150px;">
+      <label style="display:block; font-family:'DM Mono',monospace; font-size:0.68rem; font-weight:700; text-transform:uppercase; letter-spacing:0.04em; color:var(--ink-faint); margin-bottom:6px;">Trier par</label>
+      <select name="sort" style="width:100%; font-family:'Plus Jakarta Sans',sans-serif; font-size:0.88rem; padding:9px 12px; border:1.5px solid var(--line); border-radius:9px; background:var(--surface); color:var(--ink);">
+        <option value="recent" <%= 'selected' if params[:sort].blank? || params[:sort] == 'recent' %>>Plus récentes</option>
+        <option value="oldest" <%= 'selected' if params[:sort] == 'oldest' %>>Plus anciennes</option>
+        <option value="title" <%= 'selected' if params[:sort] == 'title' %>>Titre (A-Z)</option>
+      </select>
+    </div>
+    <div style="display:flex; gap:8px;">
+      <button type="submit"
+              style="font-family:'Plus Jakarta Sans',sans-serif; font-size:0.85rem; font-weight:700; padding:9px 20px; border-radius:9px; border:none; background:var(--brand); color:var(--surface); cursor:pointer;">
+        Filtrer
+      </button>
+      <% if params[:search].present? || params[:nível].present? || params[:sort].present? %>
+        <%= link_to "Effacer", activities_path,
+              style: "font-family:'Plus Jakarta Sans',sans-serif; font-size:0.85rem; font-weight:700; padding:9px 16px; border-radius:9px; text-decoration:none; background:var(--surface); color:var(--ink-soft); border:1.5px solid var(--line); display:inline-flex; align-items:center;" %>
+      <% end %>
+    </div>
+  <% end %>
 
-  <!-- Activities Section -->
-  <div class="activities-section">
+  <%# Grid de atividades %>
   <% if @activities.any? %>
-      <div class="section-header">
-        <h2><i class="bi bi-heart-fill text-danger"></i> Tes créations avec amour</h2>
-        <p>Chaque activité est une petite œuvre d'art pédagogique</p>
-      </div>
-      <div class="activities-grid">
+    <div class="activities-grid">
       <% @activities.each do |activity| %>
-          <div class="activity-card-daisy" data-niveau="<%= activity.nível %>">
-            <div class="card-header">
-              <div class="level-badge level-<%= activity.nível.downcase %>">
-                <i class="bi bi-circle-fill level-icon"></i>
+        <% m = cefr_colors(activity.nível) %>
+        <% cover = activity_cover(activity) %>
+        <div class="activity-card">
+          <div class="activity-card-cover">
+            <% if cover[:type] == :image %>
+              <img src="<%= cover[:url] %>" alt="" loading="lazy">
+            <% else %>
+              <div style="width:100%; height:100%; background:linear-gradient(135deg, <%= m[:bg] %> 0%, color-mix(in srgb, <%= m[:border] %> 20%, transparent) 100%); display:flex; align-items:center; justify-content:center;">
+                <i class="bi <%= cover[:icon] %>" style="font-size:2.6rem; color:<%= m[:border] %>; opacity:0.55;"></i>
+              </div>
+            <% end %>
+          </div>
+
+          <div style="padding:16px 18px; flex:1; display:flex; flex-direction:column;">
+            <div style="display:flex; align-items:center; justify-content:space-between; gap:8px; margin-bottom:8px;">
+              <span style="font-family:'DM Mono',monospace; font-size:0.72rem; font-weight:700; background:<%= m[:bg] %>; color:<%= m[:text] %>; border:1.5px solid <%= m[:border] %>; padding:3px 9px; border-radius:20px;">
                 <%= activity.nível %>
-              </div>
-              <div class="activity-meta">
-                <i class="bi bi-heart-fill"></i>
-                <%= activity.created_at.strftime("%d/%m") %>
-              </div>
+              </span>
+              <span style="font-family:'Plus Jakarta Sans',sans-serif; font-size:0.74rem; color:var(--ink-faint);">
+                <%= activity.created_at.strftime("%d/%m/%Y") %>
+              </span>
             </div>
-            
-            <div class="card-body">
-              <h3 class="activity-title"><%= activity.título %></h3>
-              <% if activity.texto.present? %>
-                <p class="activity-description">
-                  <%= truncate(activity.texto, length: 100) %>
-                </p>
+
+            <h3 style="font-family:'Raleway',sans-serif; font-size:1rem; font-weight:700; color:var(--ink); margin:0 0 6px 0; line-height:1.35;">
+              <%= activity.título %>
+            </h3>
+
+            <% if activity.texto.present? %>
+              <p style="font-family:'Plus Jakarta Sans',sans-serif; font-size:0.83rem; color:var(--ink-soft); margin:0 0 12px 0; line-height:1.5; flex:1;">
+                <%= truncate(activity.texto, length: 90) %>
+              </p>
+            <% else %>
+              <div style="flex:1;"></div>
+            <% end %>
+
+            <div style="display:flex; gap:12px; flex-wrap:wrap; margin-bottom:12px;">
+              <span style="font-family:'Plus Jakarta Sans',sans-serif; font-size:0.77rem; color:var(--ink-faint); display:flex; align-items:center; gap:4px;">
+                <i class="bi bi-patch-question" style="color:<%= m[:border] %>;"></i>
+                <%= activity_exercise_count(activity) %> question<%= activity_exercise_count(activity) == 1 ? '' : 's' %>
+              </span>
+              <% if activity.activity_ratings.any? %>
+                <span style="font-family:'DM Mono',monospace; font-size:0.77rem; font-weight:700; color:var(--action); display:flex; align-items:center; gap:3px;">
+                  <i class="bi bi-star-fill" style="font-size:0.68rem;"></i> <%= activity.average_rating %> (<%= activity.ratings_count %>)
+                </span>
               <% end %>
-              
-              <div class="activity-stats">
-                <div class="stat">
-                  <i class="bi bi-question-circle-fill"></i>
-                  <% total_exercises = activity.questions.count + activity.fill_blanks.count + activity.sentence_orderings.count + activity.paragraph_orderings.count %>
-                  <span><%= total_exercises %> questions</span>
-                </div>
-                <div class="stat">
-                  <i class="bi bi-clock-fill"></i>
-                  <span>~<%= [5, total_exercises * 2].max %> min</span>
-                </div>
-                <% if activity.activity_ratings.any? %>
-                  <div class="stat rating-stat-teacher">
-                    <div class="activity-stars-teacher">
-                      <% avg_rating = activity.average_rating %>
-                      <% (1..5).each do |i| %>
-                        <i class="bi bi-star<%= i <= avg_rating ? '-fill' : '' %> star-teacher <%= i <= avg_rating ? 'filled' : 'empty' %>"></i>
-                      <% end %>
-                    </div>
-                    <span class="rating-text-teacher">
-                      <%= avg_rating %> (<%= activity.ratings_count %>)
-                    </span>
-                  </div>
-                <% end %>
-              </div>
             </div>
-            
-            <div class="card-footer">
-              <%= link_to activity, class: "btn-action btn-voir-daisy" do %>
-                <i class="bi bi-eye-fill"></i>
-                Admirer
+
+            <div style="display:flex; gap:8px; padding-top:12px; border-top:1px solid var(--line-soft);">
+              <%= link_to activity,
+                    style: "flex:1; text-align:center; font-family:'Plus Jakarta Sans',sans-serif; font-size:0.8rem; font-weight:700; padding:8px 10px; border-radius:9px; text-decoration:none; background:var(--paper); color:var(--ink-soft); border:1.5px solid var(--line);" do %>
+                <i class="bi bi-eye"></i> Voir
               <% end %>
-              <%= link_to edit_activity_path(activity), class: "btn-action btn-modifier-daisy" do %>
-                <i class="bi bi-palette-fill"></i>
-                Retoucher
+              <%= link_to edit_activity_path(activity),
+                    style: "flex:1; text-align:center; font-family:'Plus Jakarta Sans',sans-serif; font-size:0.8rem; font-weight:700; padding:8px 10px; border-radius:9px; text-decoration:none; background:var(--paper); color:var(--ink-soft); border:1.5px solid var(--line);" do %>
+                <i class="bi bi-pencil"></i> Modifier
               <% end %>
-              <%= button_to activity_path(activity), 
-                    method: :delete, 
-                                         data: { confirm: "Es-tu sûre de vouloir supprimer cette création?" },
-                    class: "btn-action btn-supprimer-daisy" do %>
-                <i class="bi bi-archive-fill"></i>
-                Archiver
+              <%= button_to activity_path(activity), method: :delete,
+                    form: { data: { turbo_confirm: "Archiver cette activité ?" }, style: "flex:1;" },
+                    style: "width:100%; font-family:'Plus Jakarta Sans',sans-serif; font-size:0.8rem; font-weight:700; padding:8px 10px; border-radius:9px; border:1.5px solid var(--error-border); background:var(--error-tint); color:var(--error-deep); cursor:pointer;" do %>
+                <i class="bi bi-archive"></i> Archiver
               <% end %>
+            </div>
           </div>
         </div>
       <% end %>
     </div>
+  <% elsif params[:search].present? || params[:nível].present? %>
+    <div style="text-align:center; background:var(--surface); border:1px dashed var(--line); border-radius:18px; padding:48px 20px;">
+      <span style="font-size:2rem; display:block; margin-bottom:10px;">🔍</span>
+      <p style="font-family:'Plus Jakarta Sans',sans-serif; color:var(--ink-soft); font-size:0.92rem; margin:0 0 12px;">
+        Aucune activité ne correspond à ces filtres.
+      </p>
+      <%= link_to "Effacer les filtres", activities_path,
+            style: "font-family:'Plus Jakarta Sans',sans-serif; font-size:0.85rem; font-weight:700; color:var(--brand);" %>
+    </div>
   <% else %>
-      <div class="empty-state-daisy">
-        <div class="empty-icon">
-          <i class="bi bi-palette-fill"></i>
-        </div>
-        <h3>Ton atelier créatif t'attend!</h3>
-        <p>C'est le moment parfait pour créer ta première activité magique.</p>
-        <div class="empty-encouragement">
-                      <span>* Laisse libre cours à ton imagination *</span>
-        </div>
-        <%= link_to new_activity_path, class: "btn-create-first-daisy" do %>
-          <i class="bi bi-magic"></i>
-          Créer ma première œuvre
-                      <span class="btn-heart">♥</span>
-        <% end %>
+    <div style="text-align:center; background:var(--brand-mist); border:2px dashed var(--brand-soft); border-radius:18px; padding:48px 20px;">
+      <span style="font-size:2.6rem; display:block; margin-bottom:10px;">🥐</span>
+      <p style="font-family:'Plus Jakarta Sans',sans-serif; color:var(--ink-soft); font-size:0.92rem; margin:0 0 16px;">
+        <strong style="color:var(--brand-deep);">Vous n'avez pas encore d'activité…</strong><br>
+        Créez la première pour vos étudiants.
+      </p>
+      <%= link_to "+ Nouvelle activité", new_activity_path,
+            style: "font-family:'Plus Jakarta Sans',sans-serif; font-size:0.9rem; font-weight:700; padding:11px 24px; border-radius:999px; text-decoration:none; display:inline-flex; align-items:center; gap:8px; background:var(--brand); color:var(--surface);" %>
     </div>
   <% end %>
-  </div>
 </div>
 
-<!-- Modal de Avaliações -->
-<div id="ratings-modal" class="ratings-modal" style="display: none;">
-  <div class="ratings-modal-content">
-    <div class="ratings-modal-header">
-      <h3><i class="bi bi-star-fill"></i> Retours de tes élèves</h3>
-      <button class="close-modal" onclick="toggleRatingsModal()">
+<%# Modal de avaliações %>
+<div id="ratings-modal" style="display:none; position:fixed; inset:0; z-index:200; align-items:center; justify-content:center; background:rgba(0,0,0,0.4);">
+  <div style="background:var(--surface); border-radius:18px; max-width:560px; width:92%; max-height:85vh; overflow-y:auto; padding:22px 24px;">
+    <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:16px;">
+      <h3 style="font-family:'Raleway',sans-serif; font-size:1.15rem; font-weight:700; color:var(--brand-deep); margin:0;">
+        <i class="bi bi-star-fill"></i> Avis de vos étudiants
+      </h3>
+      <button type="button" onclick="toggleRatingsModal()" style="background:none; border:none; font-size:1.2rem; color:var(--ink-faint); cursor:pointer;">
         <i class="bi bi-x-lg"></i>
       </button>
     </div>
-    
-    <div class="ratings-modal-body">
-      <% if @total_ratings > 0 %>
-        <div class="ratings-overview-modal">
-          <div class="overview-card-modal">
-            <div class="overview-icon-modal">
-              <i class="bi bi-heart-eyes-fill"></i>
-            </div>
-            <div class="overview-content-modal">
-              <span class="overview-number-modal"><%= @total_ratings %></span>
-              <span class="overview-label-modal">évaluations reçues</span>
-            </div>
-          </div>
-          
-          <div class="overview-card-modal">
-            <div class="overview-icon-modal">
-              <i class="bi bi-star-fill"></i>
-            </div>
-            <div class="overview-content-modal">
-              <span class="overview-number-modal"><%= @average_rating_overall %></span>
-              <span class="overview-label-modal">moyenne générale</span>
-            </div>
-          </div>
-          
-          <div class="overview-card-modal">
-            <div class="overview-icon-modal">
-              <i class="bi bi-emoji-smile-fill"></i>
-            </div>
-            <div class="overview-content-modal">
-              <span class="overview-number-modal"><%= @activities_with_ratings.count %></span>
-              <span class="overview-label-modal">activités évaluées</span>
-            </div>
-          </div>
-        </div>
 
-        <div class="recent-ratings-modal">
-          <h4><i class="bi bi-clock-history"></i> Dernières évaluations</h4>
-          <div class="ratings-list-modal">
-            <% @recent_ratings.each do |rating| %>
-              <div class="rating-item-modal">
-                <div class="rating-activity-modal">
-                  <div class="activity-title-small-modal">
-                    <i class="bi bi-book-fill"></i>
-                    <%= truncate(rating.activity.título, length: 40) %>
-                  </div>
-                  <div class="activity-level-modal">
-                    <span class="level-badge-small level-<%= rating.activity.nível.downcase %>">
-                      <%= rating.activity.nível %>
-                    </span>
-                  </div>
-                </div>
-                
-                <div class="rating-details-modal">
-                  <div class="rating-stars-small">
-                    <% (1..5).each do |i| %>
-                      <i class="bi bi-star<%= i <= rating.stars ? '-fill' : '' %> star-small <%= i <= rating.stars ? 'filled' : 'empty' %>"></i>
-                    <% end %>
-                  </div>
-                  <div class="rating-meta-modal">
-                    <span class="student-email"><%= rating.student.email.split('@').first %></span>
-                    <span class="rating-date"><%= rating.formatted_date %></span>
-                  </div>
-                </div>
-                
-                <% if rating.comment.present? %>
-                  <div class="rating-comment-modal">
-                    <i class="bi bi-chat-quote-fill"></i>
-                    "<%= rating.comment %>"
-                  </div>
-                <% end %>
-              </div>
-            <% end %>
-          </div>
+    <% if @total_ratings > 0 %>
+      <div style="display:flex; gap:10px; margin-bottom:20px;">
+        <div style="flex:1; background:var(--paper-2); border-radius:12px; padding:12px; text-align:center;">
+          <div style="font-family:'Raleway',sans-serif; font-size:1.3rem; font-weight:800; color:var(--brand-deep);"><%= @total_ratings %></div>
+          <div style="font-family:'Plus Jakarta Sans',sans-serif; font-size:0.72rem; color:var(--ink-soft);">évaluations</div>
         </div>
-      <% else %>
-        <div class="no-ratings-modal">
-          <div class="no-ratings-icon">
-            <i class="bi bi-star"></i>
+        <div style="flex:1; background:var(--paper-2); border-radius:12px; padding:12px; text-align:center;">
+          <div style="font-family:'Raleway',sans-serif; font-size:1.3rem; font-weight:800; color:var(--action);"><%= @average_rating_overall %></div>
+          <div style="font-family:'Plus Jakarta Sans',sans-serif; font-size:0.72rem; color:var(--ink-soft);">moyenne</div>
+        </div>
+        <div style="flex:1; background:var(--paper-2); border-radius:12px; padding:12px; text-align:center;">
+          <div style="font-family:'Raleway',sans-serif; font-size:1.3rem; font-weight:800; color:var(--info);"><%= @activities_with_ratings.count %></div>
+          <div style="font-family:'Plus Jakarta Sans',sans-serif; font-size:0.72rem; color:var(--ink-soft);">activités évaluées</div>
+        </div>
+      </div>
+
+      <div style="font-family:'Plus Jakarta Sans',sans-serif; font-size:0.78rem; font-weight:700; color:var(--ink-soft); text-transform:uppercase; letter-spacing:0.04em; margin-bottom:10px;">
+        Dernières évaluations
+      </div>
+      <% @recent_ratings.each do |rating| %>
+        <div style="padding:10px 0; border-bottom:1px solid var(--line-soft);">
+          <div style="display:flex; align-items:center; justify-content:space-between; gap:8px; margin-bottom:4px;">
+            <span style="font-family:'Plus Jakarta Sans',sans-serif; font-weight:600; font-size:0.85rem; color:var(--ink);"><%= truncate(rating.activity.título, length: 40) %></span>
+            <span style="color:var(--action); font-size:0.78rem;"><%= "★" * rating.stars %><span style="color:var(--line);"><%= "★" * (5 - rating.stars) %></span></span>
           </div>
-          <h4>Aucune évaluation pour le moment</h4>
-          <p>Tes élèves n'ont pas encore évalué tes activités. Encourage-les à donner leur avis !</p>
+          <div style="font-family:'Plus Jakarta Sans',sans-serif; font-size:0.74rem; color:var(--ink-faint); margin-bottom:2px;">
+            <%= rating.student.email.split('@').first %> · <%= rating.formatted_date %>
+          </div>
+          <% if rating.comment.present? %>
+            <p style="font-family:'Plus Jakarta Sans',sans-serif; font-size:0.82rem; color:var(--ink-soft); font-style:italic; margin:4px 0 0;">"<%= rating.comment %>"</p>
+          <% end %>
         </div>
       <% end %>
-    </div>
+    <% else %>
+      <div style="text-align:center; padding:24px 8px;">
+        <span style="font-size:1.8rem; display:block; margin-bottom:8px;">⭐</span>
+        <p style="font-family:'Plus Jakarta Sans',sans-serif; color:var(--ink-soft); font-size:0.88rem; margin:0;">
+          Aucune évaluation pour l'instant.
+        </p>
+      </div>
+    <% end %>
   </div>
 </div>
 
-<link href="https://fonts.googleapis.com/css2?family=Lora:wght@400;500;600&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
-<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css" rel="stylesheet">
-
-<style>
-  /* === DASHBOARD DA DAISY === */
-  .daisy-dashboard {
-    font-family: 'Inter', sans-serif;
-    background: linear-gradient(135deg, #FFE4E1 0%, #FFF0F5 50%, #E8F4FD 100%);
-    min-height: 100vh;
-    padding: 2rem 1rem;
-    position: relative;
-  }
-
-  .daisy-dashboard::before {
-    content: '';
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background-image: 
-      radial-gradient(circle at 20% 80%, rgba(255, 192, 203, 0.1) 0%, transparent 50%),
-      radial-gradient(circle at 80% 20%, rgba(255, 182, 193, 0.1) 0%, transparent 50%),
-      radial-gradient(circle at 40% 40%, rgba(255, 228, 225, 0.1) 0%, transparent 50%);
-    pointer-events: none;
-    z-index: 0;
-  }
-
-  .daisy-dashboard > * {
-    position: relative;
-    z-index: 1;
-  }
-
-  /* Solução simples: colocar dashboard para trás quando modal aberto */
-  body.modal-open .daisy-dashboard {
-    z-index: -1 !important;
-    position: relative !important;
-  }
-
-  /* SOLUÇÃO ESPECÍFICA PARA DESKTOP - onde o problema ocorre */
-  @media (min-width: 992px) {
-    /* Forçar dashboard para trás no desktop quando modal aberto */
-    body.modal-open .daisy-dashboard {
-      z-index: -100 !important;
-      position: relative !important;
-      transform: translateZ(-1px) !important;
-    }
-    
-    /* Forçar todos os elementos filhos da dashboard para trás também */
-    body.modal-open .daisy-dashboard * {
-      z-index: inherit !important;
-    }
-    
-    /* Garantir que nenhum elemento da dashboard interfira */
-    body.modal-open .hero-section,
-    body.modal-open .daisy-stats-section,
-    body.modal-open .filters-section,
-    body.modal-open .activities-section {
-      z-index: -100 !important;
-      position: relative !important;
-    }
-  }
-
-  /* Remover qualquer isolamento que possa interferir */
-  .daisy-dashboard {
-    isolation: auto !important;
-  }
-
-  /* === HERO SECTION PERSONALIZADO === */
-  .hero-section {
-    margin-bottom: 2rem;
-  }
-
-  .daisy-welcome-card {
-    background: linear-gradient(135deg, rgba(255, 255, 255, 0.95) 0%, rgba(255, 240, 245, 0.95) 100%);
-    border-radius: 24px;
-    padding: 2.5rem;
-    box-shadow: 0 12px 40px rgba(255, 105, 180, 0.15);
-    border: 2px solid rgba(255, 192, 203, 0.3);
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    flex-wrap: wrap;
-    gap: 2rem;
-    backdrop-filter: blur(10px);
-    position: relative;
-    overflow: hidden;
-  }
-
-  .daisy-welcome-card::before {
-    content: '✿';
-    position: absolute;
-    top: 1rem;
-    right: 1rem;
-    font-size: 2rem;
-    opacity: 0.3;
-    animation: float 3s ease-in-out infinite;
-    color: #FF69B4;
-  }
-
-  .daisy-welcome-card::after {
-    content: '*';
-    position: absolute;
-    bottom: 1rem;
-    left: 1rem;
-    font-size: 1.5rem;
-    opacity: 0.4;
-    animation: float 3s ease-in-out infinite reverse;
-    color: #FFB6C1;
-  }
-
-  @keyframes float {
-    0%, 100% { transform: translateY(0px); }
-    50% { transform: translateY(-10px); }
-  }
-
-  .avatar-section {
-    display: flex;
-    align-items: center;
-    gap: 2rem;
-  }
-
-  .daisy-avatar-hero {
-    width: 90px;
-    height: 90px;
-    background: linear-gradient(135deg, #FF69B4 0%, #FFB6C1 100%);
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    position: relative;
-    box-shadow: 0 8px 24px rgba(255, 105, 180, 0.4);
-    border: 4px solid rgba(255, 255, 255, 0.8);
-  }
-
-  .daisy-initial-hero {
-    font-family: 'Lora', serif;
-    font-weight: 700;
-    color: white;
-    font-size: 2rem;
-    text-shadow: 0 2px 4px rgba(0,0,0,0.2);
-  }
-
-  .daisy-sparkles {
-    position: absolute;
-    top: -5px;
-    right: -5px;
-    font-size: 1.2rem;
-    animation: sparkle 2s ease-in-out infinite;
-  }
-
-  @keyframes sparkle {
-    0%, 100% { transform: scale(1) rotate(0deg); opacity: 1; }
-    50% { transform: scale(1.2) rotate(180deg); opacity: 0.8; }
-  }
-
-  .welcome-text h1 {
-    font-family: 'Lora', serif;
-    color: #1E3D59;
-    margin: 0 0 0.5rem;
-    font-size: 2.2rem;
-    font-weight: 600;
-    background: linear-gradient(135deg, #1E3D59 0%, #FF69B4 100%);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-  }
-
-  .welcome-text p {
-    color: #718096;
-    margin: 0 0 1rem;
-    font-size: 1.1rem;
-    font-style: italic;
-  }
-
-  .daisy-mood-indicator {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    background: rgba(255, 105, 180, 0.1);
-    padding: 0.5rem 1rem;
-    border-radius: 20px;
-    border: 1px solid rgba(255, 105, 180, 0.2);
-  }
-
-  .mood-emoji {
-    font-size: 1.2rem;
-    animation: pulse 2s ease-in-out infinite;
-  }
-
-  @keyframes pulse {
-    0%, 100% { transform: scale(1); }
-    50% { transform: scale(1.1); }
-  }
-
-  .mood-text {
-    font-size: 0.9rem;
-    color: #FF69B4;
-    font-weight: 600;
-  }
-
-  .btn-new-activity-daisy {
-    background: linear-gradient(135deg, #FF69B4 0%, #FFB6C1 100%);
-    color: white;
-    padding: 1rem 2rem;
-    border-radius: 20px;
-    text-decoration: none;
-    font-weight: 600;
-    display: flex;
-    align-items: center;
-    gap: 0.75rem;
-    transition: all 0.3s ease;
-    box-shadow: 0 6px 20px rgba(255, 105, 180, 0.4);
-    position: relative;
-    overflow: hidden;
-    border: 2px solid rgba(255, 255, 255, 0.3);
-  }
-
-  .btn-new-activity-daisy:hover {
-    transform: translateY(-3px);
-    box-shadow: 0 10px 30px rgba(255, 105, 180, 0.5);
-    color: white;
-    text-decoration: none;
-  }
-
-  .action-buttons {
-    display: flex;
-    gap: 1rem;
-    flex-wrap: wrap;
-    align-items: center;
-  }
-
-  .btn-invite-student-daisy {
-    background: linear-gradient(135deg, #9F7AEA 0%, #B794F6 100%);
-    color: white;
-    padding: 1rem 2rem;
-    border-radius: 20px;
-    text-decoration: none;
-    font-weight: 600;
-    display: flex;
-    align-items: center;
-    gap: 0.75rem;
-    transition: all 0.3s ease;
-    box-shadow: 0 6px 20px rgba(159, 122, 234, 0.4);
-    position: relative;
-    overflow: hidden;
-    border: 2px solid rgba(255, 255, 255, 0.3);
-  }
-
-  .btn-invite-student-daisy:hover {
-    transform: translateY(-3px);
-    box-shadow: 0 10px 30px rgba(159, 122, 234, 0.5);
-    color: white;
-    text-decoration: none;
-  }
-
-  .btn-sparkle {
-    position: absolute;
-    top: 5px;
-    right: 10px;
-    font-size: 0.8rem;
-    animation: sparkle 1.5s ease-in-out infinite;
-  }
-
-  /* === ESTATÍSTICAS FOFAS === */
-  .daisy-stats-section {
-    margin-bottom: 2rem;
-  }
-
-  .stats-container {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-    gap: 1.5rem;
-  }
-
-  .stat-card {
-    background: linear-gradient(135deg, rgba(255, 255, 255, 0.9) 0%, rgba(255, 240, 245, 0.9) 100%);
-    border-radius: 20px;
-    padding: 1.5rem;
-    display: flex;
-    align-items: center;
-    gap: 1rem;
-    box-shadow: 0 8px 24px rgba(255, 105, 180, 0.1);
-    border: 2px solid rgba(255, 192, 203, 0.2);
-    transition: all 0.3s ease;
-    backdrop-filter: blur(10px);
-  }
-
-  .stat-card:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 12px 32px rgba(255, 105, 180, 0.2);
-  }
-
-  .stat-icon {
-    font-size: 2rem;
-    width: 60px;
-    height: 60px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background: linear-gradient(135deg, #FFE4E1 0%, #FFC0CB 100%);
-    border-radius: 50%;
-    box-shadow: 0 4px 12px rgba(255, 105, 180, 0.2);
-    color: #FF69B4;
-  }
-
-  .stat-content {
-    display: flex;
-    flex-direction: column;
-  }
-
-  .stat-number {
-    font-family: 'Lora', serif;
-    font-size: 2rem;
-    font-weight: 700;
-    color: #1E3D59;
-    line-height: 1;
-  }
-
-  .stat-label {
-    font-size: 0.9rem;
-    color: #718096;
-    font-weight: 500;
-    text-transform: lowercase;
-  }
-
-  /* === FILTROS FOFOS === */
-  .filters-section {
-    background: linear-gradient(135deg, rgba(255, 255, 255, 0.95) 0%, rgba(255, 240, 245, 0.95) 100%);
-    border-radius: 20px;
-    padding: 2rem;
-    margin-bottom: 2rem;
-    box-shadow: 0 8px 24px rgba(255, 105, 180, 0.1);
-    border: 2px solid rgba(255, 192, 203, 0.2);
-    backdrop-filter: blur(10px);
-  }
-
-  .filter-header {
-    text-align: center;
-    margin-bottom: 1.5rem;
-  }
-
-  .filter-header h3 {
-    font-family: 'Lora', serif;
-    color: #1E3D59;
-    font-size: 1.5rem;
-    margin: 0 0 0.5rem;
-    font-weight: 600;
-  }
-
-  .filter-header p {
-    color: #718096;
-    margin: 0;
-    font-style: italic;
-  }
-
-  .niveau-filters {
-    display: flex;
-    justify-content: center;
-    flex-wrap: wrap;
-    gap: 1rem;
-  }
-
-  .filter-btn {
-    font-family: 'Inter', sans-serif;
-    font-size: 0.9rem;
-    font-weight: 600;
-    padding: 0.75rem 1.5rem;
-    border: 2px solid rgba(255, 192, 203, 0.3);
-    border-radius: 25px;
-    background: rgba(255, 255, 255, 0.8);
-    color: #718096;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    backdrop-filter: blur(5px);
-  }
-
-  .filter-btn:hover {
-    transform: translateY(-3px);
-    box-shadow: 0 6px 16px rgba(255, 105, 180, 0.2);
-    border-color: rgba(255, 105, 180, 0.5);
-  }
-
-  .filter-btn i {
-    font-size: 1rem;
-  }
-
-  .filter-btn.active {
-    transform: translateY(-3px);
-    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2);
-    color: white;
-  }
-
-  /* === CORES DOS FILTROS POR NÍVEL (CONSISTENTES COM STUDENT_ACTIVITIES) === */
-  .filter-a1 {
-    border-color: rgba(104, 211, 145, 0.3) !important;
-  }
-  .filter-a1 i {
-    color: #68D391 !important;
-  }
-  .filter-a1:hover {
-    background: linear-gradient(135deg, #68D391 0%, #48BB78 100%) !important;
-    color: white !important;
-    border-color: #68D391 !important;
-  }
-  .filter-a1:hover i {
-    color: white !important;
-  }
-
-  .filter-a2 {
-    border-color: rgba(79, 209, 199, 0.3) !important;
-  }
-  .filter-a2 i {
-    color: #4FD1C7 !important;
-  }
-  .filter-a2:hover {
-    background: linear-gradient(135deg, #4FD1C7 0%, #38B2AC 100%) !important;
-    color: white !important;
-    border-color: #4FD1C7 !important;
-  }
-  .filter-a2:hover i {
-    color: white !important;
-  }
-
-  .filter-b1 {
-    border-color: rgba(99, 179, 237, 0.3) !important;
-  }
-  .filter-b1 i {
-    color: #63B3ED !important;
-  }
-  .filter-b1:hover {
-    background: linear-gradient(135deg, #63B3ED 0%, #4299E1 100%) !important;
-    color: white !important;
-    border-color: #63B3ED !important;
-  }
-  .filter-b1:hover i {
-    color: white !important;
-  }
-
-  .filter-b2 {
-    border-color: rgba(124, 58, 237, 0.3) !important;
-  }
-  .filter-b2 i {
-    color: #7C3AED !important;
-  }
-  .filter-b2:hover {
-    background: linear-gradient(135deg, #7C3AED 0%, #6B46C1 100%) !important;
-    color: white !important;
-    border-color: #7C3AED !important;
-  }
-  .filter-b2:hover i {
-    color: white !important;
-  }
-
-  .filter-c1 {
-    border-color: rgba(245, 101, 101, 0.3) !important;
-  }
-  .filter-c1 i {
-    color: #F56565 !important;
-  }
-  .filter-c1:hover {
-    background: linear-gradient(135deg, #F56565 0%, #E53E3E 100%) !important;
-    color: white !important;
-    border-color: #F56565 !important;
-  }
-  .filter-c1:hover i {
-    color: white !important;
-  }
-
-  .filter-c2 {
-    border-color: rgba(237, 137, 54, 0.3) !important;
-  }
-  .filter-c2 i {
-    color: #ED8936 !important;
-  }
-  .filter-c2:hover {
-    background: linear-gradient(135deg, #ED8936 0%, #DD6B20 100%) !important;
-    color: white !important;
-    border-color: #ED8936 !important;
-  }
-  .filter-c2:hover i {
-    color: white !important;
-  }
-
-  /* === ESTADOS ATIVOS DOS FILTROS === */
-  .filter-a1.active {
-    background: linear-gradient(135deg, #68D391 0%, #48BB78 100%) !important;
-    border-color: #68D391 !important;
-  }
-  .filter-a1.active i {
-    color: white !important;
-  }
-
-  .filter-a2.active {
-    background: linear-gradient(135deg, #4FD1C7 0%, #38B2AC 100%) !important;
-    border-color: #4FD1C7 !important;
-  }
-  .filter-a2.active i {
-    color: white !important;
-  }
-
-  .filter-b1.active {
-    background: linear-gradient(135deg, #63B3ED 0%, #4299E1 100%) !important;
-    border-color: #63B3ED !important;
-  }
-  .filter-b1.active i {
-    color: white !important;
-  }
-
-  .filter-b2.active {
-    background: linear-gradient(135deg, #7C3AED 0%, #6B46C1 100%) !important;
-    border-color: #7C3AED !important;
-  }
-  .filter-b2.active i {
-    color: white !important;
-  }
-
-  .filter-c1.active {
-    background: linear-gradient(135deg, #F56565 0%, #E53E3E 100%) !important;
-    border-color: #F56565 !important;
-  }
-  .filter-c1.active i {
-    color: white !important;
-  }
-
-  .filter-c2.active {
-    background: linear-gradient(135deg, #ED8936 0%, #DD6B20 100%) !important;
-    border-color: #ED8936 !important;
-  }
-  .filter-c2.active i {
-    color: white !important;
-  }
-
-  /* Botão "Tous mes niveaux" mantém o estilo rosa quando ativo */
-  .filter-btn[data-niveau="tous"].active {
-    background: linear-gradient(135deg, #4A90E2 0%, #357ABD 100%) !important;
-    border-color: #4A90E2 !important;
-    color: white !important;
-  }
-  .filter-btn[data-niveau="tous"].active i {
-    color: white !important;
-  }
-
-  /* === SEÇÃO DE ATIVIDADES === */
-  .activities-section {
-    background: linear-gradient(135deg, rgba(255, 255, 255, 0.95) 0%, rgba(255, 240, 245, 0.95) 100%);
-    border-radius: 24px;
-    padding: 2.5rem;
-    box-shadow: 0 12px 40px rgba(255, 105, 180, 0.15);
-    border: 2px solid rgba(255, 192, 203, 0.3);
-    backdrop-filter: blur(10px);
-  }
-
-  .section-header {
-    text-align: center;
-    margin-bottom: 2rem;
-  }
-
-  .section-header h2 {
-    font-family: 'Lora', serif;
-    color: #1E3D59;
-    font-size: 2rem;
-    margin: 0 0 0.5rem;
-    font-weight: 600;
-  }
-
-  .section-header p {
-    color: #718096;
-    font-style: italic;
-    margin: 0;
-  }
-
-  .activities-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
-    gap: 2rem;
-  }
-
-  .activity-card-daisy {
-    background: linear-gradient(135deg, rgba(255, 255, 255, 0.95) 0%, rgba(255, 248, 250, 0.95) 100%);
-    border: 2px solid rgba(255, 192, 203, 0.2);
-    border-radius: 20px;
-    overflow: hidden;
-    transition: all 0.3s ease;
-    backdrop-filter: blur(5px);
-    position: relative;
-  }
-
-  .activity-card-daisy::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    height: 4px;
-    background: linear-gradient(90deg, #FF69B4 0%, #FFB6C1 50%, #FFC0CB 100%);
-  }
-
-  .activity-card-daisy:hover {
-    transform: translateY(-8px);
-    box-shadow: 0 16px 40px rgba(255, 105, 180, 0.2);
-    border-color: rgba(255, 105, 180, 0.4);
-  }
-
-  .activity-card-daisy.hidden {
-    display: none !important;
-    opacity: 0;
-    transform: scale(0.8);
-    pointer-events: none;
-  }
-
-  .activity-card-daisy .card-header {
-    background: linear-gradient(135deg, rgba(255, 240, 245, 0.8) 0%, rgba(255, 228, 225, 0.8) 100%);
-    padding: 1.25rem;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    border-bottom: 1px solid rgba(255, 192, 203, 0.2);
-  }
-
-  .level-badge {
-    padding: 0.5rem 1rem;
-    border-radius: 25px;
-    font-size: 0.85rem;
-    font-weight: 600;
-    color: white;
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-  }
-
-  .level-icon {
-    font-size: 0.8rem;
-  }
-
-  /* === CORES DOS BADGES DE NÍVEL (CONSISTENTES COM STUDENT_ACTIVITIES) === */
-  .level-badge.level-a1 { background: linear-gradient(135deg, #68D391 0%, #48BB78 100%); }
-  .level-badge.level-a2 { background: linear-gradient(135deg, #4FD1C7 0%, #38B2AC 100%); }
-  .level-badge.level-b1 { background: linear-gradient(135deg, #63B3ED 0%, #4299E1 100%); }
-  .level-badge.level-b2 { background: linear-gradient(135deg, #7C3AED 0%, #6B46C1 100%); }
-  .level-badge.level-c1 { background: linear-gradient(135deg, #F56565 0%, #E53E3E 100%); }
-  .level-badge.level-c2 { background: linear-gradient(135deg, #ED8936 0%, #DD6B20 100%); }
-
-  .activity-meta {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    color: #718096;
-    font-size: 0.85rem;
-    font-weight: 500;
-  }
-
-  .activity-meta i {
-    color: #FF69B4;
-    font-size: 1rem;
-  }
-
-  .activity-card-daisy .card-body {
-    padding: 2rem;
-  }
-
-  .activity-title {
-    font-family: 'Lora', serif;
-    color: #1E3D59;
-    font-size: 1.4rem;
-    margin: 0 0 1rem;
-    font-weight: 600;
-    line-height: 1.3;
-  }
-
-  .activity-description {
-    color: #4A5568;
-    line-height: 1.6;
-    margin: 0 0 1.5rem;
-    font-size: 0.95rem;
-  }
-
-  .activity-stats {
-    display: flex;
-    gap: 1.5rem;
-    margin-bottom: 1.5rem;
-  }
-
-  .activity-stats .stat {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    color: #718096;
-    font-size: 0.85rem;
-    font-weight: 500;
-  }
-
-  .activity-stats .stat i {
-    color: #FF69B4;
-    font-size: 1rem;
-  }
-
-  .activity-card-daisy .card-footer {
-    background: linear-gradient(135deg, rgba(255, 240, 245, 0.6) 0%, rgba(255, 228, 225, 0.6) 100%);
-    padding: 1.25rem 2rem;
-    border-top: 1px solid rgba(255, 192, 203, 0.2);
-    display: flex;
-    gap: 0.75rem;
-  }
-
-  .btn-action {
-    flex: 1;
-    padding: 0.75rem 1rem;
-    border-radius: 12px;
-    font-size: 0.85rem;
-    font-weight: 600;
-    text-decoration: none;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 0.5rem;
-    transition: all 0.3s ease;
-    border: none;
-    cursor: pointer;
-    position: relative;
-    overflow: hidden;
-  }
-
-  .btn-voir-daisy {
-    background: linear-gradient(135deg, #4A90E2 0%, #357ABD 100%);
-    color: white;
-    box-shadow: 0 4px 12px rgba(74, 144, 226, 0.3);
-  }
-
-  .btn-voir-daisy:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 6px 16px rgba(74, 144, 226, 0.4);
-    color: white;
-    text-decoration: none;
-  }
-
-  .btn-modifier-daisy {
-    background: linear-gradient(135deg, #FF69B4 0%, #FFB6C1 100%);
-    color: white;
-    box-shadow: 0 4px 12px rgba(255, 105, 180, 0.3);
-  }
-
-  .btn-modifier-daisy:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 6px 16px rgba(255, 105, 180, 0.4);
-    color: white;
-    text-decoration: none;
-  }
-
-  .btn-supprimer-daisy {
-    background: linear-gradient(135deg, #A0AEC0 0%, #718096 100%);
-    color: white;
-    box-shadow: 0 4px 12px rgba(160, 174, 192, 0.3);
-  }
-
-  .btn-supprimer-daisy:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 6px 16px rgba(160, 174, 192, 0.4);
-    color: white;
-    text-decoration: none;
-  }
-
-  /* === ESTADO VAZIO FOFO === */
-  .empty-state-daisy {
-    text-align: center;
-    padding: 4rem 2rem;
-  }
-
-  .empty-icon {
-    width: 140px;
-    height: 140px;
-    margin: 0 auto 2rem;
-    background: linear-gradient(135deg, #FFE4E1 0%, #FFC0CB 100%);
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 4rem;
-    box-shadow: 0 8px 24px rgba(255, 105, 180, 0.2);
-    border: 4px solid rgba(255, 255, 255, 0.8);
-    position: relative;
-  }
-
-  .empty-icon i {
-    animation: bounce 2s ease-in-out infinite;
-    color: #FF69B4;
-    font-size: 4rem;
-  }
-
-  @keyframes bounce {
-    0%, 100% { transform: translateY(0); }
-    50% { transform: translateY(-10px); }
-  }
-
-  .empty-state-daisy h3 {
-    font-family: 'Lora', serif;
-    color: #1E3D59;
-    font-size: 1.8rem;
-    margin: 0 0 1rem;
-    font-weight: 600;
-  }
-
-  .empty-state-daisy p {
-    color: #718096;
-    margin: 0 0 1.5rem;
-    font-size: 1.1rem;
-    line-height: 1.5;
-  }
-
-  .empty-encouragement {
-    background: linear-gradient(135deg, rgba(255, 105, 180, 0.1) 0%, rgba(255, 182, 193, 0.1) 100%);
-    padding: 1rem 2rem;
-    border-radius: 20px;
-    margin: 0 0 2rem;
-    border: 1px solid rgba(255, 105, 180, 0.2);
-    color: #FF69B4;
-    font-weight: 600;
-    font-style: italic;
-  }
-
-  .btn-create-first-daisy {
-    background: linear-gradient(135deg, #FF69B4 0%, #FFB6C1 100%);
-    color: white;
-    padding: 1rem 2rem;
-    border-radius: 20px;
-    text-decoration: none;
-    font-weight: 600;
-    display: inline-flex;
-    align-items: center;
-    gap: 0.75rem;
-    transition: all 0.3s ease;
-    box-shadow: 0 6px 20px rgba(255, 105, 180, 0.4);
-    position: relative;
-    border: 2px solid rgba(255, 255, 255, 0.3);
-  }
-
-  .btn-create-first-daisy:hover {
-    transform: translateY(-3px);
-    box-shadow: 0 10px 30px rgba(255, 105, 180, 0.5);
-    color: white;
-    text-decoration: none;
-  }
-
-  .btn-heart {
-    position: absolute;
-    top: -5px;
-    right: -5px;
-    font-size: 1rem;
-    animation: pulse 2s ease-in-out infinite;
-  }
-
-  /* === SEÇÃO DE AVALIAÇÕES === */
-  .daisy-ratings-section {
-    background: linear-gradient(135deg, rgba(255, 255, 255, 0.95) 0%, rgba(255, 240, 245, 0.95) 100%);
-    border-radius: 24px;
-    padding: 2rem;
-    margin-bottom: 2rem;
-    box-shadow: 0 12px 40px rgba(255, 105, 180, 0.15);
-    border: 2px solid rgba(255, 192, 203, 0.3);
-    backdrop-filter: blur(10px);
-    position: relative;
-    overflow: hidden;
-  }
-
-  .daisy-ratings-section::before {
-    content: '⭐';
-    position: absolute;
-    top: 1rem;
-    right: 1rem;
-    font-size: 2rem;
-    opacity: 0.3;
-    animation: float 3s ease-in-out infinite;
-  }
-
-  .ratings-header {
-    text-align: center;
-    margin-bottom: 2rem;
-  }
-
-  .ratings-header h3 {
-    font-family: 'Lora', serif;
-    color: #1E3D59;
-    font-size: 1.8rem;
-    margin: 0 0 0.5rem;
-    font-weight: 600;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 0.5rem;
-  }
-
-  .ratings-header h3 i {
-    color: #FFD700;
-  }
-
-  .ratings-header p {
-    color: #718096;
-    margin: 0;
-    font-size: 1.1rem;
-    font-style: italic;
-  }
-
-  .ratings-overview {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-    gap: 1.5rem;
-    margin-bottom: 2rem;
-  }
-
-  .overview-card {
-    background: white;
-    border-radius: 16px;
-    padding: 1.5rem;
-    display: flex;
-    align-items: center;
-    gap: 1rem;
-    box-shadow: 0 4px 16px rgba(255, 105, 180, 0.1);
-    border: 1px solid rgba(255, 192, 203, 0.2);
-    transition: transform 0.2s ease;
-  }
-
-  .overview-card:hover {
-    transform: translateY(-2px);
-  }
-
-  .overview-icon {
-    width: 60px;
-    height: 60px;
-    border-radius: 12px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 1.5rem;
-    color: white;
-  }
-
-  .overview-card:nth-child(1) .overview-icon {
-    background: linear-gradient(135deg, #FF69B4 0%, #FFB6C1 100%);
-  }
-
-  .overview-card:nth-child(2) .overview-icon {
-    background: linear-gradient(135deg, #FFD700 0%, #FFA500 100%);
-  }
-
-  .overview-card:nth-child(3) .overview-icon {
-    background: linear-gradient(135deg, #68D391 0%, #48BB78 100%);
-  }
-
-  .overview-content {
-    display: flex;
-    flex-direction: column;
-  }
-
-  .overview-number {
-    font-size: 1.8rem;
-    font-weight: 700;
-    color: #1E3D59;
-    line-height: 1;
-  }
-
-  .overview-label {
-    color: #718096;
-    font-size: 0.9rem;
-    margin-top: 0.25rem;
-  }
-
-  .recent-ratings h4 {
-    font-family: 'Lora', serif;
-    color: #1E3D59;
-    font-size: 1.4rem;
-    margin: 0 0 1.5rem;
-    font-weight: 600;
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-  }
-
-  .recent-ratings h4 i {
-    color: #4A90E2;
-  }
-
-  .ratings-list {
-    display: flex;
-    flex-direction: column;
-    gap: 1rem;
-  }
-
-  .rating-item {
-    background: white;
-    border-radius: 12px;
-    padding: 1.25rem;
-    border: 1px solid rgba(255, 192, 203, 0.2);
-    transition: all 0.2s ease;
-  }
-
-  .rating-item:hover {
-    box-shadow: 0 4px 16px rgba(255, 105, 180, 0.1);
-    transform: translateY(-1px);
-  }
-
-  .rating-activity {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 0.75rem;
-  }
-
-  .activity-title-small {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    color: #1E3D59;
-    font-weight: 600;
-    font-size: 0.95rem;
-  }
-
-  .activity-title-small i {
-    color: #4A90E2;
-  }
-
-  .level-badge-small {
-    padding: 0.2rem 0.6rem;
-    border-radius: 12px;
-    font-size: 0.75rem;
-    font-weight: 600;
-    color: white;
-  }
-
-  .level-badge-small.level-a1 { background: #68D391; }
-  .level-badge-small.level-a2 { background: #4FD1C7; }
-  .level-badge-small.level-b1 { background: #63B3ED; }
-  .level-badge-small.level-b2 { background: #7C3AED; }
-  .level-badge-small.level-c1 { background: #F56565; }
-  .level-badge-small.level-c2 { background: #ED8936; }
-
-  .rating-details {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 0.5rem;
-  }
-
-  .rating-stars-small {
-    display: flex;
-    gap: 0.2rem;
-  }
-
-  .star-small {
-    font-size: 0.9rem;
-    transition: color 0.2s ease;
-  }
-
-  .star-small.filled {
-    color: #FFD700;
-  }
-
-  .star-small.empty {
-    color: #E2E8F0;
-  }
-
-  .rating-meta {
-    display: flex;
-    flex-direction: column;
-    align-items: flex-end;
-    gap: 0.2rem;
-  }
-
-  .student-email {
-    font-size: 0.85rem;
-    color: #4A90E2;
-    font-weight: 500;
-  }
-
-  .rating-date {
-    font-size: 0.75rem;
-    color: #A0AEC0;
-  }
-
-  .rating-comment {
-    background: rgba(255, 105, 180, 0.1);
-    border-left: 3px solid #FFB6C1;
-    padding: 0.75rem;
-    border-radius: 0 8px 8px 0;
-    font-style: italic;
-    color: #4A5568;
-    display: flex;
-    align-items: flex-start;
-    gap: 0.5rem;
-    margin-top: 0.5rem;
-  }
-
-  .rating-comment i {
-    color: #FFB6C1;
-    margin-top: 0.1rem;
-    flex-shrink: 0;
-  }
-
-  .view-all-ratings {
-    text-align: center;
-    margin-top: 1.5rem;
-  }
-
-  .btn-view-all-daisy {
-    background: linear-gradient(135deg, #4A90E2 0%, #357ABD 100%);
-    color: white;
-    padding: 0.75rem 1.5rem;
-    border-radius: 16px;
-    border: none;
-    cursor: pointer;
-    font-weight: 600;
-    display: inline-flex;
-    align-items: center;
-    gap: 0.5rem;
-    transition: all 0.3s ease;
-    box-shadow: 0 4px 16px rgba(74, 144, 226, 0.3);
-  }
-
-  .btn-view-all-daisy:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 8px 24px rgba(74, 144, 226, 0.4);
-  }
-
-  /* === ESTRELAS NOS CARDS DAS ATIVIDADES === */
-  .rating-stat-teacher {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    background: rgba(255, 215, 0, 0.1);
-    padding: 0.4rem 0.6rem;
-    border-radius: 16px;
-    border: 1px solid rgba(255, 215, 0, 0.2);
-  }
-
-  .activity-stars-teacher {
-    display: flex;
-    gap: 0.15rem;
-  }
-
-  .star-teacher {
-    font-size: 0.85rem;
-    transition: color 0.2s ease;
-  }
-
-  .star-teacher.filled {
-    color: #FFD700;
-  }
-
-  .star-teacher.empty {
-    color: #E2E8F0;
-  }
-
-  .rating-text-teacher {
-    font-size: 0.8rem;
-    color: #B45309;
-    font-weight: 500;
-    white-space: nowrap;
-  }
-
-  /* === RESPONSIVIDADE === */
-  @media (max-width: 768px) {
-    .daisy-welcome-card {
-      flex-direction: column;
-      text-align: center;
-      padding: 2rem;
-    }
-
-    .avatar-section {
-      flex-direction: column;
-      gap: 1.5rem;
-    }
-
-    .action-buttons {
-      flex-direction: column;
-      width: 100%;
-      gap: 0.75rem;
-    }
-
-    .btn-new-activity-daisy,
-    .btn-invite-student-daisy {
-      width: 100%;
-      justify-content: center;
-    }
-
-    .activities-grid {
-      grid-template-columns: 1fr;
-    }
-
-    .stats-container {
-      grid-template-columns: 1fr;
-    }
-
-    .niveau-filters {
-      justify-content: center;
-    }
-
-    .filter-btn {
-      font-size: 0.8rem;
-      padding: 0.6rem 1.2rem;
-    }
-
-    .welcome-text h1 {
-      font-size: 1.8rem;
-    }
-
-    .daisy-dashboard {
-      padding: 1rem 0.5rem;
-    }
-  }
-
-  @media (max-width: 480px) {
-    .activity-card-daisy .card-footer {
-      flex-direction: column;
-      gap: 0.5rem;
-    }
-
-    .btn-action {
-      padding: 0.6rem 0.8rem;
-      font-size: 0.8rem;
-    }
-  }
-
-  .daisy-dashboard {
-    padding: 1rem 0.5rem;
-  }
-  
-  .daisy-ratings-section {
-    padding: 1.5rem;
-    margin-bottom: 1.5rem;
-  }
-  
-  .ratings-overview {
-    grid-template-columns: 1fr;
-    gap: 1rem;
-  }
-  
-  .ratings-header h3 {
-    font-size: 1.5rem;
-  }
-  
-  .recent-ratings h4 {
-    font-size: 1.2rem;
-  }
-  
-  .rating-activity {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 0.5rem;
-  }
-  
-  .rating-details {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 0.5rem;
-  }
-  
-  .rating-meta {
-    align-items: flex-start;
-  }
-
-  /* === CARD CLICÁVEL DE AVALIAÇÕES === */
-  .stat-card-clickable {
-    position: relative;
-    transition: all 0.3s ease !important;
-  }
-
-  .stat-card-clickable:hover {
-    transform: translateY(-8px) !important;
-    box-shadow: 0 16px 40px rgba(255, 105, 180, 0.25) !important;
-    border-color: rgba(255, 105, 180, 0.4) !important;
-  }
-
-  .stat-arrow {
-    position: absolute;
-    right: 1rem;
-    top: 50%;
-    transform: translateY(-50%);
-    color: #FF69B4;
-    font-size: 1.2rem;
-    transition: transform 0.3s ease;
-  }
-
-  .stat-card-clickable:hover .stat-arrow {
-    transform: translateY(-50%) translateX(5px);
-  }
-
-  /* === MODAL DE AVALIAÇÕES === */
-  .ratings-modal {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(0, 0, 0, 0.5);
-    backdrop-filter: blur(5px);
-    z-index: 1000;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    opacity: 0;
-    transition: opacity 0.3s ease;
-  }
-
-  .ratings-modal.show {
-    opacity: 1;
-  }
-
-  .ratings-modal-content {
-    background: white;
-    border-radius: 20px;
-    max-width: 800px;
-    width: 90%;
-    max-height: 80vh;
-    overflow-y: auto;
-    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
-    transform: translateY(-30px);
-    transition: transform 0.3s ease;
-    position: relative;
-  }
-
-  .ratings-modal.show .ratings-modal-content {
-    transform: translateY(0);
-  }
-
-  .ratings-modal-header {
-    background: linear-gradient(135deg, #FF69B4 0%, #FFB6C1 100%);
-    color: white;
-    padding: 1.5rem 2rem;
-    border-radius: 20px 20px 0 0;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-  }
-
-  .ratings-modal-header h3 {
-    margin: 0;
-    font-family: 'Lora', serif;
-    font-size: 1.5rem;
-    font-weight: 600;
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-  }
-
-  .close-modal {
-    background: none;
-    border: none;
-    color: white;
-    font-size: 1.2rem;
-    cursor: pointer;
-    padding: 0.5rem;
-    border-radius: 50%;
-    transition: background 0.2s ease;
-  }
-
-  .close-modal:hover {
-    background: rgba(255, 255, 255, 0.2);
-  }
-
-  .ratings-modal-body {
-    padding: 2rem;
-  }
-
-  .ratings-overview-modal {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-    gap: 1rem;
-    margin-bottom: 2rem;
-  }
-
-  .overview-card-modal {
-    background: linear-gradient(135deg, rgba(255, 240, 245, 0.8) 0%, rgba(255, 228, 225, 0.8) 100%);
-    border-radius: 12px;
-    padding: 1rem;
-    display: flex;
-    align-items: center;
-    gap: 0.75rem;
-    border: 1px solid rgba(255, 192, 203, 0.3);
-  }
-
-  .overview-icon-modal {
-    width: 50px;
-    height: 50px;
-    border-radius: 10px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 1.2rem;
-    color: white;
-  }
-
-  .overview-card-modal:nth-child(1) .overview-icon-modal {
-    background: linear-gradient(135deg, #FF69B4 0%, #FFB6C1 100%);
-  }
-
-  .overview-card-modal:nth-child(2) .overview-icon-modal {
-    background: linear-gradient(135deg, #FFD700 0%, #FFA500 100%);
-  }
-
-  .overview-card-modal:nth-child(3) .overview-icon-modal {
-    background: linear-gradient(135deg, #68D391 0%, #48BB78 100%);
-  }
-
-  .overview-content-modal {
-    display: flex;
-    flex-direction: column;
-  }
-
-  .overview-number-modal {
-    font-size: 1.5rem;
-    font-weight: 700;
-    color: #1E3D59;
-    line-height: 1;
-  }
-
-  .overview-label-modal {
-    color: #718096;
-    font-size: 0.8rem;
-    margin-top: 0.2rem;
-  }
-
-  .recent-ratings-modal h4 {
-    font-family: 'Lora', serif;
-    color: #1E3D59;
-    font-size: 1.3rem;
-    margin: 0 0 1rem;
-    font-weight: 600;
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-  }
-
-  .recent-ratings-modal h4 i {
-    color: #4A90E2;
-  }
-
-  .ratings-list-modal {
-    display: flex;
-    flex-direction: column;
-    gap: 1rem;
-    max-height: 400px;
-    overflow-y: auto;
-    padding-right: 0.5rem;
-  }
-
-  .rating-item-modal {
-    background: rgba(255, 240, 245, 0.5);
-    border-radius: 12px;
-    padding: 1rem;
-    border: 1px solid rgba(255, 192, 203, 0.2);
-    transition: all 0.2s ease;
-  }
-
-  .rating-item-modal:hover {
-    background: rgba(255, 240, 245, 0.8);
-    transform: translateY(-1px);
-  }
-
-  .rating-activity-modal {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 0.75rem;
-  }
-
-  .activity-title-small-modal {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    color: #1E3D59;
-    font-weight: 600;
-    font-size: 0.95rem;
-  }
-
-  .activity-title-small-modal i {
-    color: #4A90E2;
-  }
-
-  .rating-details-modal {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 0.5rem;
-  }
-
-  .rating-meta-modal {
-    display: flex;
-    flex-direction: column;
-    align-items: flex-end;
-    gap: 0.2rem;
-  }
-
-  .rating-comment-modal {
-    background: rgba(255, 105, 180, 0.1);
-    border-left: 3px solid #FFB6C1;
-    padding: 0.75rem;
-    border-radius: 0 8px 8px 0;
-    font-style: italic;
-    color: #4A5568;
-    display: flex;
-    align-items: flex-start;
-    gap: 0.5rem;
-    margin-top: 0.5rem;
-  }
-
-  .rating-comment-modal i {
-    color: #FFB6C1;
-    margin-top: 0.1rem;
-    flex-shrink: 0;
-  }
-
-  .no-ratings-modal {
-    text-align: center;
-    padding: 3rem 1rem;
-  }
-
-  .no-ratings-icon {
-    width: 80px;
-    height: 80px;
-    margin: 0 auto 1rem;
-    background: linear-gradient(135deg, #FFE4E1 0%, #FFC0CB 100%);
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 2rem;
-    color: #FF69B4;
-    border: 3px solid rgba(255, 255, 255, 0.8);
-  }
-
-  .no-ratings-modal h4 {
-    color: #1E3D59;
-    margin-bottom: 0.5rem;
-    font-family: 'Lora', serif;
-  }
-
-  .no-ratings-modal p {
-    color: #718096;
-    line-height: 1.5;
-  }
-
-  /* Responsividade do modal */
-  @media (max-width: 768px) {
-    .ratings-modal-content {
-      width: 95%;
-      margin: 1rem;
-    }
-
-    .ratings-modal-header {
-      padding: 1rem 1.5rem;
-    }
-
-    .ratings-modal-body {
-      padding: 1.5rem;
-    }
-
-    .ratings-overview-modal {
-      grid-template-columns: 1fr;
-      gap: 0.75rem;
-    }
-
-    .rating-activity-modal {
-      flex-direction: column;
-      align-items: flex-start;
-      gap: 0.5rem;
-    }
-
-    .rating-details-modal {
-      flex-direction: column;
-      align-items: flex-start;
-      gap: 0.5rem;
-    }
-
-    .rating-meta-modal {
-      align-items: flex-start;
-    }
-  }
-</style>
-
 <script>
-  document.addEventListener('DOMContentLoaded', function() {
-    const filterButtons = document.querySelectorAll('.filter-btn');
-    const activityCards = document.querySelectorAll('.activity-card-daisy');
-
-    console.log('Filter buttons found:', filterButtons.length);
-    console.log('Activity cards found:', activityCards.length);
-
-    filterButtons.forEach(button => {
-      button.addEventListener('click', function() {
-        console.log('Filter clicked:', this.getAttribute('data-niveau'));
-        
-        // Remove active class from all buttons
-        filterButtons.forEach(btn => btn.classList.remove('active'));
-        
-        // Add active class to clicked button
-        this.classList.add('active');
-        
-        const selectedLevel = this.getAttribute('data-niveau');
-        
-        // Filter activities with smooth animation
-        activityCards.forEach(card => {
-          const cardLevel = card.getAttribute('data-niveau');
-          console.log('Card level:', cardLevel, 'Selected:', selectedLevel);
-          
-          if (selectedLevel === 'tous' || cardLevel === selectedLevel) {
-            card.classList.remove('hidden');
-              card.style.display = 'block';
-          } else {
-            card.classList.add('hidden');
-                card.style.display = 'none';
-          }
-        });
-      });
-    });
-
-    // Add hover effects
-    activityCards.forEach(card => {
-      card.addEventListener('mouseenter', function() {
-        if (!this.classList.contains('hidden')) {
-          this.style.transform = 'translateY(-8px) scale(1.02)';
-        }
-      });
-      
-      card.addEventListener('mouseleave', function() {
-        if (!this.classList.contains('hidden')) {
-          this.style.transform = 'translateY(0) scale(1)';
-        }
-      });
-    });
-  });
-
-  // Função para controlar o modal de avaliações
   function toggleRatingsModal() {
     const modal = document.getElementById('ratings-modal');
-    if (modal.style.display === 'none' || modal.style.display === '') {
-      modal.style.display = 'flex';
-      setTimeout(() => {
-        modal.classList.add('show');
-      }, 10);
-    } else {
-      modal.classList.remove('show');
-      setTimeout(() => {
-        modal.style.display = 'none';
-      }, 300);
-    }
+    modal.style.display = (modal.style.display === 'none' || modal.style.display === '') ? 'flex' : 'none';
   }
-
-  // Fechar modal clicando fora dele
   document.addEventListener('click', function(e) {
     const modal = document.getElementById('ratings-modal');
-    if (e.target === modal) {
-      toggleRatingsModal();
-    }
+    if (e.target === modal) toggleRatingsModal();
   });
 </script>
-
