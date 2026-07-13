@@ -8,6 +8,13 @@ Rails.application.routes.draw do
   
   # Rota específica para professores
   get '/teacher_dashboard', to: 'users#index', as: :teacher_dashboard
+
+  resources :teacher_students, only: [:index, :show] do
+    member do
+      patch :update_level
+      delete :remove
+    end
+  end
   
   # Root path redirecionando para login do estudante
   root to: redirect('/students/sign_in')

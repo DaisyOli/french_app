@@ -75,24 +75,30 @@
 
     <%# Card "Meus alunos" %>
     <div style="background:var(--surface); border:1px solid var(--line); border-radius:14px; padding:16px 18px;">
-      <div style="font-family:'Plus Jakarta Sans',sans-serif; font-size:0.78rem; font-weight:700; color:var(--ink-soft); text-transform:uppercase; letter-spacing:0.04em; margin-bottom:10px;">
-        Mes étudiants
+      <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:10px;">
+        <div style="font-family:'Plus Jakarta Sans',sans-serif; font-size:0.78rem; font-weight:700; color:var(--ink-soft); text-transform:uppercase; letter-spacing:0.04em;">
+          Mes étudiants
+        </div>
+        <%= link_to "Voir tous", teacher_students_path,
+              style: "font-family:'Plus Jakarta Sans',sans-serif; font-size:0.76rem; font-weight:700; color:var(--brand);" %>
       </div>
       <% if @recent_students.any? %>
         <% @recent_students.each do |student| %>
-          <div class="dash-activity-row">
-            <div style="width:34px; height:34px; border-radius:50%; background:var(--brand-tint); color:var(--brand-deep); display:flex; align-items:center; justify-content:center; font-family:'Raleway',sans-serif; font-weight:700; font-size:0.85rem; flex-shrink:0;">
-              <%= student.email.first.upcase %>
-            </div>
-            <div style="flex:1; min-width:0;">
-              <div style="font-family:'Plus Jakarta Sans',sans-serif; font-weight:600; font-size:0.88rem; color:var(--ink); overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">
-                <%= student.email %>
+          <%= link_to teacher_student_path(student), style: "text-decoration:none; color:inherit;" do %>
+            <div class="dash-activity-row">
+              <div style="width:34px; height:34px; border-radius:50%; background:var(--brand-tint); color:var(--brand-deep); display:flex; align-items:center; justify-content:center; font-family:'Raleway',sans-serif; font-weight:700; font-size:0.85rem; flex-shrink:0;">
+                <%= student.email.first.upcase %>
               </div>
-              <div style="font-family:'Plus Jakarta Sans',sans-serif; font-size:0.74rem; color:var(--ink-faint);">
-                invité <%= time_ago_in_words(student.created_at) %>
+              <div style="flex:1; min-width:0;">
+                <div style="font-family:'Plus Jakarta Sans',sans-serif; font-weight:600; font-size:0.88rem; color:var(--ink); overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">
+                  <%= student.email %>
+                </div>
+                <div style="font-family:'Plus Jakarta Sans',sans-serif; font-size:0.74rem; color:var(--ink-faint);">
+                  invité <%= time_ago_in_words(student.created_at) %>
+                </div>
               </div>
             </div>
-          </div>
+          <% end %>
         <% end %>
       <% else %>
         <div style="text-align:center; padding:20px 8px;">

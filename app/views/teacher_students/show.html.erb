@@ -1,0 +1,112 @@
+<% content_for :head do %>
+  <title><%= @student.email %> · Practice-FR</title>
+<% end %>
+
+<div style="max-width:720px; margin:0 auto; padding:28px 16px 60px;">
+
+  <div style="margin-bottom:20px;">
+    <%= link_to teacher_students_path,
+          style: "font-family:'Plus Jakarta Sans',sans-serif; font-size:0.8rem; font-weight:600; color:var(--ink-soft); text-decoration:none; display:inline-flex; align-items:center; gap:4px;" do %>
+      <i class="bi bi-arrow-left"></i> Mes étudiants
+    <% end %>
+  </div>
+
+  <%# Header %>
+  <div style="background:var(--surface); border:1px solid var(--line); border-radius:16px; padding:24px; margin-bottom:20px;">
+    <div style="display:flex; align-items:center; gap:16px; flex-wrap:wrap;">
+      <div style="width:60px; height:60px; border-radius:50%; background:var(--brand-tint); color:var(--brand-deep); display:flex; align-items:center; justify-content:center; font-family:'Raleway',sans-serif; font-weight:700; font-size:1.4rem; flex-shrink:0;">
+        <%= @student.email.first.upcase %>
+      </div>
+      <div style="flex:1; min-width:0;">
+        <h1 style="font-family:'Raleway',sans-serif; font-size:1.2rem; font-weight:800; color:var(--ink); margin:0 0 4px; word-break:break-all;">
+          <%= @student.email %>
+        </h1>
+        <p style="font-family:'Plus Jakarta Sans',sans-serif; font-size:0.8rem; color:var(--ink-faint); margin:0;">
+          Élève depuis <%= @student.created_at.strftime("%d/%m/%Y") %>
+        </p>
+      </div>
+      <div style="display:flex; align-items:center; gap:6px; font-family:'Plus Jakarta Sans',sans-serif; font-size:0.85rem; color:var(--violet-deep);">
+        <span style="font-size:1.2rem;"><%= @student.current_trophy[:icon] %></span>
+        <%= @student.current_trophy[:name] %> · <%= @student.current_streak %> jour<%= @student.current_streak > 1 ? 's' : '' %>
+      </div>
+    </div>
+
+    <%= button_to remove_teacher_student_path(@student), method: :delete,
+          form: { data: { turbo_confirm: "Retirer #{@student.email} de votre liste d'étudiants ?" } },
+          style: "margin-top:16px; font-family:'Plus Jakarta Sans',sans-serif; font-size:0.8rem; font-weight:700; padding:8px 16px; border-radius:9px; border:1.5px solid var(--error-border); background:var(--error-tint); color:var(--error-deep); cursor:pointer;" do %>
+      <i class="bi bi-person-dash"></i> Retirer cet étudiant
+    <% end %>
+  </div>
+
+  <%# Métricas %>
+  <div style="display:flex; gap:12px; flex-wrap:wrap; margin-bottom:20px;">
+    <div style="flex:1; min-width:130px; background:var(--surface); border:1px solid var(--line); border-radius:14px; padding:14px 16px; text-align:center;">
+      <div style="font-family:'Raleway',sans-serif; font-size:1.4rem; font-weight:800; color:var(--brand-deep);"><%= @total_completed %></div>
+      <div style="font-family:'Plus Jakarta Sans',sans-serif; font-size:0.75rem; color:var(--ink-soft);">activités faites</div>
+    </div>
+    <div style="flex:1; min-width:130px; background:var(--surface); border:1px solid var(--line); border-radius:14px; padding:14px 16px; text-align:center;">
+      <div style="font-family:'Raleway',sans-serif; font-size:1.4rem; font-weight:800; color:var(--info);"><%= @average_score %>%</div>
+      <div style="font-family:'Plus Jakarta Sans',sans-serif; font-size:0.75rem; color:var(--ink-soft);">score moyen</div>
+    </div>
+    <div style="flex:1; min-width:130px; background:var(--surface); border:1px solid var(--line); border-radius:14px; padding:14px 16px; text-align:center;">
+      <div style="font-family:'Raleway',sans-serif; font-size:1.4rem; font-weight:800; color:var(--action);"><%= @best_score %>%</div>
+      <div style="font-family:'Plus Jakarta Sans',sans-serif; font-size:0.75rem; color:var(--ink-soft);">meilleur score</div>
+    </div>
+  </div>
+
+  <%# Nível editável %>
+  <div style="background:var(--surface); border:1px solid var(--line); border-radius:14px; padding:16px 18px; margin-bottom:20px;">
+    <div style="font-family:'Plus Jakarta Sans',sans-serif; font-size:0.78rem; font-weight:700; color:var(--ink-soft); text-transform:uppercase; letter-spacing:0.04em; margin-bottom:12px;">
+      Niveau
+    </div>
+    <%= form_with url: update_level_teacher_student_path(@student), method: :patch,
+          html: { style: "display:flex; flex-wrap:wrap; gap:8px; align-items:center;" } do %>
+      <% %w[A1 A2 B1 B2 C1 C2].each do |level| %>
+        <% m = cefr_colors(level) %>
+        <input type="radio" name="student[nível]" id="profile_nivel_<%= level %>" value="<%= level %>"
+               <%= 'checked' if @student.nível == level %> class="level-radio">
+        <label for="profile_nivel_<%= level %>" class="level-pill" style="--pill-bg:<%= m[:bg] %>; --pill-text:<%= m[:text] %>; --pill-border:<%= m[:border] %>;">
+          <%= level %>
+        </label>
+      <% end %>
+      <button type="submit"
+              style="font-family:'Plus Jakarta Sans',sans-serif; font-size:0.82rem; font-weight:700; padding:8px 18px; border-radius:999px; border:none; background:var(--brand); color:var(--surface); cursor:pointer;">
+        Enregistrer
+      </button>
+    <% end %>
+    <p style="font-family:'Plus Jakarta Sans',sans-serif; font-size:0.76rem; color:var(--ink-faint); margin:10px 0 0;">
+      Définit quelles activités l'étudiant peut voir (ce niveau et en-dessous).
+    </p>
+  </div>
+
+  <%# Atividades recentes %>
+  <div style="background:var(--surface); border:1px solid var(--line); border-radius:14px; padding:16px 18px;">
+    <div style="font-family:'Plus Jakarta Sans',sans-serif; font-size:0.78rem; font-weight:700; color:var(--ink-soft); text-transform:uppercase; letter-spacing:0.04em; margin-bottom:10px;">
+      Activités récentes
+    </div>
+    <% if @completed_activities.any? %>
+      <% @completed_activities.limit(10).each do |ca| %>
+        <div class="dash-activity-row">
+          <div style="flex:1; min-width:0;">
+            <div style="font-family:'Plus Jakarta Sans',sans-serif; font-weight:600; font-size:0.86rem; color:var(--ink); overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">
+              <%= ca.activity.título %>
+            </div>
+            <div style="font-family:'Plus Jakarta Sans',sans-serif; font-size:0.72rem; color:var(--ink-faint);">
+              <%= ca.completed_at.strftime("%d/%m/%Y") %>
+            </div>
+          </div>
+          <div style="font-family:'DM Mono',monospace; font-weight:700; color:var(--brand);">
+            <%= ca.percentage.round %>%
+          </div>
+        </div>
+      <% end %>
+    <% else %>
+      <div style="text-align:center; padding:20px 8px;">
+        <span style="font-size:1.8rem; display:block; margin-bottom:6px;">🥐</span>
+        <p style="font-family:'Plus Jakarta Sans',sans-serif; color:var(--ink-soft); font-size:0.85rem; margin:0;">
+          Aucune activité terminée pour l'instant.
+        </p>
+      </div>
+    <% end %>
+  </div>
+</div>
