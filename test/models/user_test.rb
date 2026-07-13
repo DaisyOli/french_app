@@ -39,4 +39,28 @@ class UserTest < ActiveSupport::TestCase
     # conta de professor direto em /users/sign_up, sem convite nem admin.
     assert_not User.devise_modules.include?(:registerable)
   end
+
+  # Sprint do painel admin: apagar um professor não pode apagar os alunos
+  # dele junto — só desvincula (mesma convenção do "remover aluno" que o
+  # próprio professor já tinha).
+  test "destroying a teacher unlinks (does not destroy) their students" do
+    @user.save!
+    student = Student.create!(email: "aluno.unlink@example.com", password: "password123", invited_by: @user)
+
+    @user.destroy
+
+    assert Student.exists?(student.id)
+    student.reload
+    assert_nil student.invited_by_id
+    assert_nil student.invited_by_type
+  end
+
+  test "destroying a teacher destroys their activities" do
+    @user.save!
+    activity = Activity.create!(título: "Activité à supprimer", nível: "A1", user: @user)
+
+    @user.destroy
+
+    assert_not Activity.exists?(activity.id)
+  end
 end

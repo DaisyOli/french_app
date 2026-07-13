@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2026_07_13_125210) do
+ActiveRecord::Schema[7.1].define(version: 2026_07_13_165456) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -44,6 +44,16 @@ ActiveRecord::Schema[7.1].define(version: 2026_07_13_125210) do
     t.index ["student_id", "activity_id"], name: "index_activity_ratings_on_student_id_and_activity_id", unique: true
     t.index ["student_id"], name: "index_activity_ratings_on_student_id"
     t.check_constraint "stars >= 1 AND stars <= 5", name: "stars_range_check"
+  end
+
+  create_table "admin_audit_logs", force: :cascade do |t|
+    t.bigint "admin_id", null: false
+    t.string "action", null: false
+    t.string "target_description", null: false
+    t.text "details"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["admin_id"], name: "index_admin_audit_logs_on_admin_id"
   end
 
   create_table "alternatives", force: :cascade do |t|
@@ -238,6 +248,7 @@ ActiveRecord::Schema[7.1].define(version: 2026_07_13_125210) do
   add_foreign_key "activities", "users"
   add_foreign_key "activity_ratings", "activities"
   add_foreign_key "activity_ratings", "students"
+  add_foreign_key "admin_audit_logs", "users", column: "admin_id"
   add_foreign_key "alternatives", "questions"
   add_foreign_key "association_pairs", "column_associations"
   add_foreign_key "blanks", "fill_blanks"
