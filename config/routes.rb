@@ -1,6 +1,6 @@
 Rails.application.routes.draw do
-  devise_for :students, controllers: { invitations: 'students/invitations' }
-  devise_for :users
+  devise_for :students, controllers: { invitations: 'students/invitations', sessions: 'students/sessions' }
+  devise_for :users, controllers: { sessions: 'users/sessions' }
   
   # Rota específica para estudantes
   get '/student_dashboard', to: 'students#dashboard', as: :student_dashboard
