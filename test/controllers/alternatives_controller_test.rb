@@ -20,7 +20,7 @@ class AlternativesControllerTest < ActionDispatch::IntegrationTest
       }
     end
     assert_response :redirect
-    assert_match /activities\/#{@activity.id}/, response.location
+    assert_match %r{activities/#{@activity.slug}}, response.location
   end
 
   test "should update alternative when authenticated" do
@@ -31,7 +31,7 @@ class AlternativesControllerTest < ActionDispatch::IntegrationTest
       }
     }
     assert_response :redirect
-    assert_match /activities\/#{@activity.id}/, response.location
+    assert_match %r{activities/#{@activity.slug}}, response.location
   end
 
   test "should destroy alternative when authenticated" do
@@ -40,7 +40,7 @@ class AlternativesControllerTest < ActionDispatch::IntegrationTest
       delete activity_question_alternative_path(@activity, @question, alternative)
     end
     assert_response :redirect
-    assert_match /activities\/#{@activity.id}/, response.location
+    assert_match %r{activities/#{@activity.slug}}, response.location
   end
 
   test "should not allow access without authentication" do

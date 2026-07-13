@@ -17,7 +17,7 @@ class ActivitiesControllerTest < ActionDispatch::IntegrationTest
     sign_in @user
     get activities_path
     assert_response :success
-    assert_select "h1", /Mes petites créations/i
+    assert_select "h1", /Mes activités/i
   end
 
   test "should show activity" do
@@ -96,9 +96,12 @@ class ActivitiesControllerTest < ActionDispatch::IntegrationTest
     assert_redirected_to activities_path
   end
 
-  test "should get solve page without authentication" do
+  # Corrigido de propósito na Sprint 3: resolver atividade por link direto
+  # sem login era um furo de segurança real em produção. Não reverter esta
+  # expectativa para :success sem reabrir esse buraco.
+  test "should redirect to student login when solving without authentication" do
     get solve_activity_path(@activity)
-    assert_response :success
+    assert_redirected_to new_student_session_path
   end
 
   test "should not allow student to access new activity" do

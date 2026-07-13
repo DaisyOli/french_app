@@ -18,7 +18,7 @@ class SuggestionsControllerTest < ActionDispatch::IntegrationTest
       }
     end
     assert_response :redirect
-    assert_match /activities\/#{@activity.id}/, response.location
+    assert_match %r{activities/#{@activity.slug}}, response.location
   end
 
   test "should update suggestion when authenticated" do
@@ -29,7 +29,7 @@ class SuggestionsControllerTest < ActionDispatch::IntegrationTest
       }
     }
     assert_response :redirect
-    assert_match /activities\/#{@activity.id}/, response.location
+    assert_match %r{activities/#{@activity.slug}}, response.location
   end
 
   test "should destroy suggestion when authenticated" do
@@ -38,7 +38,7 @@ class SuggestionsControllerTest < ActionDispatch::IntegrationTest
       delete activity_suggestion_path(@activity, suggestion)
     end
     assert_response :redirect
-    assert_match /activities\/#{@activity.id}/, response.location
+    assert_match %r{activities/#{@activity.slug}}, response.location
   end
 
   test "should not allow access without authentication" do
