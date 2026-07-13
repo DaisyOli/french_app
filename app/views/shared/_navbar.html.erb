@@ -55,13 +55,24 @@
         <% end %>
       <% end %>
 
+      <% if current_user.admin? %>
+        <%= link_to admin_root_path,
+              class: "hidden sm:inline-flex items-center whitespace-nowrap px-4 py-1.5 rounded-lg text-sm font-semibold no-underline",
+              style: "background:var(--surface); color:var(--brand-deep); border:1.5px solid var(--brand-tint-2); font-family:'Plus Jakarta Sans',sans-serif; text-decoration:none;" do %>
+          <i class="bi bi-speedometer2" style="margin-right:6px;"></i>Panneau Admin
+        <% end %>
+      <% end %>
+
       <%= link_to "+ Nouvelle activité", new_activity_path,
             class: "hidden sm:inline-flex items-center whitespace-nowrap px-4 py-1.5 rounded-lg text-sm font-semibold text-white no-underline",
             style: "background:var(--brand-bright); font-family:'Plus Jakarta Sans',sans-serif; text-decoration:none;" %>
 
       <% teacher_mobile_links = [["+ Nouvelle activité", new_activity_path, "var(--brand)"],
                                  ["Inviter un étudiant", new_student_invitation_path, "var(--brand)"]]
-         teacher_mobile_links << ["Inviter un professeur", new_user_invitation_path, "var(--brand)"] if current_user.admin? %>
+         if current_user.admin?
+           teacher_mobile_links << ["Inviter un professeur", new_user_invitation_path, "var(--brand)"]
+           teacher_mobile_links << ["Panneau Admin", admin_root_path, "var(--brand-deep)"]
+         end %>
       <%= render "shared/navbar_dropdown",
             role_label: current_user.admin? ? "PROFESSEURE · ADMIN" : "PROFESSEURE",
             display_name: "Daisy 🌼",

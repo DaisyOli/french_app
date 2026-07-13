@@ -16,7 +16,13 @@ Rails.application.routes.draw do
       get :attestation
     end
   end
-  
+
+  namespace :admin do
+    root to: "dashboard#index"
+    resources :users, only: [:update, :destroy]
+    resources :students, only: [:destroy]
+  end
+
   # Root path redirecionando para login do estudante
   root to: redirect('/students/sign_in')
   

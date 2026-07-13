@@ -1,0 +1,185 @@
+<% content_for :head do %>
+  <title>Panneau Admin · Practice-FR</title>
+<% end %>
+
+<div style="max-width:1100px; margin:0 auto; padding:28px 16px 60px;">
+
+  <div style="display:flex; align-items:center; justify-content:space-between; gap:12px; margin-bottom:20px;">
+    <div>
+      <%= link_to teacher_dashboard_path,
+            style: "font-family:'Plus Jakarta Sans',sans-serif; font-size:0.8rem; font-weight:600; color:var(--ink-soft); text-decoration:none; display:inline-flex; align-items:center; gap:4px; margin-bottom:6px;" do %>
+        <i class="bi bi-arrow-left"></i> Tableau de bord
+      <% end %>
+      <h1 style="font-family:'Raleway',sans-serif; font-size:1.5rem; font-weight:800; color:var(--brand-deep); margin:0; display:flex; align-items:center; gap:10px;">
+        Panneau Admin
+        <span style="font-family:'DM Mono',monospace; font-size:0.68rem; font-weight:700; background:var(--brand-deep); color:var(--surface); padding:2px 10px; border-radius:20px;">ADMIN</span>
+      </h1>
+    </div>
+    <%= link_to new_user_invitation_path,
+          style: "font-family:'Plus Jakarta Sans',sans-serif; font-size:0.85rem; font-weight:700; padding:10px 20px; border-radius:999px; text-decoration:none; background:var(--brand); color:var(--surface); white-space:nowrap;" do %>
+      <i class="bi bi-plus-circle"></i> Inviter un professeur
+    <% end %>
+  </div>
+
+  <%# Cartões agregados %>
+  <div class="dash-metrics-grid" style="margin-bottom:24px;">
+    <div style="background:var(--surface); border:1px solid var(--line); border-radius:14px; padding:16px 18px;">
+      <div style="font-family:'DM Mono',monospace; font-size:0.68rem; font-weight:700; letter-spacing:0.05em; text-transform:uppercase; color:var(--ink-faint); margin-bottom:6px;">Professeurs</div>
+      <span style="font-family:'Raleway',sans-serif; font-size:1.7rem; font-weight:800; color:var(--brand-deep);"><%= @total_teachers %></span>
+    </div>
+    <div style="background:var(--surface); border:1px solid var(--line); border-radius:14px; padding:16px 18px;">
+      <div style="font-family:'DM Mono',monospace; font-size:0.68rem; font-weight:700; letter-spacing:0.05em; text-transform:uppercase; color:var(--ink-faint); margin-bottom:6px;">Étudiants</div>
+      <span style="font-family:'Raleway',sans-serif; font-size:1.7rem; font-weight:800; color:var(--info);"><%= @total_students %></span>
+    </div>
+    <div style="background:var(--surface); border:1px solid var(--line); border-radius:14px; padding:16px 18px;">
+      <div style="font-family:'DM Mono',monospace; font-size:0.68rem; font-weight:700; letter-spacing:0.05em; text-transform:uppercase; color:var(--ink-faint); margin-bottom:6px;">Activités</div>
+      <span style="font-family:'Raleway',sans-serif; font-size:1.7rem; font-weight:800; color:var(--action);"><%= @total_activities %></span>
+    </div>
+    <div style="background:var(--surface); border:1px solid var(--line); border-radius:14px; padding:16px 18px;">
+      <div style="font-family:'DM Mono',monospace; font-size:0.68rem; font-weight:700; letter-spacing:0.05em; text-transform:uppercase; color:var(--ink-faint); margin-bottom:6px;">Tentatives</div>
+      <span style="font-family:'Raleway',sans-serif; font-size:1.7rem; font-weight:800; color:var(--violet);"><%= @total_attempts %></span>
+    </div>
+  </div>
+
+  <%# Tabela de professores %>
+  <div style="background:var(--surface); border:1px solid var(--line); border-radius:14px; padding:18px 20px; margin-bottom:24px; overflow-x:auto;">
+    <div style="font-family:'Plus Jakarta Sans',sans-serif; font-size:0.78rem; font-weight:700; color:var(--ink-soft); text-transform:uppercase; letter-spacing:0.04em; margin-bottom:12px;">Professeurs</div>
+    <table style="width:100%; border-collapse:collapse; min-width:640px;">
+      <thead>
+        <tr style="border-bottom:1.5px solid var(--line);">
+          <th style="text-align:left; font-family:'DM Mono',monospace; font-size:0.68rem; font-weight:700; text-transform:uppercase; color:var(--ink-faint); padding:8px 6px;">Professeur</th>
+          <th style="text-align:center; font-family:'DM Mono',monospace; font-size:0.68rem; font-weight:700; text-transform:uppercase; color:var(--ink-faint); padding:8px 6px;">Activités</th>
+          <th style="text-align:center; font-family:'DM Mono',monospace; font-size:0.68rem; font-weight:700; text-transform:uppercase; color:var(--ink-faint); padding:8px 6px;">Étudiants</th>
+          <th style="text-align:center; font-family:'DM Mono',monospace; font-size:0.68rem; font-weight:700; text-transform:uppercase; color:var(--ink-faint); padding:8px 6px;">Tentatives</th>
+          <th style="text-align:center; font-family:'DM Mono',monospace; font-size:0.68rem; font-weight:700; text-transform:uppercase; color:var(--ink-faint); padding:8px 6px;">Score moyen</th>
+          <th style="text-align:center; font-family:'DM Mono',monospace; font-size:0.68rem; font-weight:700; text-transform:uppercase; color:var(--ink-faint); padding:8px 6px;">Dernière activité</th>
+          <th style="padding:8px 6px;"></th>
+        </tr>
+      </thead>
+      <tbody>
+        <% @teachers.each do |teacher| %>
+          <tr id="teacher-<%= teacher.id %>" style="border-bottom:1px solid var(--line-soft);">
+            <td style="padding:10px 6px;">
+              <div style="font-family:'Plus Jakarta Sans',sans-serif; font-weight:600; font-size:0.85rem; color:var(--ink);">
+                <%= teacher.name.presence || teacher.email %>
+                <% if teacher.admin? %>
+                  <span style="font-family:'DM Mono',monospace; font-size:0.6rem; font-weight:700; color:var(--brand-deep);">· ADMIN</span>
+                <% end %>
+              </div>
+              <div style="font-family:'Plus Jakarta Sans',sans-serif; font-size:0.72rem; color:var(--ink-faint);"><%= teacher.email %></div>
+              <button type="button" class="toggle-form" data-target="form-name-<%= teacher.id %>"
+                      style="font-family:'Plus Jakarta Sans',sans-serif; font-size:0.68rem; font-weight:700; padding:2px 8px; border-radius:7px; border:1.5px solid var(--brand-bright); background:var(--surface); color:var(--brand-deep); cursor:pointer; margin-top:4px;">
+                <i class="bi bi-pencil"></i> Nom
+              </button>
+              <div id="form-name-<%= teacher.id %>" style="display:none; margin-top:8px;">
+                <%= form_with model: teacher, url: admin_user_path(teacher), method: :patch, html: { style: "display:flex; gap:6px;" } do |form| %>
+                  <%= form.text_field :name, value: teacher.name, placeholder: "Nom du professeur",
+                        style: "font-family:'Plus Jakarta Sans',sans-serif; font-size:0.8rem; padding:6px 8px; border:1.5px solid var(--line); border-radius:8px; background:var(--surface); color:var(--ink); width:140px;" %>
+                  <%= form.submit "✓", style: "border:1.5px solid var(--brand-bright); background:var(--brand-tint); color:var(--brand-deep); border-radius:7px; padding:4px 10px; cursor:pointer; font-weight:700;" %>
+                <% end %>
+              </div>
+            </td>
+            <td style="text-align:center; font-family:'DM Mono',monospace; font-size:0.85rem; color:var(--ink);"><%= @activities_count[teacher.id] || 0 %></td>
+            <td style="text-align:center; font-family:'DM Mono',monospace; font-size:0.85rem; color:var(--ink);"><%= @students_count[teacher.id] || 0 %></td>
+            <td style="text-align:center; font-family:'DM Mono',monospace; font-size:0.85rem; color:var(--ink);"><%= @attempts_count[teacher.id] || 0 %></td>
+            <td style="text-align:center; font-family:'DM Mono',monospace; font-size:0.85rem; color:var(--ink);">
+              <% avg = @average_score[teacher.id] %>
+              <%= avg ? "#{avg.round}%" : "—" %>
+            </td>
+            <td style="text-align:center; font-family:'Plus Jakarta Sans',sans-serif; font-size:0.78rem; color:var(--ink-soft);">
+              <% last = @last_activity_at[teacher.id] %>
+              <%= last ? last.strftime("%d/%m/%Y") : "—" %>
+            </td>
+            <td style="text-align:right; padding:10px 6px;">
+              <% unless teacher == current_user %>
+                <%= button_to admin_user_path(teacher), method: :delete,
+                      form: { data: { turbo_confirm: "Supprimer #{teacher.email} ? Cela supprimera aussi ses #{@activities_count[teacher.id] || 0} activité(s). Les #{@students_count[teacher.id] || 0} étudiant(s) lié(s) ne seront pas supprimés, juste déliés. Cette action est irréversible." } },
+                      style: "font-family:'Plus Jakarta Sans',sans-serif; font-size:0.75rem; font-weight:700; padding:5px 10px; border-radius:8px; border:1.5px solid var(--error-border); background:var(--error-tint); color:var(--error-deep); cursor:pointer;" do %>
+                  <i class="bi bi-trash"></i>
+                <% end %>
+              <% end %>
+            </td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  </div>
+
+  <%# Tabela de alunos %>
+  <div style="background:var(--surface); border:1px solid var(--line); border-radius:14px; padding:18px 20px; margin-bottom:24px; overflow-x:auto;">
+    <div style="font-family:'Plus Jakarta Sans',sans-serif; font-size:0.78rem; font-weight:700; color:var(--ink-soft); text-transform:uppercase; letter-spacing:0.04em; margin-bottom:12px;">Étudiants</div>
+    <table style="width:100%; border-collapse:collapse; min-width:560px;">
+      <thead>
+        <tr style="border-bottom:1.5px solid var(--line);">
+          <th style="text-align:left; font-family:'DM Mono',monospace; font-size:0.68rem; font-weight:700; text-transform:uppercase; color:var(--ink-faint); padding:8px 6px;">Étudiant</th>
+          <th style="text-align:left; font-family:'DM Mono',monospace; font-size:0.68rem; font-weight:700; text-transform:uppercase; color:var(--ink-faint); padding:8px 6px;">Professeur</th>
+          <th style="text-align:center; font-family:'DM Mono',monospace; font-size:0.68rem; font-weight:700; text-transform:uppercase; color:var(--ink-faint); padding:8px 6px;">Niveau</th>
+          <th style="text-align:center; font-family:'DM Mono',monospace; font-size:0.68rem; font-weight:700; text-transform:uppercase; color:var(--ink-faint); padding:8px 6px;">Activités faites</th>
+          <th style="padding:8px 6px;"></th>
+        </tr>
+      </thead>
+      <tbody>
+        <% @students.each do |student| %>
+          <tr id="student-<%= student.id %>" style="border-bottom:1px solid var(--line-soft);">
+            <td style="padding:10px 6px; font-family:'Plus Jakarta Sans',sans-serif; font-size:0.82rem; color:var(--ink);"><%= student.email %></td>
+            <td style="padding:10px 6px; font-family:'Plus Jakarta Sans',sans-serif; font-size:0.78rem; color:var(--ink-soft);">
+              <%= student.invited_by&.email || "—" %>
+            </td>
+            <td style="text-align:center;">
+              <% if student.nível.present? %>
+                <% m = cefr_colors(student.nível) %>
+                <span style="font-family:'DM Mono',monospace; font-size:0.68rem; font-weight:700; background:<%= m[:bg] %>; color:<%= m[:text] %>; border:1.5px solid <%= m[:border] %>; padding:1px 8px; border-radius:20px;"><%= student.nível %></span>
+              <% else %>
+                <span style="font-family:'Plus Jakarta Sans',sans-serif; font-size:0.72rem; color:var(--ink-faint);">—</span>
+              <% end %>
+            </td>
+            <td style="text-align:center; font-family:'DM Mono',monospace; font-size:0.85rem; color:var(--ink);"><%= @completed_count[student.id] || 0 %></td>
+            <td style="text-align:right; padding:10px 6px;">
+              <%= button_to admin_student_path(student), method: :delete,
+                    form: { data: { turbo_confirm: "Supprimer #{student.email} ? Tout son historique d'activités sera perdu. Cette action est irréversible." } },
+                    style: "font-family:'Plus Jakarta Sans',sans-serif; font-size:0.75rem; font-weight:700; padding:5px 10px; border-radius:8px; border:1.5px solid var(--error-border); background:var(--error-tint); color:var(--error-deep); cursor:pointer;" do %>
+                <i class="bi bi-trash"></i>
+              <% end %>
+            </td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  </div>
+
+  <%# Historique %>
+  <div style="background:var(--surface); border:1px solid var(--line); border-radius:14px; padding:18px 20px;">
+    <div style="font-family:'Plus Jakarta Sans',sans-serif; font-size:0.78rem; font-weight:700; color:var(--ink-soft); text-transform:uppercase; letter-spacing:0.04em; margin-bottom:12px;">Historique des actions admin</div>
+    <% if @recent_logs.any? %>
+      <div style="display:flex; flex-direction:column; gap:8px;">
+        <% @recent_logs.each do |log| %>
+          <div class="dash-activity-row">
+            <div style="flex:1; min-width:0;">
+              <div style="font-family:'Plus Jakarta Sans',sans-serif; font-weight:600; font-size:0.82rem; color:var(--ink);">
+                <%= log.action %> — <%= log.target_description %>
+              </div>
+              <div style="font-family:'Plus Jakarta Sans',sans-serif; font-size:0.7rem; color:var(--ink-faint);">
+                <%= log.admin.email %> · <%= log.created_at.strftime("%d/%m/%Y %H:%M") %>
+                <%= "· #{log.details}" if log.details.present? %>
+              </div>
+            </div>
+          </div>
+        <% end %>
+      </div>
+    <% else %>
+      <p style="font-family:'Plus Jakarta Sans',sans-serif; font-size:0.82rem; color:var(--ink-faint); margin:0;">Aucune action admin pour l'instant.</p>
+    <% end %>
+  </div>
+</div>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
+    document.querySelectorAll('.toggle-form').forEach(function (button) {
+      button.addEventListener('click', function () {
+        const target = document.getElementById(this.getAttribute('data-target'));
+        if (!target) return;
+        target.style.display = (target.style.display === 'none' || target.style.display === '') ? 'block' : 'none';
+      });
+    });
+  });
+</script>
