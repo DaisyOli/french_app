@@ -1,8 +1,10 @@
 # Practice FR — Plano de Migração (briefing de missão)
 
 > Escrito em 2026-07-10 pela sessão do exercise_app (Practice BR), que já analisou
-> este repositório. **Sessão nova: leia este arquivo inteiro antes de qualquer
-> mudança**, e leia também o contrato da franquia no repo irmão:
+> este repositório. Atualizado em 2026-07-13 com o estado real depois da migração
+> página a página (Sprint 3) e o novo roteiro de features (Sprint 4-FR em diante).
+> **Sessão nova: leia este arquivo inteiro antes de qualquer mudança**, e leia
+> também o contrato da franquia no repo irmão:
 > `~/code/exercise_app/docs/DESIGN_SYSTEM.md` e `docs/design_system.html`
 > (abra a sessão com `claude --add-dir ~/code/exercise_app`).
 
@@ -29,52 +31,55 @@ apps — só os VALORES mudam). Fonte de verdade lá: `app/assets/stylesheets/_t
 
 ## Sprints (nesta ordem)
 
-### Sprint 0 — Higiene do repositório (1 sentada, sem mudança visual)
-1. Tirar `node_modules/` do git (`git rm -r --cached node_modules` + `.gitignore`).
-2. Apagar `app/assets/stylesheets/application.css.backup` e a pasta órfã `french_app/`.
-3. Resolver o Bootstrap duplicado: manter SÓ a gem por enquanto (remover o `<link>` CDN
-   do layout) — a remoção total do Bootstrap vem na migração página a página.
-4. Conferir o deploy: remote heroku, Procfile, como rodam as migrações; fazer um
-   deploy de validação depois da faxina.
+### Sprint 0 — Higiene do repositório ✅ CONCLUÍDA
+### Sprint 1-FR — Fundação da franquia ✅ CONCLUÍDA
+### Sprint 2-FR — Nascer a marca francesa ✅ CONCLUÍDA
+> Paleta **Bordeaux crème** (bordô `#8A2545`/`#5C1630` sobre creme `#FAF6EF`, action
+> dourado `#C08A28`, brand-soft rosa empoeirado `#C08A95`). Branding completo em
+> `branding/fr/` (logo vetorial, Raleway SemiBold 600, sem subtítulo). Tokens
+> gravados em `app/assets/stylesheets/_tokens.scss`.
 
-### Sprint 1-FR — Fundação da franquia
-1. Instalar `tailwindcss-rails` + DaisyUI (mesmas versões do BR: DaisyUI v4, tailwindcss-rails ~3.3).
-2. Copiar do BR: `app/assets/stylesheets/_tokens.scss` (manter os NOMES; valores
-   provisórios = os do BR até a Sprint 2-FR), `docs/DESIGN_SYSTEM.md`,
-   `docs/design_system.html`, `scripts/tokenize_colors.rb`.
-3. `tailwind.config.js` no padrão do BR: `extend.colors` lendo os tokens
-   (`brand`, `action`, `ink`, `paper`, `line`...), tema DaisyUI **`practice-fr`**,
-   fontes (`Raleway`/`Plus Jakarta Sans`/`DM Mono` — franquia) e raios 8/12/18/24px.
+### Sprint 3-FR — Migração página a página — ✅ CONCLUÍDA (2026-07-12/13)
 
-### Sprint 2-FR — Nascer a marca francesa (decisão de design da Daisy)
-> **STATUS 2026-07-11: decidida — Bordeaux crème** (bordô #8A2545/#5C1630 sobre
-> creme #FAF6EF, action dourado #C08A28, brand-soft rosa empoeirado #C08A95).
-> Branding completo em `branding/fr/` (logo vetorial, Raleway SemiBold 600, sem
-> subtítulo). Falta só gravar os valores em `_tokens.scss`/tema DaisyUI (início do Sprint 3).
-1. Criar `mockup.html` com 3–4 direções de paleta preenchendo os MESMOS tokens
-   (ex.: evoluir o roxo atual para uma família roxa "de gente grande"; azul-França +
-   accent quente; bordô/creme). Mostrar cada direção trocando só o bloco `:root`.
-2. Daisy escolhe. Gravar a paleta vencedora em `_tokens.scss` + tema DaisyUI +
-   bloco `:root` do `docs/design_system.html` local.
-3. Apagar o `mockup.html` ao final (regra dela: um mockup ativo por vez; o
-   `design_system.html` é a referência permanente).
+> **Achado importante durante a Sprint 3**: o Practice-BR, na tela de exercícios
+> (equivalente ao `show.html.erb` do FR), não tem um componente estrutural
+> reutilizável pra "card de exercício" — é convenção copiada manualmente entre
+> ~10 partials, não um padrão formal. Então a regra "cards/grid se portam do BR,
+> não se recriam" valeu bem para telas de listagem (`.activity-card`,
+> `.activities-grid`, dashboards), mas **não fazia sentido forçar pro
+> `show.html.erb`** — lá o trabalho foi retoken visual (trocar cor por token),
+> sem mexer na estrutura, porque a página tem lógica de negócio real embaralhada
+> com a view e nenhum alvo estrutural limpo do BR pra copiar.
 
-### Sprint 3+ — Migração página a página (receita R8 do BR)
-Ordem sugerida: layout/navbar → telas Devise → lista de atividades → show/quiz → admin.
+Páginas migradas (Bootstrap → tokens da franquia, `var(--token)`, sem hex cru):
+- Navbar (`shared/_navbar.html.erb`) e Devise (login professor/aluno, sem os
+  alertas automáticos do Devise — "conectado com sucesso" etc. removidos).
+- Dashboard do aluno (`students/dashboard.html.erb`) e do professor
+  (`users/index.html.erb`, antes um redirect vazio — nasceu do zero, direção
+  visual "Adega": hero sólido em `--brand-deep`).
+- Quiz/resolver atividade (`activities/solve.html.erb`) — todos os tipos de
+  exercício na estrutura real do BR (não só cor).
+- Formulário de criar/editar atividade (`activities/_form.html.erb`).
+- Tela de exercícios (`activities/show.html.erb`) — **retoken visual apenas**
+  (ver achado acima); redesenho estrutural fica pra uma sprint futura dedicada.
+- Lista de atividades do professor (`activities/index.html.erb`) — ganhou busca,
+  filtro por nível e ordenação (server-side, sem JS, como o BR).
+- Convite de aluno (`students/invitations/new.html.erb`).
+- Removido: gem `bootstrap` continua no Gemfile (não removida ainda — não bloqueou
+  nada, fica pra depois se quiser).
 
-> **Cards, grid e responsividade NÃO se recriam — se PORTAM do BR.** O trabalho
-> que a Daisy fez nos cards/responsividade do Practice-BR é estrutura da franquia
-> (classes Tailwind/DaisyUI); copiar/adaptar o markup das views equivalentes do BR
-> e deixar os tokens pintarem de bordô. Abrir a sessão com
-> `claude --add-dir ~/code/exercise_app` pra ler as views de lá.
-> **Critério de qualidade:** a franquia Practice é peça de portfólio — tem que
-> ficar incrível para recrutadores (polimento visual, estados vazios com charme,
-> responsividade impecável).
-Por página: substituir classes Bootstrap por Tailwind/DaisyUI com tokens; collapses
-viram Stimulus; `form-control` → `form-input`; hex que sobrar → rodar
-`scripts/tokenize_colors.rb` (ajustar o mapa hex→token para a paleta local; dry-run
-antes de `--apply`; mailers e `theme-color` ficam com hex). Ao final de tudo: remover
-a gem `bootstrap` + `sassc-rails`.
+**Achados de segurança corrigidos durante a Sprint 3** (não estavam no escopo
+original, mas eram graves demais pra esperar):
+- Atividade era resolvível sem login por link direto — corrigido, agora exige
+  login (aluno ou professor) e volta pra atividade certa depois de logar.
+- Professor conseguia editar/apagar atividade — e qualquer exercício dentro dela
+  — de OUTRO professor, só sabendo o link (11 controllers de exercício sem
+  checagem de dono; 5 deles nem exigiam login nenhum). Corrigido com um Concern
+  (`app/controllers/concerns/activity_ownable.rb`) incluído nos 11.
+
+### Sprint 4-FR em diante — ver seção "Roteiro de features" abaixo
+A migração visual está encerrada. As próximas sprints são features novas (convite
+de professor, nível do aluno, perfil, percurso profissional), não mais retoken.
 
 ## Regras de trabalho da Daisy (valem aqui também)
 
@@ -86,4 +91,44 @@ a gem `bootstrap` + `sassc-rails`.
 - **Verificação**: nunca resetar senha de usuário real; criar usuário temporário.
 - Ela é professora que aprendeu a programar: linguagem simples, um conceito novo por vez,
   analogias, tom encorajador. Commits pequenos com mensagens em português contando a história.
-- Testar local antes de subir; deploy só com o ok dela.
+- Testar local antes de subir; deploy só com o ok dela — sprint por sprint, não em lote.
+- **Ao mexer numa área do código, checar se a checagem de dono/autenticação existe** —
+  a Sprint 3 revelou que vários controllers antigos não tinham (ver achados de
+  segurança acima). Não presumir que "já deve estar protegido".
+
+## Roteiro de features (Sprint 4-FR em diante) — planejado em 2026-07-13
+
+Depois da migração visual (Sprint 3), a Daisy pediu 3 features novas do
+practice-br: convite de professor, nível do aluno definido pelo professor (com
+página de perfil dedicada, visão do professor), e "percurso profissional"
+(OPCO/eCPF — programas reais de financiamento de formação francesa, não um
+flag genérico — desbloqueia emissão de atestado de formação no BR).
+
+Investigação no BR mostrou que nada disso porta 1:1: o BR não tem `Student`
+separado (é tudo `User` com `role`), e convite de professor lá é restrito a um
+papel `admin` que o FR ainda não tem. Decisões tomadas com a Daisy antes de
+desenhar o roteiro: criar `admin` de verdade (não pular essa etapa), perfil do
+aluno só do ponto de vista do professor (sem tela "meu perfil" pro aluno), e
+o pacote completo do percurso profissional incluindo o atestado.
+
+- **Sprint 4-FR** — Papel `admin` em `users` (migration + promover a Daisy via
+  console, sem UI ainda — fundação pras próximas).
+- **Sprint 5-FR** — Convite de professor: `Users::InvitationsController`
+  (mesmo padrão de `Students::InvitationsController`), gated por
+  `current_user.admin?`; navbar ganha botão "Inviter" com seletor de papel
+  (só visível pra admin); professor comum continua só com "Inviter un étudiant".
+- **Sprint 6-FR** — Nível do aluno: coluna `nível` em `students` (CEFR A1-C2),
+  definido no convite. Decisão em aberto: vai restringir acesso a atividades
+  (como o BR) ou fica só informativo? Recomendado começar informativo.
+- **Sprint 7-FR** — Lista de alunos + perfil individual (visão do professor):
+  hoje só existe um preview de 3 no dashboard; falta lista completa com busca
+  e uma tela de perfil por aluno (nível editável, métricas, remover vínculo).
+- **Sprint 8-FR** — Percurso profissional: coluna `professional_type`
+  (OPCO/eCPF) em `students`, badge no perfil e no dashboard do aluno, e
+  emissão de atestado de formação (certificado imprimível com horas/atividades
+  — rastreamento de horas ainda a decidir: derivar de `CompletedActivity` ou
+  campo novo).
+
+Plano detalhado de cada sprint fica em `/home/daisyoli/.claude/plans/` durante
+a implementação (um plano por sessão) — este documento só mantém o roteiro
+geral e o que já foi feito.
