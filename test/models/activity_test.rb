@@ -138,4 +138,65 @@ class ActivityTest < ActiveSupport::TestCase
     assert_not @activity.valid?
     assert_includes @activity.errors[:base], "Une activité ne peut pas avoir plus de 25 questions pour éviter les problèmes de performance"
   end
+
+  # Sprint do redesenho do show.html.erb (2026-07-13): ordered_elements /
+  # next_display_order / previous_element_dom_id substituem a lógica de
+  # ordenação que estava reimplementada em 7 controllers diferentes.
+  test "ordered_elements returns every exercise type sorted by display_order" do
+    @activity.save!
+    question = @activity.questions.create!(conteúdo: "Q", tipo: "multiple_choice", display_order: 3)
+    statement = @activity.statements.create!(conteúdo: "S", display_order: 1)
+    column_association = @activity.column_associations.create!(title: "T", column_a_title: "A", column_b_title: "B", display_order: 2)
+
+    assert_equal [statement, column_association, question], @activity.ordered_elements
+  end
+
+  test "ordered_elements excludes unsaved records built in memory" do
+    @activity.save!
+    @activity.suggestions.new(conteúdo: "rascunho não salvo")
+
+    assert_empty @activity.ordered_elements
+  end
+
+  test "next_display_order considers media fields and every exercise type" do
+    @activity.video_url = "https://www.youtube.com/watch?v=example"
+    @activity.video_order = 5
+    @activity.save!
+    @activity.statements.create!(conteúdo: "S", display_order: 2)
+
+    assert_equal 6, @activity.next_display_order
+  end
+
+  test "next_display_order returns 1 for a brand new activity with nothing yet" do
+    @activity.save!
+    assert_equal 1, @activity.next_display_order
+  end
+
+  # Achado da faxina: 6 dos 7 controllers nunca consideravam
+  # column_associations como candidato a "elemento anterior" ao apagar algo
+  # — corrigido centralizando em previous_element_dom_id.
+  test "previous_element_dom_id considers column_associations as a candidate" do
+    @activity.save!
+    column_association = @activity.column_associations.create!(title: "T", column_a_title: "A", column_b_title: "B", display_order: 1)
+    statement = @activity.statements.create!(conteúdo: "S", display_order: 2)
+
+    assert_equal "column-association-#{column_association.id}",
+                 @activity.previous_element_dom_id(statement.display_order, exclude: statement)
+  end
+
+  test "previous_element_dom_id considers media sections as candidates" do
+    @activity.video_url = "https://www.youtube.com/watch?v=example"
+    @activity.video_order = 1
+    @activity.save!
+    statement = @activity.statements.create!(conteúdo: "S", display_order: 2)
+
+    assert_equal "video-section", @activity.previous_element_dom_id(statement.display_order, exclude: statement)
+  end
+
+  test "previous_element_dom_id returns nil when nothing comes before" do
+    @activity.save!
+    statement = @activity.statements.create!(conteúdo: "S", display_order: 1)
+
+    assert_nil @activity.previous_element_dom_id(statement.display_order, exclude: statement)
+  end
 end

@@ -26,6 +26,74 @@ class Activity < ApplicationRecord
   before_validation :generate_slug, if: :should_generate_slug?
   before_validation :ensure_unique_slug
   
+  # Tipos de exercício com ordem própria dentro da atividade — não inclui
+  # vídeo/imagem/texto, que são campos da própria Activity (video_order/
+  # imagem_order/texte_order), tratados à parte nos métodos abaixo.
+  ORDERED_ELEMENT_ASSOCIATIONS = %i[statements questions suggestions fill_blanks
+                                     sentence_orderings paragraph_orderings column_associations].freeze
+
+  # Prefixo do id HTML usado pra rolar a tela até o elemento — mesma
+  # convenção que já existia espalhada pelos controllers e pela view
+  # (fill_blank/sentence_ordering/paragraph_ordering/column_association usam
+  # hífen, não os nomes das classes).
+  ELEMENT_DOM_ID_PREFIXES = {
+    "Statement" => "statement",
+    "Question" => "question",
+    "Suggestion" => "suggestion",
+    "FillBlank" => "fill-blank",
+    "SentenceOrdering" => "sentence-ordering",
+    "ParagraphOrdering" => "paragraph-ordering",
+    "ColumnAssociation" => "column-association",
+  }.freeze
+
+  # Todos os exercícios da atividade (sem vídeo/imagem/texto), na ordem em
+  # que aparecem pro professor. display_order pode ser nil em registros bem
+  # antigos, por isso o fallback pro id. Filtra só os já salvos: um
+  # controller que chama @activity.suggestions.new(...) antes de calcular a
+  # próxima ordem deixaria o novo registro (sem id ainda) no meio da lista.
+  def ordered_elements
+    ORDERED_ELEMENT_ASSOCIATIONS.flat_map { |assoc| send(assoc) }
+                                 .select(&:persisted?)
+                                 .sort_by { |element| element.display_order || element.id }
+  end
+
+  # Próximo display_order livre, considerando TODOS os elementos com posição
+  # própria na sequência — vídeo/imagem/texto e os 7 tipos de exercício.
+  def next_display_order
+    orders = []
+    orders << video_order if video_url.present?
+    orders << imagem_order if imagem_url.present?
+    orders << texte_order if texte.present?
+    orders.concat(ordered_elements.map { |el| el.display_order || el.id })
+    (orders.compact.max || 0) + 1
+  end
+
+  # Id HTML do elemento imediatamente anterior a uma certa ordem — usado pra
+  # rolar a tela até o elemento certo depois de apagar algo. Considera
+  # vídeo/imagem/texto e os 7 tipos de exercício (achado na Sprint do
+  # redesenho: antes, 6 dos 7 controllers nunca consideravam
+  # column_associations como candidato, podendo rolar pro lugar errado).
+  # Passe exclude: pro próprio elemento sendo removido (ainda não destruído
+  # no banco quando este método é chamado).
+  def previous_element_dom_id(before_order, exclude: nil)
+    candidates = []
+    candidates << ["video-section", video_order] if video_url.present? && video_order < before_order
+    candidates << ["image-section", imagem_order] if imagem_url.present? && imagem_order < before_order
+    candidates << ["texte-section", texte_order] if texte.present? && texte_order < before_order
+
+    ordered_elements.each do |element|
+      next if exclude && element == exclude
+
+      order = element.display_order || element.id
+      next unless order < before_order
+
+      prefix = ELEMENT_DOM_ID_PREFIXES.fetch(element.class.name)
+      candidates << ["#{prefix}-#{element.id}", order]
+    end
+
+    candidates.max_by { |(_, order)| order }&.first
+  end
+
   # Método para URLs amigáveis - retorna slug em vez de ID
   def to_param
     slug

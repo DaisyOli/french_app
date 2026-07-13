@@ -41,6 +41,21 @@ class StatementsControllerTest < ActionDispatch::IntegrationTest
     assert_match /activities\/#{@activity.slug}/, response.location
   end
 
+  # Achado da faxina: deletar um statement nunca considerava uma
+  # column_association como "elemento anterior" pra rolar a tela — corrigido
+  # centralizando a lógica em Activity#previous_element_dom_id.
+  test "destroying a statement scrolls back to a preceding column_association" do
+    statement = statements(:one)
+    column_association = @activity.column_associations.create!(
+      title: "Vocabulaire", column_a_title: "A", column_b_title: "B",
+      display_order: statement.display_order - 1
+    )
+
+    delete activity_statement_path(@activity, statement)
+
+    assert_redirected_to activity_path(@activity, scroll_to: "column-association-#{column_association.id}")
+  end
+
   test "should not allow access without authentication" do
     sign_out @user
     post activity_statements_path(@activity), params: { 

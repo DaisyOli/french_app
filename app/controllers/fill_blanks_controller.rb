@@ -5,26 +5,15 @@ class FillBlanksController < ApplicationController
 
   def create
     @fill_blank = @activity.fill_blanks.new(fill_blank_params)
-    
-    # Encontrar a maior ordem entre todos os elementos
-    max_orders = []
-    max_orders << @activity.video_order if @activity.video_url.present?
-    max_orders << @activity.imagem_order if @activity.imagem_url.present?
-    max_orders << @activity.texte_order if @activity.texte.present?
-    max_orders << @activity.statements.maximum(:display_order) || 0
-    max_orders << @activity.questions.maximum(:display_order) || 0
-    max_orders << @activity.suggestions.maximum(:display_order) || 0
-    max_orders << @activity.fill_blanks.maximum(:display_order) || 0
-    
-    @fill_blank.display_order = (max_orders.compact.max || 0) + 1
-    
+    @fill_blank.display_order = @activity.next_display_order
+
     respond_to do |format|
       if @fill_blank.save
         # Processar as lacunas automaticamente
         @fill_blank.process_blanks!
-        format.html { redirect_to activity_path(@activity, scroll_to: "fill-blank-#{@fill_blank.id}"), notice: 'Exercício de lacunas criado com sucesso!' }
+        format.html { redirect_to activity_path(@activity, scroll_to: "fill-blank-#{@fill_blank.id}"), notice: 'Exercice à trous créé avec succès !' }
       else
-        format.html { redirect_to activity_path(@activity), alert: 'Não foi possível adicionar o exercício de lacunas.' }
+        format.html { redirect_to activity_path(@activity), alert: 'Impossible d\'ajouter l\'exercice à trous.' }
       end
     end
   end
@@ -36,57 +25,25 @@ class FillBlanksController < ApplicationController
         if fill_blank_params[:conteúdo].present?
           @fill_blank.process_blanks!
         end
-        format.html { redirect_to activity_path(@activity, scroll_to: "fill-blank-#{@fill_blank.id}"), notice: 'Exercício de lacunas atualizado com sucesso!' }
+        format.html { redirect_to activity_path(@activity, scroll_to: "fill-blank-#{@fill_blank.id}"), notice: 'Exercice à trous mis à jour avec succès !' }
       else
-        format.html { redirect_to activity_path(@activity), alert: 'Não foi possível atualizar o exercício de lacunas.' }
+        format.html { redirect_to activity_path(@activity), alert: 'Impossible de mettre à jour l\'exercice à trous.' }
       end
     end
   end
 
   def destroy
-    # Salvar ordem do elemento que será removido
     ordem_removido = @fill_blank.display_order
-    
-    # Procurar elemento anterior ao removido (mesmo padrão dos outros controladores)
-    elementos_anteriores = []
-    
-    # Verificar elementos de vídeo, imagem e texto
-    elementos_anteriores << {type: 'video', id: 'video-section', order: @activity.video_order} if @activity.video_url.present? && @activity.video_order < ordem_removido
-    elementos_anteriores << {type: 'image', id: 'image-section', order: @activity.imagem_order} if @activity.imagem_url.present? && @activity.imagem_order < ordem_removido
-    elementos_anteriores << {type: 'texte', id: 'texte-section', order: @activity.texte_order} if @activity.texte.present? && @activity.texte_order < ordem_removido
-    
-    # Verificar statements
-    @activity.statements.where('display_order < ?', ordem_removido).each do |stmt|
-      elementos_anteriores << {type: 'statement', id: "statement-#{stmt.id}", order: stmt.display_order}
-    end
-    
-    # Verificar questions
-    @activity.questions.where('display_order < ?', ordem_removido).each do |quest|
-      elementos_anteriores << {type: 'question', id: "question-#{quest.id}", order: quest.display_order}
-    end
-    
-    # Verificar suggestions
-    @activity.suggestions.where('display_order < ?', ordem_removido).each do |sugg|
-      elementos_anteriores << {type: 'suggestion', id: "suggestion-#{sugg.id}", order: sugg.display_order}
-    end
-    
-    # Verificar outros fill_blanks (exceto o que será removido)
-    @activity.fill_blanks.where('id != ? AND display_order < ?', @fill_blank.id, ordem_removido).each do |fb|
-      elementos_anteriores << {type: 'fill_blank', id: "fill-blank-#{fb.id}", order: fb.display_order}
-    end
-    
-    # Destruir o exercício de lacunas
+    scroll_target = @activity.previous_element_dom_id(ordem_removido, exclude: @fill_blank)
+
     @fill_blank.destroy
-    
+
     respond_to do |format|
-      # Se houver elementos anteriores, redirecionar para o mais próximo
-      if elementos_anteriores.any?
-        # Ordenar elementos por ordem decrescente para encontrar o mais próximo
-        elemento_anterior = elementos_anteriores.sort_by { |e| -e[:order] }.first
-        format.html { redirect_to activity_path(@activity, scroll_to: elemento_anterior[:id]), 
-                                  notice: 'Exercício de lacunas removido com sucesso!' }
+      if scroll_target
+        format.html { redirect_to activity_path(@activity, scroll_to: scroll_target),
+                                  notice: 'Exercice à trous supprimé avec succès !' }
       else
-        format.html { redirect_to activity_path(@activity), notice: 'Exercício de lacunas removido com sucesso!' }
+        format.html { redirect_to activity_path(@activity), notice: 'Exercice à trous supprimé avec succès !' }
       end
     end
   end
@@ -95,9 +52,9 @@ class FillBlanksController < ApplicationController
     @fill_blank = @activity.fill_blanks.find(params[:id])
 
     if @fill_blank.update(display_order: params[:display_order])
-      redirect_to activity_path(@activity, scroll_to: "fill-blank-#{@fill_blank.id}"), notice: 'Ordem atualizada com sucesso!'
+      redirect_to activity_path(@activity, scroll_to: "fill-blank-#{@fill_blank.id}"), notice: 'Ordre mis à jour avec succès !'
     else
-      redirect_to activity_path(@activity), alert: 'Erro ao atualizar ordem.'
+      redirect_to activity_path(@activity), alert: 'Erreur lors de la mise à jour de l\'ordre.'
     end
   end
 
