@@ -1,316 +1,113 @@
 <!DOCTYPE html>
-<html>
+<html lang="fr">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Invitation à Practice-FR</title>
-  <!--[if mso]>
-  <noscript>
-    <xml>
-      <o:OfficeDocumentSettings>
-        <o:PixelsPerInch>96</o:PixelsPerInch>
-      </o:OfficeDocumentSettings>
-    </xml>
-  </noscript>
-  <![endif]-->
-  <style>
-    /* Reset styles */
-    body, table, td, p, a, li, blockquote {
-      -webkit-text-size-adjust: 100%;
-      -ms-text-size-adjust: 100%;
-    }
-    table, td {
-      mso-table-lspace: 0pt;
-      mso-table-rspace: 0pt;
-    }
-    img {
-      -ms-interpolation-mode: bicubic;
-      border: 0;
-      height: auto;
-      line-height: 100%;
-      outline: none;
-      text-decoration: none;
-    }
-    
-    /* Main styles */
-    body {
-      font-family: Arial, sans-serif !important;
-      line-height: 1.6;
-      color: #333333;
-      background-color: #f4f4f4;
-      margin: 0 !important;
-      padding: 0 !important;
-      width: 100% !important;
-      min-width: 100% !important;
-    }
-    
-    .email-container {
-      max-width: 600px;
-      margin: 0 auto;
-      background-color: #ffffff;
-      border-radius: 8px;
-      overflow: hidden;
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-    }
-    
-    .header {
-      background-color: #4A90E2;
-      color: #ffffff;
-      padding: 30px 20px;
-      text-align: center;
-    }
-    
-    .header h1 {
-      margin: 0;
-      font-size: 24px;
-      font-weight: bold;
-      color: #ffffff !important;
-    }
-    
-    .header p {
-      margin: 10px 0 0;
-      font-size: 16px;
-      color: #ffffff !important;
-    }
-    
-    .content {
-      padding: 30px 20px;
-      background-color: #ffffff;
-    }
-    
-    .welcome-message {
-      font-size: 18px;
-      color: #1E3D59 !important;
-      margin-bottom: 20px;
-      text-align: center;
-      font-weight: bold;
-    }
-    
-    .invitation-text {
-      font-size: 16px;
-      color: #333333 !important;
-      margin-bottom: 25px;
-      line-height: 1.6;
-      text-align: left;
-    }
-    
-    .cta-container {
-      text-align: center;
-      margin: 30px 0;
-      padding: 20px 0;
-    }
-    
-    .cta-button {
-      display: inline-block !important;
-      background-color: #4A90E2 !important;
-      color: #ffffff !important;
-      padding: 15px 30px !important;
-      border-radius: 6px !important;
-      text-decoration: none !important;
-      font-weight: bold !important;
-      font-size: 16px !important;
-      border: none !important;
-    }
-    
-    .cta-button:hover {
-      background-color: #357ABD !important;
-    }
-    
-    .features-table {
-      width: 100%;
-      margin: 25px 0;
-      border-collapse: collapse;
-    }
-    
-    .feature-cell {
-      text-align: center;
-      padding: 15px 10px;
-      background-color: #f8f9fa;
-      border-radius: 8px;
-      margin: 5px;
-      vertical-align: top;
-    }
-    
-    .feature-icon {
-      font-size: 24px;
-      margin-bottom: 8px;
-      display: block;
-    }
-    
-    .feature-title {
-      color: #1E3D59 !important;
-      font-size: 14px;
-      font-weight: bold;
-      margin: 5px 0;
-    }
-    
-    .feature-desc {
-      color: #666666 !important;
-      font-size: 12px;
-      margin: 0;
-    }
-    
-    .footer {
-      background-color: #f8f9fa;
-      padding: 20px;
-      text-align: center;
-      color: #666666 !important;
-      font-size: 14px;
-    }
-    
-    .footer p {
-      margin: 5px 0;
-      color: #666666 !important;
-    }
-    
-    /* Mobile responsive */
-    @media only screen and (max-width: 600px) {
-      .email-container {
-        width: 100% !important;
-        margin: 0 !important;
-        border-radius: 0 !important;
-      }
-      .content {
-        padding: 20px 15px !important;
-      }
-      .header {
-        padding: 20px 15px !important;
-      }
-      .cta-button {
-        padding: 12px 25px !important;
-        font-size: 14px !important;
-      }
-    }
-  </style>
 </head>
-<body style="margin: 0; padding: 0; background-color: #f4f4f4; font-family: Arial, sans-serif;">
-  
-  <!-- Main Container -->
-  <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%" style="margin: 0; padding: 0; background-color: #f4f4f4;">
+<%# E-mail HTML não pode usar var(--token) — clientes de e-mail não suportam
+    CSS custom properties. Hex literais copiados de _tokens.scss (paleta
+    Bordeaux crème), mesma lógica que os mailers do practice-br já usam. %>
+<body style="margin:0; padding:0; background:#F0E9DC; font-family:'Helvetica Neue',Arial,sans-serif;">
+
+  <%# Preheader invisível — aparece no preview do e-mail antes de abrir %>
+  <% teacher = @resource.invited_by %>
+  <div style="display:none; max-height:0; overflow:hidden; mso-hide:all;">
+    <%= teacher&.name.present? ? "#{teacher.name} vous a invité(e) à pratiquer le français sur Practice-FR." : "Vous avez été invité(e) à rejoindre Practice-FR." %>
+  </div>
+
+  <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#F0E9DC; padding:40px 16px;">
     <tr>
-      <td style="padding: 20px 0;">
-        
-        <!-- Email Container -->
-        <table role="presentation" cellspacing="0" cellpadding="0" border="0" style="margin: 0 auto; max-width: 600px; background-color: #ffffff; border-radius: 8px; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);">
-          
-          <!-- Header -->
+      <td align="center">
+        <table role="presentation" width="560" cellpadding="0" cellspacing="0" style="background:#FFFFFF; border-radius:16px; overflow:hidden; box-shadow:0 2px 12px rgba(0,0,0,0.08);">
+
+          <%# Cabeçalho %>
           <tr>
-            <td style="background-color: #4A90E2; color: #ffffff; padding: 30px 20px; text-align: center; border-radius: 8px 8px 0 0;">
-              <h1 style="margin: 0; font-size: 24px; font-weight: bold; color: #ffffff;">🥐 Practice-FR</h1>
+            <td style="background:#5C1630; padding:28px 40px; text-align:center;">
+              <div style="font-family:'Helvetica Neue',Arial,sans-serif; font-size:1.4rem; font-weight:800; color:#FFFFFF; letter-spacing:-0.01em;">
+                Practice<span style="color:#C08A95;">-FR</span>
+              </div>
+              <div style="font-family:'Helvetica Neue',Arial,sans-serif; font-size:0.72rem; color:#C08A95; margin-top:4px; letter-spacing:0.05em;">
+                APPRENDRE LE FRANÇAIS
+              </div>
             </td>
           </tr>
-          
-          <!-- Content -->
+
+          <%# Corpo %>
           <tr>
-            <td style="padding: 30px 20px; background-color: #ffffff;">
-              
-              <!-- Welcome Message -->
-              <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%">
+            <td style="padding:40px 40px 32px;">
+
+              <h1 style="font-family:'Helvetica Neue',Arial,sans-serif; font-size:1.25rem; font-weight:800; color:#5C1630; margin:0 0 16px; text-align:center;">
+                Vous avez été invité(e) sur Practice-FR !
+              </h1>
+
+              <% if teacher&.name.present? %>
+                <p style="font-family:'Helvetica Neue',Arial,sans-serif; font-size:0.95rem; color:#2A1B1E; line-height:1.65; margin:0 0 12px;">
+                  Bonjour ! <strong><%= teacher.name %></strong> vous a préparé des activités spécialement conçues pour vous aider à progresser en français de manière ludique et efficace.
+                </p>
+              <% else %>
+                <p style="font-family:'Helvetica Neue',Arial,sans-serif; font-size:0.95rem; color:#2A1B1E; line-height:1.65; margin:0 0 12px;">
+                  Bonjour ! Vous avez été invité(e) à rejoindre Practice-FR, une plateforme d'apprentissage du français interactive et amusante.
+                </p>
+              <% end %>
+
+              <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="margin:28px 0;">
                 <tr>
-                  <td style="text-align: center; padding-bottom: 20px;">
-                    <h2 style="font-size: 18px; color: #1E3D59; margin: 0; font-weight: bold;">
-                      <strong>Bonjour!</strong> 👋
-                    </h2>
+                  <td width="32%" style="text-align:center; padding:14px 6px; background:#F8E7EB; border-radius:10px;">
+                    <div style="font-size:1.3rem; margin-bottom:6px;">🎯</div>
+                    <div style="font-family:'Helvetica Neue',Arial,sans-serif; font-size:0.78rem; font-weight:700; color:#5C1630;">Activités interactives</div>
                   </td>
-                </tr>
-              </table>
-              
-              <!-- Invitation Text -->
-              <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%">
-                <tr>
-                  <td style="padding-bottom: 25px;">
-                    <p style="font-size: 16px; color: #333333; margin: 0; line-height: 1.6;">
-                      Vous avez été invité(e) à rejoindre <strong>Practice-FR</strong>, une plateforme d'apprentissage du français interactive et amusante!
-                    </p>
-                    <p style="font-size: 16px; color: #333333; margin: 15px 0 0; line-height: 1.6;">
-                      Daisy 🌼 vous a préparé des activités spécialement conçues pour vous aider à progresser en français de manière ludique et efficace.
-                    </p>
+                  <td width="4%">&nbsp;</td>
+                  <td width="32%" style="text-align:center; padding:14px 6px; background:#F8E7EB; border-radius:10px;">
+                    <div style="font-size:1.3rem; margin-bottom:6px;">🏆</div>
+                    <div style="font-family:'Helvetica Neue',Arial,sans-serif; font-size:0.78rem; font-weight:700; color:#5C1630;">Système de récompenses</div>
+                  </td>
+                  <td width="4%">&nbsp;</td>
+                  <td width="32%" style="text-align:center; padding:14px 6px; background:#F8E7EB; border-radius:10px;">
+                    <div style="font-size:1.3rem; margin-bottom:6px;">📈</div>
+                    <div style="font-family:'Helvetica Neue',Arial,sans-serif; font-size:0.78rem; font-weight:700; color:#5C1630;">Suivi des progrès</div>
                   </td>
                 </tr>
               </table>
 
-              <!-- Features -->
-              <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%" style="margin: 25px 0;">
+              <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="margin-bottom:28px;">
                 <tr>
-                  <!-- Feature 1 -->
-                  <td style="text-align: center; padding: 15px 5px; background-color: #f8f9fa; border-radius: 8px; width: 30%;">
-                    <div style="font-size: 24px; margin-bottom: 8px;">🎯</div>
-                    <div style="color: #1E3D59; font-size: 14px; font-weight: bold; margin: 5px 0;">Activités interactives</div>
-                    <div style="color: #666666; font-size: 12px; margin: 0;">Exercices amusants et variés</div>
-                  </td>
-                  
-                  <!-- Spacer -->
-                  <td style="width: 5%;"></td>
-                  
-                  <!-- Feature 2 -->
-                  <td style="text-align: center; padding: 15px 5px; background-color: #f8f9fa; border-radius: 8px; width: 30%;">
-                    <div style="font-size: 24px; margin-bottom: 8px;">🏆</div>
-                    <div style="color: #1E3D59; font-size: 14px; font-weight: bold; margin: 5px 0;">Système de récompenses</div>
-                    <div style="color: #666666; font-size: 12px; margin: 0;">Gagnez des trophées</div>
-                  </td>
-                  
-                  <!-- Spacer -->
-                  <td style="width: 5%;"></td>
-                  
-                  <!-- Feature 3 -->
-                  <td style="text-align: center; padding: 15px 5px; background-color: #f8f9fa; border-radius: 8px; width: 30%;">
-                    <div style="font-size: 24px; margin-bottom: 8px;">📈</div>
-                    <div style="color: #1E3D59; font-size: 14px; font-weight: bold; margin: 5px 0;">Suivi des progrès</div>
-                    <div style="color: #666666; font-size: 12px; margin: 0;">Voyez votre évolution</div>
+                  <td align="center">
+                    <a href="<%= accept_invitation_url(@resource, invitation_token: @token) %>"
+                       style="display:inline-block; background:#C08A28; color:#FFFFFF;
+                              font-family:'Helvetica Neue',Arial,sans-serif; font-size:1rem; font-weight:700;
+                              padding:15px 40px; border-radius:12px; text-decoration:none;">
+                      Créer mon compte et commencer →
+                    </a>
                   </td>
                 </tr>
               </table>
 
-              <!-- CTA Button -->
-              <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%">
-                <tr>
-                  <td style="text-align: center; padding: 30px 0;">
-                    <table role="presentation" cellspacing="0" cellpadding="0" border="0" style="margin: 0 auto;">
-                      <tr>
-                        <td style="background-color: #4A90E2; border-radius: 6px;">
-                          <a href="<%= accept_invitation_url(@resource, invitation_token: @token) %>" 
-                             style="display: inline-block; background-color: #4A90E2; color: #ffffff; padding: 15px 30px; border-radius: 6px; text-decoration: none; font-weight: bold; font-size: 16px; border: none;">
-                            Créer mon compte et commencer! 🚀
-                          </a>
-                        </td>
-                      </tr>
-                    </table>
-                  </td>
-                </tr>
-              </table>
+              <% if @resource.invitation_due_at %>
+                <p style="font-family:'Helvetica Neue',Arial,sans-serif; font-size:0.8rem; color:#6B5458; margin:0 0 12px; text-align:center;">
+                  Cette invitation expire le <%= l(@resource.invitation_due_at, format: :long) %>.
+                </p>
+              <% end %>
 
-              <!-- Disclaimer -->
-              <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%">
-                <tr>
-                  <td style="text-align: center; padding-top: 20px;">
-                    <% if @resource.invitation_due_at %>
-                      <p style="font-size: 14px; color: #666666; margin: 0 0 10px;">
-                        Cette invitation expire le <%= l(@resource.invitation_due_at, format: :long) %>.
-                      </p>
-                    <% end %>
-                    <p style="font-size: 14px; color: #666666; margin: 0;">
-                      Si vous n'avez pas demandé cette invitation, vous pouvez ignorer cet email.
-                    </p>
-                  </td>
-                </tr>
-              </table>
-              
+              <p style="font-family:'Helvetica Neue',Arial,sans-serif; font-size:0.8rem; color:#6B5458; line-height:1.55; margin:0; text-align:center;">
+                Si vous n'avez pas demandé cette invitation, vous pouvez ignorer cet e-mail en toute sécurité.
+              </p>
             </td>
           </tr>
-          
-          <!-- Footer -->
+
+          <%# Rodapé %>
           <tr>
-            <td style="background-color: #f8f9fa; padding: 20px; text-align: center; border-radius: 0 0 8px 8px;">
-              <p style="margin: 5px 0; color: #666666; font-size: 14px;"><strong>Practice-FR</strong></p>
-              <p style="margin: 5px 0; color: #666666; font-size: 14px;">Apprendre le français n'a jamais été aussi amusant!</p>
+            <td style="background:#F0E9DC; border-top:1px solid #E2D8C8; padding:18px 36px; text-align:center;">
+              <p style="font-family:'Helvetica Neue',Arial,sans-serif; font-size:0.75rem; color:#6B5458; margin:0;">
+                Practice-FR · Apprendre le français n'a jamais été aussi amusant !
+              </p>
             </td>
           </tr>
-          
+
         </table>
-        
       </td>
     </tr>
   </table>
-  
+
 </body>
 </html>

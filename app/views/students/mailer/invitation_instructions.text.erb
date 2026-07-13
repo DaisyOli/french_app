@@ -1,10 +1,15 @@
-🥐 Practice-FR - Invitation à rejoindre la plateforme
+Practice-FR - Invitation à rejoindre la plateforme
 
 Bonjour!
 
-Vous avez été invité(e) à rejoindre Practice-FR, une plateforme d'apprentissage du français interactive et amusante!
+<% teacher = @resource.invited_by %>
+<% if teacher&.name.present? %>
+<%= teacher.name %> vous a invité(e) à rejoindre Practice-FR, une plateforme d'apprentissage du français interactive et amusante!
 
-Daisy 🌼 vous a préparé des activités spécialement conçues pour vous aider à progresser en français de manière ludique et efficace.
+<%= teacher.name %> vous a préparé des activités spécialement conçues pour vous aider à progresser en français de manière ludique et efficace.
+<% else %>
+Vous avez été invité(e) à rejoindre Practice-FR, une plateforme d'apprentissage du français interactive et amusante!
+<% end %>
 
 Pour créer votre compte et commencer votre aventure française, cliquez sur le lien suivant:
 
