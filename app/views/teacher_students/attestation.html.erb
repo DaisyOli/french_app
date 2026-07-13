@@ -1,0 +1,119 @@
+<% content_for :hide_navbar, true %>
+<% content_for :head do %>
+  <title>Attestation de formation · <%= @student.email %></title>
+<% end %>
+
+<style>
+  @media print {
+    .no-print { display: none !important; }
+    body { background: #fff !important; }
+    .attestation-card { border: none !important; box-shadow: none !important; }
+  }
+</style>
+
+<div style="max-width:820px; margin:0 auto; padding:24px 16px 60px;">
+
+  <div class="no-print" style="display:flex; justify-content:space-between; align-items:center; margin-bottom:18px;">
+    <%= link_to teacher_student_path(@student),
+          style: "font-family:'Plus Jakarta Sans',sans-serif; font-size:0.8rem; font-weight:600; color:var(--ink-soft); text-decoration:none; display:inline-flex; align-items:center; gap:4px;" do %>
+      <i class="bi bi-arrow-left"></i> Retour au profil
+    <% end %>
+    <button onclick="window.print()"
+            style="font-family:'Plus Jakarta Sans',sans-serif; font-size:0.85rem; font-weight:700; padding:9px 18px; border-radius:9px; border:none; background:var(--brand); color:var(--surface); cursor:pointer;">
+      🖨️ Imprimer / Enregistrer en PDF
+    </button>
+  </div>
+
+  <div class="attestation-card" style="background:var(--surface); border:1px solid var(--line); border-radius:16px; padding:40px;">
+
+    <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:28px; padding-bottom:20px; border-bottom:2px solid var(--brand-deep);">
+      <%= image_tag "practice-fr-logo-mark-color.svg", alt: "Practice-FR", style: "height:40px;" %>
+      <div style="text-align:right;">
+        <h1 style="font-family:'Raleway',sans-serif; font-size:1.3rem; font-weight:800; color:var(--brand-deep); margin:0 0 4px;">
+          Attestation de formation
+        </h1>
+        <p style="font-family:'Plus Jakarta Sans',sans-serif; font-size:0.78rem; color:var(--ink-faint); margin:0;">
+          Générée le <%= Time.current.strftime("%d/%m/%Y") %>
+        </p>
+      </div>
+    </div>
+
+    <div style="display:flex; gap:24px; flex-wrap:wrap; margin-bottom:24px;">
+      <div style="flex:1; min-width:220px;">
+        <div style="font-family:'DM Mono',monospace; font-size:0.68rem; font-weight:700; text-transform:uppercase; letter-spacing:0.04em; color:var(--ink-faint); margin-bottom:6px;">Stagiaire</div>
+        <div style="font-family:'Plus Jakarta Sans',sans-serif; font-weight:700; font-size:0.95rem; color:var(--ink);"><%= @student.email %></div>
+        <% if @student.professional_type.present? %>
+          <% m = professional_colors(@student.professional_type) %>
+          <span style="display:inline-block; margin-top:6px; font-family:'DM Mono',monospace; font-size:0.7rem; font-weight:700; background:<%= m[:bg] %>; color:<%= m[:text] %>; border:1.5px solid <%= m[:border] %>; padding:2px 9px; border-radius:20px;">
+            <%= @student.professional_type %>
+          </span>
+        <% end %>
+      </div>
+      <div style="flex:1; min-width:220px;">
+        <div style="font-family:'DM Mono',monospace; font-size:0.68rem; font-weight:700; text-transform:uppercase; letter-spacing:0.04em; color:var(--ink-faint); margin-bottom:6px;">Formateur</div>
+        <div style="font-family:'Plus Jakarta Sans',sans-serif; font-weight:700; font-size:0.95rem; color:var(--ink);"><%= current_user.email %></div>
+      </div>
+    </div>
+
+    <div style="display:flex; gap:12px; flex-wrap:wrap; margin-bottom:28px;">
+      <div style="flex:1; min-width:140px; background:var(--brand-mist); border-radius:12px; padding:14px 16px; text-align:center;">
+        <div style="font-family:'Raleway',sans-serif; font-size:1.2rem; font-weight:800; color:var(--brand-deep);"><%= format_training_duration(@total_minutes) %></div>
+        <div style="font-family:'Plus Jakarta Sans',sans-serif; font-size:0.72rem; color:var(--ink-soft);">durée totale</div>
+      </div>
+      <div style="flex:1; min-width:140px; background:var(--brand-mist); border-radius:12px; padding:14px 16px; text-align:center;">
+        <div style="font-family:'Raleway',sans-serif; font-size:1.2rem; font-weight:800; color:var(--brand-deep);"><%= @completed_activities.size %></div>
+        <div style="font-family:'Plus Jakarta Sans',sans-serif; font-size:0.72rem; color:var(--ink-soft);">activité<%= @completed_activities.size > 1 ? 's' : '' %></div>
+      </div>
+      <div style="flex:1; min-width:140px; background:var(--brand-mist); border-radius:12px; padding:14px 16px; text-align:center;">
+        <div style="font-family:'Raleway',sans-serif; font-size:0.95rem; font-weight:700; color:var(--brand-deep);">
+          <% if @completed_activities.any? %>
+            <%= @completed_activities.first.completed_at.strftime("%d/%m/%Y") %> – <%= @completed_activities.last.completed_at.strftime("%d/%m/%Y") %>
+          <% else %>
+            —
+          <% end %>
+        </div>
+        <div style="font-family:'Plus Jakarta Sans',sans-serif; font-size:0.72rem; color:var(--ink-soft);">période</div>
+      </div>
+    </div>
+
+    <% if @completed_activities.any? %>
+      <table style="width:100%; border-collapse:collapse; margin-bottom:24px;">
+        <thead>
+          <tr style="border-bottom:1.5px solid var(--line);">
+            <th style="text-align:left; font-family:'DM Mono',monospace; font-size:0.68rem; font-weight:700; text-transform:uppercase; color:var(--ink-faint); padding:8px 6px;">Date</th>
+            <th style="text-align:left; font-family:'DM Mono',monospace; font-size:0.68rem; font-weight:700; text-transform:uppercase; color:var(--ink-faint); padding:8px 6px;">Activité</th>
+            <th style="text-align:center; font-family:'DM Mono',monospace; font-size:0.68rem; font-weight:700; text-transform:uppercase; color:var(--ink-faint); padding:8px 6px;">Niveau</th>
+            <th style="text-align:center; font-family:'DM Mono',monospace; font-size:0.68rem; font-weight:700; text-transform:uppercase; color:var(--ink-faint); padding:8px 6px;">Durée</th>
+            <th style="text-align:center; font-family:'DM Mono',monospace; font-size:0.68rem; font-weight:700; text-transform:uppercase; color:var(--ink-faint); padding:8px 6px;">Score</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% @completed_activities.each do |ca| %>
+            <% m = ca.activity.nível.present? ? cefr_colors(ca.activity.nível) : nil %>
+            <tr style="border-bottom:1px solid var(--line-soft);">
+              <td style="font-family:'Plus Jakarta Sans',sans-serif; font-size:0.82rem; color:var(--ink-soft); padding:8px 6px;"><%= ca.completed_at.strftime("%d/%m/%Y") %></td>
+              <td style="font-family:'Plus Jakarta Sans',sans-serif; font-size:0.82rem; color:var(--ink); padding:8px 6px;"><%= ca.activity.título %></td>
+              <td style="text-align:center; padding:8px 6px;">
+                <% if m %>
+                  <span style="font-family:'DM Mono',monospace; font-size:0.68rem; font-weight:700; background:<%= m[:bg] %>; color:<%= m[:text] %>; border:1.5px solid <%= m[:border] %>; padding:1px 8px; border-radius:20px;"><%= ca.activity.nível %></span>
+                <% else %>
+                  —
+                <% end %>
+              </td>
+              <td style="text-align:center; font-family:'DM Mono',monospace; font-size:0.8rem; color:var(--ink-soft); padding:8px 6px;"><%= format_training_duration(ca.duration_minutes) %></td>
+              <td style="text-align:center; font-family:'DM Mono',monospace; font-weight:700; color:var(--brand); padding:8px 6px;"><%= ca.percentage.round %>%</td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+    <% else %>
+      <p style="font-family:'Plus Jakarta Sans',sans-serif; color:var(--ink-soft); font-size:0.88rem; text-align:center; padding:20px 0;">
+        Aucune activité complétée pour l'instant.
+      </p>
+    <% end %>
+
+    <p style="font-family:'Plus Jakarta Sans',sans-serif; font-size:0.72rem; color:var(--ink-faint); line-height:1.5; margin:0; padding-top:16px; border-top:1px solid var(--line-soft);">
+      Cette attestation a été générée automatiquement par la plateforme Practice-FR. Les durées correspondent au temps enregistré entre l'ouverture et la soumission de chaque activité, avec un maximum de 2h par session. Seules les activités créées par <%= current_user.email %> sont comptabilisées.
+    </p>
+  </div>
+</div>

@@ -19,6 +19,15 @@ class CompletedActivity < ApplicationRecord
   # Atualizar streak do estudante após salvar
   after_save :update_student_streak
 
+  # Minutos entre started_at e completed_at, limitado a 2h por sessão
+  # (evita inflar o total com uma aba esquecida aberta). Atividades sem
+  # started_at (feitas antes desta coluna existir) retornam nil.
+  def duration_minutes
+    return nil unless started_at && completed_at
+
+    [(completed_at - started_at) / 60, 120].min.round
+  end
+
   private
 
   def calculate_percentage

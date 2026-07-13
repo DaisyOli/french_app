@@ -14,6 +14,25 @@ module ApplicationHelper
     CEFR_COLORS[level] || CEFR_COLORS['A1']
   end
 
+  # Cores dos badges de percurso professionnel (OPCO/eCPF).
+  PROFESSIONAL_COLORS = {
+    'OPCO' => { bg: 'var(--info-tint)',   text: 'var(--info-deep)',   border: 'var(--info)' },
+    'eCPF' => { bg: 'var(--violet-tint)', text: 'var(--violet-deep)', border: 'var(--violet)' },
+  }.freeze
+
+  def professional_colors(type)
+    PROFESSIONAL_COLORS[type]
+  end
+
+  # Formata minutos de formação em "Xh YYmin" (ou "YYmin", ou "—" se ausente).
+  def format_training_duration(minutes)
+    return '—' if minutes.blank? || minutes.zero?
+
+    hours = minutes / 60
+    mins = minutes % 60
+    hours.positive? ? "#{hours}h #{format('%02d', mins)}min" : "#{mins}min"
+  end
+
   # Capa do card de atividade: imagem, thumbnail do YouTube ou gradiente com ícone.
   # (Versão FR: aqui as mídias são colunas de URL — imagem_url / video_url.)
   def activity_cover(activity)

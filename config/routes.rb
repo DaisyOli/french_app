@@ -13,6 +13,7 @@ Rails.application.routes.draw do
     member do
       patch :update_level
       delete :remove
+      get :attestation
     end
   end
   

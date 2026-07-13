@@ -1,6 +1,6 @@
 class TeacherStudentsController < ApplicationController
   before_action :authenticate_user!
-  before_action :set_student, only: [:show, :update_level, :remove]
+  before_action :set_student, only: [:show, :update_level, :remove, :attestation]
 
   def index
     @students = current_user.students.order(created_at: :desc)
@@ -20,6 +20,12 @@ class TeacherStudentsController < ApplicationController
     avg = @completed_activities.average(:percentage)
     @average_score = avg ? avg.round(1) : 0
     @best_score = @completed_activities.maximum(:percentage)&.round(1) || 0
+    @training_minutes = teacher_completed_activities.to_a.sum { |ca| ca.duration_minutes || 0 }
+  end
+
+  def attestation
+    @completed_activities = teacher_completed_activities.order(completed_at: :asc).to_a
+    @total_minutes = @completed_activities.sum { |ca| ca.duration_minutes || 0 }
   end
 
   def update_level
@@ -39,5 +45,14 @@ class TeacherStudentsController < ApplicationController
 
   def set_student
     @student = current_user.students.find(params[:id])
+  end
+
+  # Só conta atividades que o próprio professor criou — a mesma pessoa
+  # que assina o atestado é a que ministrou a formação.
+  def teacher_completed_activities
+    @student.completed_activities
+            .joins(:activity)
+            .where(activities: { user_id: current_user.id })
+            .includes(:activity)
   end
 end

@@ -54,7 +54,7 @@ class Students::InvitationsController < Devise::InvitationsController
   end
 
   def configure_permitted_parameters
-    devise_parameter_sanitizer.permit(:invite, keys: [:email, :nível])
+    devise_parameter_sanitizer.permit(:invite, keys: [:email, :nível, :professional_type])
     devise_parameter_sanitizer.permit(:accept_invitation, keys: [:password, :password_confirmation, :invitation_token])
   end
 

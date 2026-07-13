@@ -308,7 +308,7 @@ class ActivitiesController < ApplicationController
     end
 
     def completed_activity_params
-      params.require(:completed_activity).permit(:score, :total_questions)
+      params.require(:completed_activity).permit(:score, :total_questions, :started_at)
     end
 
     def update_related_orders

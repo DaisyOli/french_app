@@ -379,6 +379,10 @@
 
 <script type="text/javascript">
   document.addEventListener('DOMContentLoaded', function() {
+    // Horário de abertura da atividade — usado pra calcular a duração da
+    // sessão no atestado de formation (percurso professionnel).
+    const activityStartedAt = new Date().toISOString();
+
     const quizForm = document.getElementById('activity-quiz-form');
     const resultsContainer = document.getElementById('results-container');
     const scoreMessage = document.getElementById('score-message');
@@ -870,7 +874,8 @@
       const data = {
         completed_activity: {
           score: score,
-          total_questions: totalQuestions
+          total_questions: totalQuestions,
+          started_at: activityStartedAt
         }
       };
       

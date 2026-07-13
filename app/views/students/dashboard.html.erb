@@ -12,6 +12,15 @@
     <p style="font-family:'Plus Jakarta Sans',sans-serif; font-size:0.92rem; color:var(--ink-soft); margin:0;">
       Prêt à apprendre le français aujourd'hui ?
     </p>
+    <% if current_student.professional_type.present? %>
+      <% pm = professional_colors(current_student.professional_type) %>
+      <div style="display:inline-flex; align-items:center; gap:6px; margin-top:10px; font-family:'Plus Jakarta Sans',sans-serif; font-size:0.82rem; color:var(--ink-soft);">
+        <span style="font-family:'DM Mono',monospace; font-size:0.68rem; font-weight:700; background:<%= pm[:bg] %>; color:<%= pm[:text] %>; border:1.5px solid <%= pm[:border] %>; padding:1px 8px; border-radius:20px;">
+          <%= current_student.professional_type %>
+        </span>
+        Parcours professionnel reconnu
+      </div>
+    <% end %>
   </div>
 
   <%# Grade de 4 métricas %>

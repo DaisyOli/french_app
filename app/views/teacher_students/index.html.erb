@@ -46,13 +46,21 @@
                   <div style="font-family:'Plus Jakarta Sans',sans-serif; font-weight:700; font-size:0.92rem; color:var(--ink); overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">
                     <%= student.email %>
                   </div>
-                  <% if m %>
-                    <span style="display:inline-block; margin-top:3px; font-family:'DM Mono',monospace; font-size:0.68rem; font-weight:700; background:<%= m[:bg] %>; color:<%= m[:text] %>; border:1.5px solid <%= m[:border] %>; padding:1px 7px; border-radius:20px;">
-                      <%= student.nível %>
-                    </span>
-                  <% else %>
-                    <span style="font-family:'Plus Jakarta Sans',sans-serif; font-size:0.72rem; color:var(--ink-faint);">⚠️ sans niveau</span>
-                  <% end %>
+                  <div style="display:flex; align-items:center; gap:5px; flex-wrap:wrap; margin-top:3px;">
+                    <% if m %>
+                      <span style="display:inline-block; font-family:'DM Mono',monospace; font-size:0.68rem; font-weight:700; background:<%= m[:bg] %>; color:<%= m[:text] %>; border:1.5px solid <%= m[:border] %>; padding:1px 7px; border-radius:20px;">
+                        <%= student.nível %>
+                      </span>
+                    <% else %>
+                      <span style="font-family:'Plus Jakarta Sans',sans-serif; font-size:0.72rem; color:var(--ink-faint);">⚠️ sans niveau</span>
+                    <% end %>
+                    <% if student.professional_type.present? %>
+                      <% pm = professional_colors(student.professional_type) %>
+                      <span style="display:inline-block; font-family:'DM Mono',monospace; font-size:0.68rem; font-weight:700; background:<%= pm[:bg] %>; color:<%= pm[:text] %>; border:1.5px solid <%= pm[:border] %>; padding:1px 7px; border-radius:20px;">
+                        <%= student.professional_type %>
+                      </span>
+                    <% end %>
+                  </div>
                 </div>
               </div>
 

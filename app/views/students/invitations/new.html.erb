@@ -44,6 +44,22 @@
         </p>
       </div>
 
+      <div style="margin-bottom:28px;">
+        <label style="display:block; font-family:'DM Mono',monospace; font-size:0.72rem; font-weight:700; text-transform:uppercase; letter-spacing:0.04em; color:var(--ink-soft); margin-bottom:8px;">Parcours professionnel (optionnel)</label>
+        <div style="display:flex; flex-wrap:wrap; gap:8px;">
+          <% Student::PROFESSIONAL_TYPES.each do |type| %>
+            <% m = professional_colors(type) %>
+            <%= f.radio_button :professional_type, type, id: "student_professional_type_#{type}", class: "level-radio" %>
+            <label for="student_professional_type_<%= type %>" class="level-pill" style="--pill-bg:<%= m[:bg] %>; --pill-text:<%= m[:text] %>; --pill-border:<%= m[:border] %>;">
+              <%= type %>
+            </label>
+          <% end %>
+        </div>
+        <p style="font-family:'Plus Jakarta Sans',sans-serif; font-size:0.78rem; color:var(--ink-faint); margin:8px 0 0;">
+          Pour les étudiants en formation financée (OPCO ou eCPF) — active la génération d'une attestation de formation.
+        </p>
+      </div>
+
       <%= f.button :submit, "Envoyer l'invitation",
             style: "width:100%; font-family:'Plus Jakarta Sans',sans-serif; font-size:0.9rem; font-weight:700; padding:11px 24px; border-radius:999px; border:none; background:var(--brand); color:var(--surface); cursor:pointer;" %>
     <% end %>

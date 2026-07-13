@@ -9,8 +9,10 @@ class Student < ApplicationRecord
   has_many :activity_ratings, dependent: :destroy
 
   CEFR_LEVELS = %w[A1 A2 B1 B2 C1 C2].freeze
+  PROFESSIONAL_TYPES = %w[OPCO eCPF].freeze
 
   validates :nível, inclusion: { in: CEFR_LEVELS }, allow_blank: true
+  validates :professional_type, inclusion: { in: PROFESSIONAL_TYPES }, allow_blank: true
 
   # Quais níveis de atividade este aluno pode acessar — cumulativo, o nível
   # atribuído e tudo abaixo (mesma regra do practice-br). Sem nível definido
