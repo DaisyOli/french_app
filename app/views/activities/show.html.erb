@@ -233,7 +233,7 @@
                   <div class="item-content">
                     <div class="preserve-format"><%= element[:object].conteúdo %></div>
                     <div class="item-actions">
-                      <button class="btn btn-sm btn-outline-primary toggle-form edit-btn" data-target="form-statement-<%= element[:object].id %>" title="<%= t('common.edit') %>"><i class="bi bi-pencil"></i></button>
+                      <button type="button" class="btn btn-sm btn-outline-primary toggle-form edit-btn" data-target="form-statement-<%= element[:object].id %>" title="<%= t('common.edit') %>"><i class="bi bi-pencil"></i></button>
                       <%= button_to activity_statement_path(@activity, element[:object]), method: :delete, form: { data: { turbo_confirm: t('common.confirm_delete') } }, class: "btn btn-sm btn-outline-danger", title: t('common.delete') do %>
                         <i class="bi bi-trash"></i>
                       <% end %>
@@ -266,7 +266,7 @@
                   <div class="item-content">
                     <strong class="preserve-format"><%= element[:object].conteúdo %></strong>
                     <div class="item-actions">
-                      <button class="btn btn-sm btn-outline-primary toggle-form edit-btn" data-target="form-question-<%= element[:object].id %>" title="<%= t('common.edit') %>"><i class="bi bi-pencil"></i></button>
+                      <button type="button" class="btn btn-sm btn-outline-primary toggle-form edit-btn" data-target="form-question-<%= element[:object].id %>" title="<%= t('common.edit') %>"><i class="bi bi-pencil"></i></button>
                       <%= button_to activity_question_path(@activity, element[:object]), method: :delete, form: { data: { turbo_confirm: t('common.confirm_delete') } }, class: "btn btn-sm btn-outline-danger", title: t('common.delete') do %>
                         <i class="bi bi-trash"></i>
                       <% end %>
@@ -294,7 +294,7 @@
                               <span class="correct-badge"><i class="bi bi-check-circle-fill"></i> Correta</span>
                             <% end %>
                             <div class="item-actions">
-                              <button class="btn btn-sm btn-outline-primary toggle-form edit-btn" data-target="form-alternative-<%= alternative.id %>" title="<%= t('common.edit') %>"><i class="bi bi-pencil"></i></button>
+                              <button type="button" class="btn btn-sm btn-outline-primary toggle-form edit-btn" data-target="form-alternative-<%= alternative.id %>" title="<%= t('common.edit') %>"><i class="bi bi-pencil"></i></button>
                               <%= button_to activity_question_alternative_path(@activity, element[:object], alternative), method: :delete, form: { data: { turbo_confirm: t('common.confirm_delete') } }, class: "btn btn-sm btn-outline-danger", title: t('common.delete') do %>
                                 <i class="bi bi-trash"></i>
                               <% end %>
@@ -322,7 +322,7 @@
                   <% end %>
                   
                   <p>
-                    <button class="btn btn-sm btn-outline-primary toggle-form add-btn" data-target="form-new-alternative-<%= element[:object].id %>" title="<%= t('common.add_alternative') %>"><i class="bi bi-plus"></i></button>
+                    <button type="button" class="btn btn-sm btn-outline-primary toggle-form add-btn" data-target="form-new-alternative-<%= element[:object].id %>" title="<%= t('common.add_alternative') %>"><i class="bi bi-plus"></i></button>
                   </p>
                   
                   <div id="form-new-alternative-<%= element[:object].id %>" class="form-section" style="display: none;">
@@ -355,7 +355,7 @@
                   <div class="item-content">
                     <div class="preserve-format"><%= element[:object].conteúdo %></div>
                     <div class="item-actions">
-                      <button class="btn btn-sm btn-outline-primary toggle-form edit-btn" data-target="form-suggestion-<%= element[:object].id %>" title="<%= t('common.edit') %>"><i class="bi bi-pencil"></i></button>
+                      <button type="button" class="btn btn-sm btn-outline-primary toggle-form edit-btn" data-target="form-suggestion-<%= element[:object].id %>" title="<%= t('common.edit') %>"><i class="bi bi-pencil"></i></button>
                       <%= button_to activity_suggestion_path(@activity, element[:object]), method: :delete, form: { data: { turbo_confirm: t('common.confirm_delete') } }, class: "btn btn-sm btn-outline-danger", title: t('common.delete') do %>
                         <i class="bi bi-trash"></i>
                       <% end %>
@@ -391,7 +391,7 @@
                       <div class="preserve-format"><%= element[:object].text_with_numbered_blanks.html_safe %></div>
                     </div>
                     <div class="item-actions">
-                      <button class="btn btn-sm btn-outline-primary toggle-form edit-btn" data-target="form-fill-blank-<%= element[:object].id %>" title="Editar exercício"><i class="bi bi-pencil"></i></button>
+                      <button type="button" class="btn btn-sm btn-outline-primary toggle-form edit-btn" data-target="form-fill-blank-<%= element[:object].id %>" title="Editar exercício"><i class="bi bi-pencil"></i></button>
                       <%= button_to activity_fill_blank_path(@activity, element[:object]), method: :delete, form: { data: { turbo_confirm: "Tem certeza que deseja remover este exercício de lacunas?" } }, class: "btn btn-sm btn-outline-danger", title: "Remover exercício" do %>
                         <i class="bi bi-trash"></i>
                       <% end %>
@@ -420,7 +420,7 @@
                               <span class="blank-number">[<%= blank.position %>]</span>
                               <span class="blank-answer"><%= blank.correct_answer.present? ? blank.correct_answer : "Não definida" %></span>
                               <div class="item-actions">
-                                <button class="btn btn-sm btn-outline-primary toggle-form edit-btn" data-target="form-blank-<%= blank.id %>" title="Editar resposta"><i class="bi bi-pencil"></i></button>
+                                <button type="button" class="btn btn-sm btn-outline-primary toggle-form edit-btn" data-target="form-blank-<%= blank.id %>" title="Editar resposta"><i class="bi bi-pencil"></i></button>
                               </div>
                             </div>
                             
@@ -467,7 +467,7 @@
                       </div>
                     </div>
                     <div class="item-actions">
-                      <button class="btn btn-sm btn-outline-primary toggle-form edit-btn" data-target="form-sentence-ordering-<%= element[:object].id %>" title="Modifier l'exercice"><i class="bi bi-pencil"></i></button>
+                      <button type="button" class="btn btn-sm btn-outline-primary toggle-form edit-btn" data-target="form-sentence-ordering-<%= element[:object].id %>" title="Modifier l'exercice"><i class="bi bi-pencil"></i></button>
                       <%= button_to activity_sentence_ordering_path(@activity, element[:object]), method: :delete, form: { data: { turbo_confirm: "Êtes-vous sûr de vouloir supprimer cet exercice d'organisation de mots?" } }, class: "btn btn-sm btn-outline-danger", title: "Supprimer l'exercice" do %>
                         <i class="bi bi-trash"></i>
                       <% end %>
@@ -508,7 +508,7 @@
                       <% end %>
                     </div>
                     <div class="item-actions">
-                      <button class="btn btn-sm btn-outline-primary toggle-form edit-btn" data-target="form-paragraph-ordering-<%= element[:object].id %>" title="Modifier l'exercice"><i class="bi bi-pencil"></i></button>
+                      <button type="button" class="btn btn-sm btn-outline-primary toggle-form edit-btn" data-target="form-paragraph-ordering-<%= element[:object].id %>" title="Modifier l'exercice"><i class="bi bi-pencil"></i></button>
                       <%= button_to activity_paragraph_ordering_path(@activity, element[:object]), method: :delete, form: { data: { turbo_confirm: "Êtes-vous sûr de vouloir supprimer cet exercice d'organisation de phrases?" } }, class: "btn btn-sm btn-outline-danger", title: "Supprimer l'exercice" do %>
                         <i class="bi bi-trash"></i>
                       <% end %>
@@ -537,7 +537,7 @@
                               <span class="sentence-number">[<%= sentence.correct_position %>]</span>
                               <span class="sentence-text"><%= sentence.sentence %></span>
                               <div class="item-actions">
-                                <button class="btn btn-sm btn-outline-primary toggle-form edit-btn" data-target="form-sentence-<%= sentence.id %>" title="Modifier la phrase"><i class="bi bi-pencil"></i></button>
+                                <button type="button" class="btn btn-sm btn-outline-primary toggle-form edit-btn" data-target="form-sentence-<%= sentence.id %>" title="Modifier la phrase"><i class="bi bi-pencil"></i></button>
                                 <%= button_to activity_paragraph_ordering_paragraph_sentence_path(@activity, element[:object], sentence), method: :delete, form: { data: { turbo_confirm: "Supprimer cette phrase?" } }, class: "btn btn-sm btn-outline-danger", title: "Supprimer la phrase" do %>
                                   <i class="bi bi-trash"></i>
                                 <% end %>
@@ -562,7 +562,7 @@
                   <% end %>
                   
                   <p class="mt-3">
-                    <button class="btn btn-sm btn-outline-primary toggle-form add-btn" data-target="form-new-sentence-<%= element[:object].id %>" title="Ajouter une phrase"><i class="bi bi-plus"></i> Ajouter une phrase</button>
+                    <button type="button" class="btn btn-sm btn-outline-primary toggle-form add-btn" data-target="form-new-sentence-<%= element[:object].id %>" title="Ajouter une phrase"><i class="bi bi-plus"></i> Ajouter une phrase</button>
                   </p>
                   
                   <div id="form-new-sentence-<%= element[:object].id %>" class="form-section" style="display: none;">
@@ -597,7 +597,7 @@
                       <strong>Colonnes:</strong> <%= element[:object].column_a_title %> ↔ <%= element[:object].column_b_title %>
                     </div>
                     <div class="item-actions">
-                      <button class="btn btn-sm btn-outline-primary toggle-form edit-btn" data-target="form-column-association-<%= element[:object].id %>" title="Modifier l'exercice"><i class="bi bi-pencil"></i></button>
+                      <button type="button" class="btn btn-sm btn-outline-primary toggle-form edit-btn" data-target="form-column-association-<%= element[:object].id %>" title="Modifier l'exercice"><i class="bi bi-pencil"></i></button>
                       <%= button_to activity_column_association_path(@activity, element[:object]), method: :delete, form: { data: { turbo_confirm: "Êtes-vous sûr de vouloir supprimer cet exercice d'association?" } }, class: "btn btn-sm btn-outline-danger", title: "Supprimer l'exercice" do %>
                         <i class="bi bi-trash"></i>
                       <% end %>
@@ -637,7 +637,7 @@
                                   <span class="pair-number">[<%= pair.pair_order %>]</span>
                                   <span class="pair-text"><%= pair.item_a %></span>
                                   <div class="item-actions">
-                                    <button class="btn btn-sm btn-outline-primary toggle-form edit-btn" data-target="form-pair-<%= pair.id %>" title="Modifier la paire"><i class="bi bi-pencil"></i></button>
+                                    <button type="button" class="btn btn-sm btn-outline-primary toggle-form edit-btn" data-target="form-pair-<%= pair.id %>" title="Modifier la paire"><i class="bi bi-pencil"></i></button>
                                     <%= button_to activity_column_association_association_pair_path(@activity, element[:object], pair), method: :delete, form: { data: { turbo_confirm: "Supprimer cette paire?" } }, class: "btn btn-sm btn-outline-danger", title: "Supprimer la paire" do %>
                                       <i class="bi bi-trash"></i>
                                     <% end %>
@@ -683,7 +683,7 @@
                   <% end %>
                   
                   <p class="mt-3">
-                    <button class="btn btn-sm btn-outline-primary toggle-form add-btn" data-target="form-new-pair-<%= element[:object].id %>" title="Ajouter une paire"><i class="bi bi-plus"></i> Ajouter une paire</button>
+                    <button type="button" class="btn btn-sm btn-outline-primary toggle-form add-btn" data-target="form-new-pair-<%= element[:object].id %>" title="Ajouter une paire"><i class="bi bi-plus"></i> Ajouter une paire</button>
                   </p>
                   
                   <div id="form-new-pair-<%= element[:object].id %>" class="form-section" style="display: none;">
