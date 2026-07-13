@@ -37,6 +37,14 @@ Rails.application.configure do
   # Store uploaded files on the local file system in a temporary directory.
   config.active_storage.service = :test
 
+  # Desligado (nil, não comentado!) de propósito, mesma razão do
+  # config/environments/production.rb: a gem sassc-rails religa sozinha
+  # :sass (SassC/LibSass, motor antigo) em qualquer ambiente que não seja
+  # development, e esse compressor não entende CSS moderno que o DaisyUI
+  # gera (@supports not selector(:has(*))) — quebra qualquer teste que
+  # renderize uma view com o layout padrão.
+  config.assets.css_compressor = nil
+
   config.action_mailer.perform_caching = false
   config.action_mailer.default_url_options = { host: "www.example.com" }
 
