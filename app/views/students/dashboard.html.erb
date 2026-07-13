@@ -111,15 +111,15 @@
       <div class="dash-level-grid">
         <% @level_progress.each do |lp| %>
           <% m = cefr_colors(lp[:level]) %>
-          <div style="text-align:center;">
+          <div style="text-align:center; <%= 'opacity:0.45;' if lp[:locked] %>">
             <span style="display:inline-block; font-family:'DM Mono',monospace; font-size:0.72rem; font-weight:700; background:<%= m[:bg] %>; color:<%= m[:text] %>; border:1.5px solid <%= m[:border] %>; padding:2px 8px; border-radius:20px; margin-bottom:6px;">
-              <%= lp[:level] %>
+              <% if lp[:locked] %><i class="bi bi-lock-fill" style="font-size:0.65rem;"></i> <% end %><%= lp[:level] %>
             </span>
             <div style="height:5px; background:<%= m[:bg] %>; border-radius:3px; overflow:hidden; margin-bottom:4px;">
               <div style="height:100%; width:<%= lp[:pct] %>%; background:<%= m[:bar] %>;"></div>
             </div>
             <div style="font-family:'Plus Jakarta Sans',sans-serif; font-size:0.7rem; color:var(--ink-faint);">
-              <%= lp[:completed] %>/<%= lp[:total] %>
+              <%= lp[:locked] ? "verrouillé" : "#{lp[:completed]}/#{lp[:total]}" %>
             </div>
           </div>
         <% end %>

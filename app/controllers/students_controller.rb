@@ -31,27 +31,36 @@ class StudentsController < ApplicationController
     @current_streak = current_student.current_streak
     @motivational_message = current_student.motivational_message
 
-    # Próxima atividade recomendada pro card "Continuer"
+    # Próxima atividade recomendada pro card "Continuer" — só dentro do que o
+    # aluno pode acessar (nível dele e abaixo; sem nível definido = tudo)
     level_order = ApplicationHelper::CEFR_COLORS.keys
-    @next_activity = Activity.where.not(id: @completed_activity_ids)
+    accessible_levels = current_student.accessible_levels
+    @next_activity = Activity.where(nível: accessible_levels)
+                              .where.not(id: @completed_activity_ids)
                               .sort_by { |a| [level_order.index(a.nível) || 99, a.título] }
                               .first
     @next_activity_is_retry = @next_activity.nil?
     @next_activity ||= @completed_activities.first&.activity
 
-    # Progresso por nível CEFR pra grade de níveis
+    # Progresso por nível CEFR pra grade de níveis (níveis fora do alcance do
+    # aluno aparecem marcados como bloqueados, não escondidos)
     level_totals = Activity.group(:nível).count
     level_completed = current_student.completed_activities.joins(:activity).group('activities.nível').count
     @level_progress = level_order.map do |level|
       total = level_totals[level] || 0
       completed = level_completed[level] || 0
-      { level: level, total: total, completed: completed, pct: total.zero? ? 0 : (completed * 100.0 / total).round }
+      { level: level, total: total, completed: completed,
+        pct: total.zero? ? 0 : (completed * 100.0 / total).round,
+        locked: !accessible_levels.include?(level) }
     end
   end
 
   def activities
-    # Buscar todas as atividades com avaliações pré-carregadas
-    all_activities = Activity.includes(:activity_ratings).order(:título)
+    # Buscar todas as atividades com avaliações pré-carregadas, só as que o
+    # aluno pode acessar (nível dele e abaixo; sem nível definido = tudo)
+    all_activities = Activity.includes(:activity_ratings)
+                              .where(nível: current_student.accessible_levels)
+                              .order(:título)
     
     # Dados de progresso do estudante
     @completed_activities = current_student.completed_activities.includes(:activity)

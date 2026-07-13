@@ -28,6 +28,22 @@
               style: "width:100%; font-family:'Plus Jakarta Sans',sans-serif; font-size:0.95rem; padding:11px 14px; border:1.5px solid #{invalid ? 'var(--error)' : 'var(--line)'}; border-radius:10px; background:var(--surface); color:var(--ink);" %>
       </div>
 
+      <div style="margin-bottom:28px;">
+        <label style="display:block; font-family:'DM Mono',monospace; font-size:0.72rem; font-weight:700; text-transform:uppercase; letter-spacing:0.04em; color:var(--ink-soft); margin-bottom:8px;">Niveau (optionnel)</label>
+        <div style="display:flex; flex-wrap:wrap; gap:8px;">
+          <% %w[A1 A2 B1 B2 C1 C2].each do |level| %>
+            <% m = cefr_colors(level) %>
+            <%= f.radio_button :nível, level, id: "student_nivel_#{level}", class: "level-radio" %>
+            <label for="student_nivel_<%= level %>" class="level-pill" style="--pill-bg:<%= m[:bg] %>; --pill-text:<%= m[:text] %>; --pill-border:<%= m[:border] %>;">
+              <%= level %>
+            </label>
+          <% end %>
+        </div>
+        <p style="font-family:'Plus Jakarta Sans',sans-serif; font-size:0.78rem; color:var(--ink-faint); margin:8px 0 0;">
+          Définit quelles activités l'étudiant peut voir (ce niveau et en-dessous). Laissez vide pour un accès complet.
+        </p>
+      </div>
+
       <%= f.button :submit, "Envoyer l'invitation",
             style: "width:100%; font-family:'Plus Jakarta Sans',sans-serif; font-size:0.9rem; font-weight:700; padding:11px 24px; border-radius:999px; border:none; background:var(--brand); color:var(--surface); cursor:pointer;" %>
     <% end %>

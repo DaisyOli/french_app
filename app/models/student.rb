@@ -8,6 +8,21 @@ class Student < ApplicationRecord
   has_many :completed_activity_records, through: :completed_activities, source: :activity
   has_many :activity_ratings, dependent: :destroy
 
+  CEFR_LEVELS = %w[A1 A2 B1 B2 C1 C2].freeze
+
+  validates :nível, inclusion: { in: CEFR_LEVELS }, allow_blank: true
+
+  # Quais níveis de atividade este aluno pode acessar — cumulativo, o nível
+  # atribuído e tudo abaixo (mesma regra do practice-br). Sem nível definido
+  # (aluno antigo, de antes desta coluna existir, ou convite sem nível
+  # escolhido) = acesso total, pra não travar quem já usava o app.
+  def accessible_levels
+    return CEFR_LEVELS if nível.blank?
+
+    idx = CEFR_LEVELS.index(nível)
+    idx ? CEFR_LEVELS[0..idx] : CEFR_LEVELS
+  end
+
   # Atualizar streak após completar uma atividade
   def update_streak!
     today = Date.current
