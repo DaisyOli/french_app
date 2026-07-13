@@ -169,6 +169,44 @@
   border-top: 1px solid var(--line-soft);
 }
 
+/* Pills de nível CEFR (formulário de atividade) — radio nativo escondido
+   + label estilizada, sem JS (Stimulus não conecta neste app). */
+.level-radio {
+  position: absolute;
+  opacity: 0;
+  width: 1px;
+  height: 1px;
+  pointer-events: none;
+}
+
+.level-pill {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 46px;
+  padding: 8px 16px;
+  border-radius: 999px;
+  border: 1.5px solid var(--line);
+  background: var(--surface);
+  color: var(--ink-soft);
+  font-family: 'DM Mono', monospace;
+  font-weight: 700;
+  font-size: 0.85rem;
+  cursor: pointer;
+  transition: background 0.15s ease, color 0.15s ease, border-color 0.15s ease;
+}
+
+.level-radio:checked + .level-pill {
+  background: var(--pill-bg);
+  color: var(--pill-text);
+  border-color: var(--pill-border);
+}
+
+.level-radio:focus-visible + .level-pill {
+  outline: 2px solid var(--brand);
+  outline-offset: 2px;
+}
+
 /* Base da franquia Practice — o resto vem do Tailwind + tokens */
 * {
   box-sizing: border-box;
@@ -312,10 +350,10 @@ a:hover {
 
 /* Estilo para o efeito de papel */
 .paper-effect {
-  background: #ffffff;
+  background: var(--surface);
   border-radius: 8px;
   padding: 25px;
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
   margin-bottom: 30px;
 }
 
@@ -327,13 +365,13 @@ a:hover {
 
 .activity-header h1 {
   font-size: 1.2rem !important;
-  color: #1E3D59;
+  color: var(--brand-deep);
   margin-bottom: 10px;
 }
 
 .decorative-line {
   height: 3px;
-  background: linear-gradient(to right, transparent, #7c639b, transparent);
+  background: linear-gradient(to right, transparent, var(--brand-soft), transparent);
   margin: 15px auto;
   width: 80%;
 }
@@ -343,12 +381,12 @@ a:hover {
   margin-bottom: 30px;
   padding: 15px;
   border-radius: 5px;
-  background-color: #f9f9f9;
+  background-color: var(--paper-2);
 }
 
 .paper-section h3 {
-  color: #5d4777;
-  border-bottom: 2px solid #e0e0e0;
+  color: var(--brand-deep);
+  border-bottom: 2px solid var(--line);
   padding-bottom: 10px;
   margin-bottom: 15px;
   font-size: 1.5rem;
@@ -356,7 +394,7 @@ a:hover {
 
 /* Caixas de conteúdo */
 .content-box {
-  background: white;
+  background: var(--surface);
   padding: 15px;
   border-radius: 5px;
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
@@ -371,7 +409,7 @@ a:hover {
 
 .item-list li {
   margin-bottom: 15px;
-  background: white;
+  background: var(--surface);
   padding: 15px;
   border-radius: 5px;
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
@@ -398,15 +436,15 @@ a:hover {
 
 .alternatives-list li {
   margin-bottom: 10px;
-  background: #f5f5f5;
+  background: var(--paper-2);
   padding: 10px;
   border-radius: 5px;
 }
 
 /* Badge para alternativa correta */
 .correct-badge {
-  background: #5d4777;
-  color: white;
+  background: var(--success);
+  color: var(--surface);
   padding: 2px 8px;
   border-radius: 12px;
   font-size: 0.8rem;
@@ -499,33 +537,33 @@ a:hover {
   left: 0;
   right: 0;
   bottom: 0;
-  background-color: rgba(147, 112, 219, 0);
+  background-color: color-mix(in srgb, var(--brand) 0%, transparent);
   z-index: -1;
   border-radius: 8px;
   animation: highlight-bg 3s ease-in-out;
 }
 
 @keyframes highlight-bg {
-  0%, 100% { background-color: rgba(147, 112, 219, 0); }
-  20%, 40% { background-color: rgba(147, 112, 219, 0.2); }
-  60%, 80% { background-color: rgba(147, 112, 219, 0.1); }
+  0%, 100% { background-color: color-mix(in srgb, var(--brand) 0%, transparent); }
+  20%, 40% { background-color: color-mix(in srgb, var(--brand) 20%, transparent); }
+  60%, 80% { background-color: color-mix(in srgb, var(--brand) 10%, transparent); }
 }
 
 @keyframes highlight-pulse {
-  0% { 
-    box-shadow: 0 0 0 0 rgba(147, 112, 219, 0.9);
+  0% {
+    box-shadow: 0 0 0 0 color-mix(in srgb, var(--brand) 90%, transparent);
   }
-  20% { 
-    box-shadow: 0 0 0 15px rgba(147, 112, 219, 0.6);
+  20% {
+    box-shadow: 0 0 0 15px color-mix(in srgb, var(--brand) 60%, transparent);
   }
-  40% { 
-    box-shadow: 0 0 0 5px rgba(147, 112, 219, 0.4);
+  40% {
+    box-shadow: 0 0 0 5px color-mix(in srgb, var(--brand) 40%, transparent);
   }
-  60% { 
-    box-shadow: 0 0 0 10px rgba(147, 112, 219, 0.2);
+  60% {
+    box-shadow: 0 0 0 10px color-mix(in srgb, var(--brand) 20%, transparent);
   }
-  100% { 
-    box-shadow: 0 0 0 0 rgba(147, 112, 219, 0);
+  100% {
+    box-shadow: 0 0 0 0 color-mix(in srgb, var(--brand) 0%, transparent);
   }
 }
 

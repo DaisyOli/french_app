@@ -1,7 +1,7 @@
-<div class="container mt-5">
-  <div class="row justify-content-center">
-    <div class="col-lg-8">
-      <%= render "form", activity: @activity %>
-    </div>
-  </div>
-</div> 
+<% content_for :head do %>
+  <title>Nouvelle activité · Practice-FR</title>
+<% end %>
+
+<div style="max-width:640px; margin:0 auto; padding:28px 16px 60px;">
+  <%= render "form", activity: @activity %>
+</div>
