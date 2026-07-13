@@ -112,6 +112,57 @@ class StudentTest < ActiveSupport::TestCase
     assert_equal 2, next_trophy[:needed]
   end
 
+  test "nível should accept blank and valid CEFR levels" do
+    assert @student.valid?
+
+    Student::CEFR_LEVELS.each do |level|
+      @student.nível = level
+      assert @student.valid?, "#{level} deveria ser um nível válido"
+    end
+  end
+
+  test "nível should reject invalid values" do
+    @student.nível = "Z9"
+    assert_not @student.valid?
+  end
+
+  test "accessible_levels should return all levels when nível is blank" do
+    # Decisão deliberada da Sprint 6: aluno sem nível (antigo, de antes desta
+    # coluna existir, ou convite sem nível escolhido) tem acesso total, pra
+    # não travar quem já usava o app antes desta feature existir.
+    @student.nível = nil
+    assert_equal Student::CEFR_LEVELS, @student.accessible_levels
+  end
+
+  test "accessible_levels should be cumulative up to the assigned level" do
+    @student.nível = "B1"
+    assert_equal %w[A1 A2 B1], @student.accessible_levels
+  end
+
+  test "accessible_levels should return only A1 for the lowest level" do
+    @student.nível = "A1"
+    assert_equal %w[A1], @student.accessible_levels
+  end
+
+  test "accessible_levels should return all levels for the highest level" do
+    @student.nível = "C2"
+    assert_equal Student::CEFR_LEVELS, @student.accessible_levels
+  end
+
+  test "professional_type should accept blank and OPCO/eCPF" do
+    assert @student.valid?
+
+    Student::PROFESSIONAL_TYPES.each do |type|
+      @student.professional_type = type
+      assert @student.valid?, "#{type} deveria ser um percurso profissional válido"
+    end
+  end
+
+  test "professional_type should reject invalid values" do
+    @student.professional_type = "INVALID"
+    assert_not @student.valid?
+  end
+
   test "motivational_message should return appropriate message" do
     @student.current_streak = 0
     assert_includes @student.motivational_message, "Commencez"
