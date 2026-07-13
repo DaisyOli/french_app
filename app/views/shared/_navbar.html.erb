@@ -30,23 +30,44 @@
 
     <% if user_signed_in? && !student_signed_in? %>
       <%# ---- Professora ---- %>
-      <%= link_to new_student_invitation_path,
-            class: "hidden sm:inline-flex items-center whitespace-nowrap px-4 py-1.5 rounded-lg text-sm font-semibold no-underline",
-            style: "background:var(--surface); color:var(--brand-deep); border:1.5px solid var(--brand-tint-2); font-family:'Plus Jakarta Sans',sans-serif; text-decoration:none;" do %>
-        <i class="bi bi-envelope" style="margin-right:6px;"></i>Inviter un étudiant
+      <% if current_user.admin? %>
+        <%# Admin convida aluno OU professor — dropdown com as duas opções. %>
+        <div class="dropdown hidden sm:block">
+          <label tabindex="0"
+                 class="flex items-center whitespace-nowrap px-4 py-1.5 rounded-lg text-sm font-semibold no-underline cursor-pointer"
+                 style="background:var(--surface); color:var(--brand-deep); border:1.5px solid var(--brand-tint-2); font-family:'Plus Jakarta Sans',sans-serif;">
+            <i class="bi bi-envelope" style="margin-right:6px;"></i>Inviter
+          </label>
+          <ul tabindex="0"
+              class="dropdown-content menu menu-sm shadow-lg z-50 mt-2 p-2 rounded-xl"
+              style="background:var(--surface); border:1px solid var(--line); min-width:220px;">
+            <li><%= link_to "Inviter un étudiant", new_student_invitation_path,
+                      style: "font-family:'Plus Jakarta Sans',sans-serif; font-size:0.875rem; font-weight:600; color:var(--ink);" %></li>
+            <li><%= link_to "Inviter un professeur", new_user_invitation_path,
+                      style: "font-family:'Plus Jakarta Sans',sans-serif; font-size:0.875rem; font-weight:600; color:var(--ink);" %></li>
+          </ul>
+        </div>
+      <% else %>
+        <%= link_to new_student_invitation_path,
+              class: "hidden sm:inline-flex items-center whitespace-nowrap px-4 py-1.5 rounded-lg text-sm font-semibold no-underline",
+              style: "background:var(--surface); color:var(--brand-deep); border:1.5px solid var(--brand-tint-2); font-family:'Plus Jakarta Sans',sans-serif; text-decoration:none;" do %>
+          <i class="bi bi-envelope" style="margin-right:6px;"></i>Inviter un étudiant
+        <% end %>
       <% end %>
 
       <%= link_to "+ Nouvelle activité", new_activity_path,
             class: "hidden sm:inline-flex items-center whitespace-nowrap px-4 py-1.5 rounded-lg text-sm font-semibold text-white no-underline",
             style: "background:var(--brand-bright); font-family:'Plus Jakarta Sans',sans-serif; text-decoration:none;" %>
 
+      <% teacher_mobile_links = [["+ Nouvelle activité", new_activity_path, "var(--brand)"],
+                                 ["Inviter un étudiant", new_student_invitation_path, "var(--brand)"]]
+         teacher_mobile_links << ["Inviter un professeur", new_user_invitation_path, "var(--brand)"] if current_user.admin? %>
       <%= render "shared/navbar_dropdown",
-            role_label: "PROFESSEURE",
+            role_label: current_user.admin? ? "PROFESSEURE · ADMIN" : "PROFESSEURE",
             display_name: "Daisy 🌼",
             avatar_letter: "D",
             avatar_gradient: "var(--action), var(--action-bright)",
-            mobile_links: [["+ Nouvelle activité", new_activity_path, "var(--brand)"],
-                           ["Inviter un étudiant", new_student_invitation_path, "var(--brand)"]],
+            mobile_links: teacher_mobile_links,
             sign_out_path: destroy_user_session_path %>
 
     <% elsif student_signed_in? %>

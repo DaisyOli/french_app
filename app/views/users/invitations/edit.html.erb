@@ -1,0 +1,41 @@
+<% content_for :head do %>
+  <title>Créer mon mot de passe · Practice-FR</title>
+<% end %>
+
+<div style="max-width:480px; margin:0 auto; padding:28px 16px 60px;">
+  <div style="background:var(--surface); border:1px solid var(--line); border-radius:16px; padding:28px 26px;">
+
+    <div style="text-align:center; margin-bottom:22px;">
+      <div style="width:56px; height:56px; border-radius:50%; background:var(--brand-tint); display:flex; align-items:center; justify-content:center; margin:0 auto 14px;">
+        <i class="bi bi-mortarboard-fill" style="font-size:1.4rem; color:var(--brand-deep);"></i>
+      </div>
+      <h1 style="font-family:'Raleway',sans-serif; font-size:1.3rem; font-weight:800; color:var(--brand-deep); margin:0 0 6px;">
+        Bienvenue chez Practice-FR
+      </h1>
+      <p style="font-family:'Plus Jakarta Sans',sans-serif; font-size:0.88rem; color:var(--ink-soft); margin:0;">
+        Créez votre mot de passe pour accéder à votre espace professeur.
+      </p>
+    </div>
+
+    <%= simple_form_for(resource, as: resource_name, url: invitation_path(resource_name), html: { method: :put }) do |f| %>
+      <%= f.hidden_field :invitation_token %>
+
+      <div style="margin-bottom:20px;">
+        <label style="display:block; font-family:'DM Mono',monospace; font-size:0.72rem; font-weight:700; text-transform:uppercase; letter-spacing:0.04em; color:var(--ink-soft); margin-bottom:8px;">Mot de passe</label>
+        <%= f.input_field :password,
+              placeholder: "Choisissez un mot de passe sécurisé",
+              style: "width:100%; font-family:'Plus Jakarta Sans',sans-serif; font-size:0.95rem; padding:11px 14px; border:1.5px solid var(--line); border-radius:10px; background:var(--surface); color:var(--ink);" %>
+      </div>
+
+      <div style="margin-bottom:20px;">
+        <label style="display:block; font-family:'DM Mono',monospace; font-size:0.72rem; font-weight:700; text-transform:uppercase; letter-spacing:0.04em; color:var(--ink-soft); margin-bottom:8px;">Confirmer le mot de passe</label>
+        <%= f.input_field :password_confirmation,
+              placeholder: "Répétez le mot de passe",
+              style: "width:100%; font-family:'Plus Jakarta Sans',sans-serif; font-size:0.95rem; padding:11px 14px; border:1.5px solid var(--line); border-radius:10px; background:var(--surface); color:var(--ink);" %>
+      </div>
+
+      <%= f.button :submit, "Créer mon compte",
+            style: "width:100%; font-family:'Plus Jakarta Sans',sans-serif; font-size:0.9rem; font-weight:700; padding:11px 24px; border-radius:999px; border:none; background:var(--brand); color:var(--surface); cursor:pointer;" %>
+    <% end %>
+  </div>
+</div>
