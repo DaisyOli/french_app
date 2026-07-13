@@ -1,5 +1,6 @@
 class ParagraphOrderingsController < ApplicationController
-  before_action :set_activity
+  include ActivityOwnable
+
   before_action :set_paragraph_ordering, only: [:update, :destroy]
 
   def create
@@ -97,9 +98,8 @@ class ParagraphOrderingsController < ApplicationController
   end
 
   def update_order
-    @activity = Activity.find_by_param(params[:activity_id])
-    @paragraph_ordering = ParagraphOrdering.find(params[:id])
-    
+    @paragraph_ordering = @activity.paragraph_orderings.find(params[:id])
+
     if @paragraph_ordering.update(display_order: params[:display_order])
       redirect_to activity_path(@activity, scroll_to: "paragraph-ordering-#{@paragraph_ordering.id}"), notice: 'Ordre mis à jour avec succès!'
     else
@@ -108,10 +108,6 @@ class ParagraphOrderingsController < ApplicationController
   end
 
   private
-    def set_activity
-      @activity = Activity.find_by_param(params[:activity_id])
-    end
-
     def set_paragraph_ordering
       @paragraph_ordering = @activity.paragraph_orderings.find(params[:id])
     end

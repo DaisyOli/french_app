@@ -1,5 +1,6 @@
 class FillBlanksController < ApplicationController
-  before_action :set_activity
+  include ActivityOwnable
+
   before_action :set_fill_blank, only: [:update, :destroy]
 
   def create
@@ -91,9 +92,8 @@ class FillBlanksController < ApplicationController
   end
 
   def update_order
-    @activity = Activity.find_by_param(params[:activity_id])
-    @fill_blank = FillBlank.find(params[:id])
-    
+    @fill_blank = @activity.fill_blanks.find(params[:id])
+
     if @fill_blank.update(display_order: params[:display_order])
       redirect_to activity_path(@activity, scroll_to: "fill-blank-#{@fill_blank.id}"), notice: 'Ordem atualizada com sucesso!'
     else
@@ -102,10 +102,6 @@ class FillBlanksController < ApplicationController
   end
 
   private
-    def set_activity
-      @activity = Activity.find_by_param(params[:activity_id])
-    end
-
     def set_fill_blank
       @fill_blank = @activity.fill_blanks.find(params[:id])
     end

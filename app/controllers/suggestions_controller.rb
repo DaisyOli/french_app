@@ -1,6 +1,6 @@
 class SuggestionsController < ApplicationController
-  before_action :authenticate_user!
-  before_action :set_activity
+  include ActivityOwnable
+
   before_action :set_suggestion, only: [:update, :destroy]
 
   def create
@@ -80,9 +80,8 @@ class SuggestionsController < ApplicationController
   end
 
   def update_order
-    @activity = Activity.find_by_param(params[:activity_id])
-    @suggestion = Suggestion.find(params[:id])
-    
+    @suggestion = @activity.suggestions.find(params[:id])
+
     if @suggestion.update(display_order: params[:display_order])
       redirect_to activity_path(@activity, scroll_to: "suggestion-#{@suggestion.id}"), notice: t('flash.actions.update.notice', resource_name: Suggestion.model_name.human)
     else
@@ -91,10 +90,6 @@ class SuggestionsController < ApplicationController
   end
 
   private
-
-  def set_activity
-    @activity = Activity.find_by_param(params[:activity_id])
-  end
 
   def set_suggestion
     @suggestion = @activity.suggestions.find(params[:id])

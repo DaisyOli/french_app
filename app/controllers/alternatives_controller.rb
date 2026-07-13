@@ -1,6 +1,6 @@
 class AlternativesController < ApplicationController
-  before_action :authenticate_user!
-  before_action :set_activity
+  include ActivityOwnable
+
   before_action :set_question
   before_action :set_alternative, only: [:update, :destroy]
 
@@ -40,10 +40,6 @@ class AlternativesController < ApplicationController
   end
 
   private
-    def set_activity
-      @activity = Activity.find_by_param(params[:activity_id])
-    end
-
     def set_question
       @question = @activity.questions.find(params[:question_id])
     end

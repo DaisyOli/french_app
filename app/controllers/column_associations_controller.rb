@@ -1,8 +1,7 @@
 class ColumnAssociationsController < ApplicationController
-  before_action :authenticate_user!
-  
+  include ActivityOwnable
+
   def create
-    @activity = Activity.find_by_param(params[:activity_id])
     @column_association = @activity.column_associations.build(column_association_params)
     
     if @column_association.save
@@ -13,19 +12,18 @@ class ColumnAssociationsController < ApplicationController
   end
   
   def update
-    @column_association = ColumnAssociation.find(params[:id])
-    
+    @column_association = @activity.column_associations.find(params[:id])
+
     if @column_association.update(column_association_params)
       redirect_to activity_path(@column_association.activity, scroll_to: "column-association-#{@column_association.id}"), notice: 'Exercice d\'association mis à jour avec succès.'
     else
       redirect_to @column_association.activity, alert: 'Erreur lors de la mise à jour de l\'exercice.'
     end
   end
-  
+
   def destroy
-    @column_association = ColumnAssociation.find(params[:id])
-    @activity = @column_association.activity
-    
+    @column_association = @activity.column_associations.find(params[:id])
+
     # Coletar todos os elementos para encontrar o anterior, por que? Porque se não houver elementos anteriores, redirecionar para a atividade mesmo assim, da para refatorar para não ter que fazer isso?
     activity_elements = []
     
@@ -81,9 +79,9 @@ class ColumnAssociationsController < ApplicationController
   end
   
   def update_order
-    @column_association = ColumnAssociation.find(params[:id])
+    @column_association = @activity.column_associations.find(params[:id])
     @column_association.update(display_order: params[:display_order])
-    redirect_to activity_path(@column_association.activity, scroll_to: "column-association-#{@column_association.id}")
+    redirect_to activity_path(@activity, scroll_to: "column-association-#{@column_association.id}")
   end
   
   private

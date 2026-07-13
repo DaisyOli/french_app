@@ -1,6 +1,6 @@
 class QuestionsController < ApplicationController
-  before_action :authenticate_user!
-  before_action :set_activity
+  include ActivityOwnable
+
   before_action :set_question, only: [:update, :destroy]
 
   def new
@@ -86,9 +86,8 @@ class QuestionsController < ApplicationController
   end
 
   def update_order
-    @activity = Activity.find_by_param(params[:activity_id])
-    @question = Question.find(params[:id])
-    
+    @question = @activity.questions.find(params[:id])
+
     if @question.update(display_order: params[:display_order])
       redirect_to activity_path(@activity, scroll_to: "question-#{@question.id}"), notice: t('flash.actions.update.notice', resource_name: Question.model_name.human)
     else
@@ -97,10 +96,6 @@ class QuestionsController < ApplicationController
   end
 
   private
-    def set_activity
-      @activity = Activity.find_by_param(params[:activity_id])
-    end
-
     def set_question
       @question = @activity.questions.find(params[:id])
     end

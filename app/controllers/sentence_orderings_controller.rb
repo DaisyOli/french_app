@@ -1,5 +1,6 @@
 class SentenceOrderingsController < ApplicationController
-  before_action :set_activity
+  include ActivityOwnable
+
   before_action :set_sentence_ordering, only: [:update, :destroy]
 
   def create
@@ -103,9 +104,8 @@ class SentenceOrderingsController < ApplicationController
   end
 
   def update_order
-    @activity = Activity.find_by_param(params[:activity_id])
-    @sentence_ordering = SentenceOrdering.find(params[:id])
-    
+    @sentence_ordering = @activity.sentence_orderings.find(params[:id])
+
     if @sentence_ordering.update(display_order: params[:display_order])
       redirect_to activity_path(@activity, scroll_to: "sentence-ordering-#{@sentence_ordering.id}"), notice: 'Ordre mis à jour avec succès!'
     else
@@ -114,10 +114,6 @@ class SentenceOrderingsController < ApplicationController
   end
 
   private
-    def set_activity
-      @activity = Activity.find_by_param(params[:activity_id])
-    end
-
     def set_sentence_ordering
       @sentence_ordering = @activity.sentence_orderings.find(params[:id])
     end

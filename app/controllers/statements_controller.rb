@@ -1,6 +1,6 @@
 class StatementsController < ApplicationController
-  before_action :authenticate_user!
-  before_action :set_activity
+  include ActivityOwnable
+
   before_action :set_statement, only: [:update, :destroy]
 
   def create
@@ -80,9 +80,8 @@ class StatementsController < ApplicationController
   end
 
   def update_order
-    @activity = Activity.find_by_param(params[:activity_id])
-    @statement = Statement.find(params[:id])
-    
+    @statement = @activity.statements.find(params[:id])
+
     if @statement.update(display_order: params[:display_order])
       redirect_to activity_path(@activity, scroll_to: "statement-#{@statement.id}"), notice: t('flash.actions.update.notice', resource_name: Statement.model_name.human)
     else
@@ -91,10 +90,6 @@ class StatementsController < ApplicationController
   end
 
   private
-
-  def set_activity
-    @activity = Activity.find_by_param(params[:activity_id])
-  end
 
   def set_statement
     @statement = @activity.statements.find(params[:id])

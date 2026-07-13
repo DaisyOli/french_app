@@ -1,4 +1,6 @@
 class BlanksController < ApplicationController
+  include ActivityOwnable
+
   before_action :set_fill_blank
   before_action :set_blank, only: [:update]
 
@@ -14,7 +16,7 @@ class BlanksController < ApplicationController
 
   private
     def set_fill_blank
-      @fill_blank = FillBlank.find(params[:fill_blank_id])
+      @fill_blank = @activity.fill_blanks.find(params[:fill_blank_id])
     end
 
     def set_blank

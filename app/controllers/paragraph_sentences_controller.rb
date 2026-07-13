@@ -1,5 +1,6 @@
 class ParagraphSentencesController < ApplicationController
-  before_action :set_activity
+  include ActivityOwnable
+
   before_action :set_paragraph_ordering
   before_action :set_paragraph_sentence, only: [:update, :destroy]
 
@@ -39,10 +40,6 @@ class ParagraphSentencesController < ApplicationController
   end
 
   private
-    def set_activity
-      @activity = Activity.find_by_param(params[:activity_id])
-    end
-
     def set_paragraph_ordering
       @paragraph_ordering = @activity.paragraph_orderings.find(params[:paragraph_ordering_id])
     end
