@@ -4,27 +4,15 @@
 
 <div style="max-width:1100px; margin:0 auto; padding:28px 16px 60px;">
 
-  <%# Header %>
-  <div style="display:flex; align-items:baseline; justify-content:space-between; flex-wrap:wrap; gap:10px; margin-bottom:20px;">
-    <div>
-      <%= link_to teacher_dashboard_path,
-            style: "font-family:'Plus Jakarta Sans',sans-serif; font-size:0.8rem; font-weight:600; color:var(--ink-soft); text-decoration:none; display:inline-flex; align-items:center; gap:4px; margin-bottom:6px;" do %>
-        <i class="bi bi-arrow-left"></i> Tableau de bord
-      <% end %>
-      <h1 style="font-family:'Raleway',sans-serif; font-size:1.5rem; font-weight:800; color:var(--brand-deep); margin:0;">
-        Mes activités
-      </h1>
-    </div>
-    <div style="display:flex; gap:8px;">
-      <%= link_to new_student_invitation_path,
-            style: "font-family:'Plus Jakarta Sans',sans-serif; font-size:0.85rem; font-weight:700; padding:9px 18px; border-radius:999px; text-decoration:none; display:inline-flex; align-items:center; gap:6px; background:var(--surface); color:var(--ink-soft); border:1.5px solid var(--line);" do %>
-        <i class="bi bi-envelope"></i> Inviter un étudiant
-      <% end %>
-      <%= link_to new_activity_path,
-            style: "font-family:'Plus Jakarta Sans',sans-serif; font-size:0.85rem; font-weight:700; padding:9px 18px; border-radius:999px; text-decoration:none; display:inline-flex; align-items:center; gap:6px; background:var(--brand); color:var(--surface);" do %>
-        <i class="bi bi-plus-circle"></i> Nouvelle activité
-      <% end %>
-    </div>
+  <%# Header — "Nouvelle activité"/"Inviter un étudiant" já vivem na navbar, sem duplicar aqui %>
+  <div style="margin-bottom:20px;">
+    <%= link_to teacher_dashboard_path,
+          style: "font-family:'Plus Jakarta Sans',sans-serif; font-size:0.8rem; font-weight:600; color:var(--ink-soft); text-decoration:none; display:inline-flex; align-items:center; gap:4px; margin-bottom:6px;" do %>
+      <i class="bi bi-arrow-left"></i> Tableau de bord
+    <% end %>
+    <h1 style="font-family:'Raleway',sans-serif; font-size:1.5rem; font-weight:800; color:var(--brand-deep); margin:0;">
+      Mes activités
+    </h1>
   </div>
 
   <%# Métricas %>
@@ -53,38 +41,40 @@
 
   <%# Busca e filtros — GET tradicional, sem JS, igual ao practice-br %>
   <%= form_with url: activities_path, method: :get,
-        style: "background:var(--surface); border:1px solid var(--line); border-radius:14px; padding:14px 16px; margin-bottom:24px; display:flex; gap:10px; flex-wrap:wrap; align-items:flex-end;" do %>
-    <div style="flex:2; min-width:180px;">
-      <label style="display:block; font-family:'DM Mono',monospace; font-size:0.68rem; font-weight:700; text-transform:uppercase; letter-spacing:0.04em; color:var(--ink-faint); margin-bottom:6px;">Rechercher</label>
-      <input type="text" name="search" value="<%= params[:search] %>" placeholder="Titre de l'activité..."
-             style="width:100%; font-family:'Plus Jakarta Sans',sans-serif; font-size:0.88rem; padding:9px 12px; border:1.5px solid var(--line); border-radius:9px; background:var(--surface); color:var(--ink);">
-    </div>
-    <div style="flex:1; min-width:130px;">
-      <label style="display:block; font-family:'DM Mono',monospace; font-size:0.68rem; font-weight:700; text-transform:uppercase; letter-spacing:0.04em; color:var(--ink-faint); margin-bottom:6px;">Niveau</label>
-      <select name="nível" style="width:100%; font-family:'Plus Jakarta Sans',sans-serif; font-size:0.88rem; padding:9px 12px; border:1.5px solid var(--line); border-radius:9px; background:var(--surface); color:var(--ink);">
-        <option value="">Tous</option>
-        <% %w[A1 A2 B1 B2 C1 C2].each do |level| %>
-          <option value="<%= level %>" <%= 'selected' if params[:nível] == level %>><%= level %></option>
+        html: { style: "display:block;" } do %>
+    <div style="background:var(--surface); border:1px solid var(--line); border-radius:14px; padding:14px 16px; margin-bottom:24px; display:flex; gap:10px; flex-wrap:wrap; align-items:flex-end;">
+      <div style="flex:2; min-width:180px;">
+        <label style="display:block; font-family:'DM Mono',monospace; font-size:0.68rem; font-weight:700; text-transform:uppercase; letter-spacing:0.04em; color:var(--ink-faint); margin-bottom:6px;">Rechercher</label>
+        <input type="text" name="search" value="<%= params[:search] %>" placeholder="Titre de l'activité..."
+               style="width:100%; font-family:'Plus Jakarta Sans',sans-serif; font-size:0.88rem; padding:9px 12px; border:1.5px solid var(--line); border-radius:9px; background:var(--surface); color:var(--ink);">
+      </div>
+      <div style="flex:1; min-width:130px;">
+        <label style="display:block; font-family:'DM Mono',monospace; font-size:0.68rem; font-weight:700; text-transform:uppercase; letter-spacing:0.04em; color:var(--ink-faint); margin-bottom:6px;">Niveau</label>
+        <select name="nível" style="width:100%; font-family:'Plus Jakarta Sans',sans-serif; font-size:0.88rem; padding:9px 12px; border:1.5px solid var(--line); border-radius:9px; background:var(--surface); color:var(--ink);">
+          <option value="">Tous</option>
+          <% %w[A1 A2 B1 B2 C1 C2].each do |level| %>
+            <option value="<%= level %>" <%= 'selected' if params[:nível] == level %>><%= level %></option>
+          <% end %>
+        </select>
+      </div>
+      <div style="flex:1; min-width:150px;">
+        <label style="display:block; font-family:'DM Mono',monospace; font-size:0.68rem; font-weight:700; text-transform:uppercase; letter-spacing:0.04em; color:var(--ink-faint); margin-bottom:6px;">Trier par</label>
+        <select name="sort" style="width:100%; font-family:'Plus Jakarta Sans',sans-serif; font-size:0.88rem; padding:9px 12px; border:1.5px solid var(--line); border-radius:9px; background:var(--surface); color:var(--ink);">
+          <option value="recent" <%= 'selected' if params[:sort].blank? || params[:sort] == 'recent' %>>Plus récentes</option>
+          <option value="oldest" <%= 'selected' if params[:sort] == 'oldest' %>>Plus anciennes</option>
+          <option value="title" <%= 'selected' if params[:sort] == 'title' %>>Titre (A-Z)</option>
+        </select>
+      </div>
+      <div style="display:flex; gap:8px;">
+        <button type="submit"
+                style="font-family:'Plus Jakarta Sans',sans-serif; font-size:0.85rem; font-weight:700; padding:9px 20px; border-radius:9px; border:none; background:var(--brand); color:var(--surface); cursor:pointer;">
+          Filtrer
+        </button>
+        <% if params[:search].present? || params[:nível].present? || params[:sort].present? %>
+          <%= link_to "Effacer", activities_path,
+                style: "font-family:'Plus Jakarta Sans',sans-serif; font-size:0.85rem; font-weight:700; padding:9px 16px; border-radius:9px; text-decoration:none; background:var(--surface); color:var(--ink-soft); border:1.5px solid var(--line); display:inline-flex; align-items:center;" %>
         <% end %>
-      </select>
-    </div>
-    <div style="flex:1; min-width:150px;">
-      <label style="display:block; font-family:'DM Mono',monospace; font-size:0.68rem; font-weight:700; text-transform:uppercase; letter-spacing:0.04em; color:var(--ink-faint); margin-bottom:6px;">Trier par</label>
-      <select name="sort" style="width:100%; font-family:'Plus Jakarta Sans',sans-serif; font-size:0.88rem; padding:9px 12px; border:1.5px solid var(--line); border-radius:9px; background:var(--surface); color:var(--ink);">
-        <option value="recent" <%= 'selected' if params[:sort].blank? || params[:sort] == 'recent' %>>Plus récentes</option>
-        <option value="oldest" <%= 'selected' if params[:sort] == 'oldest' %>>Plus anciennes</option>
-        <option value="title" <%= 'selected' if params[:sort] == 'title' %>>Titre (A-Z)</option>
-      </select>
-    </div>
-    <div style="display:flex; gap:8px;">
-      <button type="submit"
-              style="font-family:'Plus Jakarta Sans',sans-serif; font-size:0.85rem; font-weight:700; padding:9px 20px; border-radius:9px; border:none; background:var(--brand); color:var(--surface); cursor:pointer;">
-        Filtrer
-      </button>
-      <% if params[:search].present? || params[:nível].present? || params[:sort].present? %>
-        <%= link_to "Effacer", activities_path,
-              style: "font-family:'Plus Jakarta Sans',sans-serif; font-size:0.85rem; font-weight:700; padding:9px 16px; border-radius:9px; text-decoration:none; background:var(--surface); color:var(--ink-soft); border:1.5px solid var(--line); display:inline-flex; align-items:center;" %>
-      <% end %>
+      </div>
     </div>
   <% end %>
 
