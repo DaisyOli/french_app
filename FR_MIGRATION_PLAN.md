@@ -77,9 +77,10 @@ original, mas eram graves demais pra esperar):
   checagem de dono; 5 deles nem exigiam login nenhum). Corrigido com um Concern
   (`app/controllers/concerns/activity_ownable.rb`) incluído nos 11.
 
-### Sprint 4-FR em diante — ver seção "Roteiro de features" abaixo
-A migração visual está encerrada. As próximas sprints são features novas (convite
-de professor, nível do aluno, perfil, percurso profissional), não mais retoken.
+### Sprint 4-FR a 8-FR — ver seção "Roteiro de features" abaixo — ✅ CONCLUÍDAS (2026-07-13)
+A migração visual está encerrada. As sprints 4-8 foram features novas (convite
+de professor, nível do aluno, perfil, percurso profissional), não mais retoken —
+todas implementadas, testadas e deployadas (release v56→v58).
 
 ## Regras de trabalho da Daisy (valem aqui também)
 
@@ -111,23 +112,31 @@ desenhar o roteiro: criar `admin` de verdade (não pular essa etapa), perfil do
 aluno só do ponto de vista do professor (sem tela "meu perfil" pro aluno), e
 o pacote completo do percurso profissional incluindo o atestado.
 
-- **Sprint 4-FR** — Papel `admin` em `users` (migration + promover a Daisy via
-  console, sem UI ainda — fundação pras próximas).
-- **Sprint 5-FR** — Convite de professor: `Users::InvitationsController`
+- **Sprint 4-FR** ✅ — Papel `admin` em `users` (`add_admin_to_users`), Daisy
+  promovida via `heroku run rails runner` (única admin; sem UI de auto-promoção,
+  igual ao BR). Fundação sem UI própria — nada lia o flag ainda.
+- **Sprint 5-FR** ✅ — Convite de professor: `Users::InvitationsController`
   (mesmo padrão de `Students::InvitationsController`), gated por
-  `current_user.admin?`; navbar ganha botão "Inviter" com seletor de papel
-  (só visível pra admin); professor comum continua só com "Inviter un étudiant".
-- **Sprint 6-FR** — Nível do aluno: coluna `nível` em `students` (CEFR A1-C2),
-  definido no convite. Decisão em aberto: vai restringir acesso a atividades
-  (como o BR) ou fica só informativo? Recomendado começar informativo.
-- **Sprint 7-FR** — Lista de alunos + perfil individual (visão do professor):
-  hoje só existe um preview de 3 no dashboard; falta lista completa com busca
-  e uma tela de perfil por aluno (nível editável, métricas, remover vínculo).
-- **Sprint 8-FR** — Percurso profissional: coluna `professional_type`
-  (OPCO/eCPF) em `students`, badge no perfil e no dashboard do aluno, e
-  emissão de atestado de formação (certificado imprimível com horas/atividades
-  — rastreamento de horas ainda a decidir: derivar de `CompletedActivity` ou
-  campo novo).
+  `current_user.admin?`; navbar ganha dropdown "Inviter" (aluno/professor) só
+  pra admin; professor comum continua só com "Inviter un étudiant".
+- **Sprint 6-FR** ✅ — Nível do aluno: coluna `nível` em `students` (CEFR A1-C2),
+  definido no convite (pills CSS-only). **Restringe acesso** às atividades
+  (`accessible_levels`, cumulativo — como o BR), decisão explícita da Daisy.
+  Diferença deliberada do BR: nível em branco = acesso TOTAL (não zero), pra
+  não travar aluno já existente antes desta coluna existir.
+- **Sprint 7-FR** ✅ — Lista de alunos (`teacher_students#index`, busca + stats
+  por aluno) + perfil individual (`#show`: nível editável, métricas, remover
+  vínculo) — tudo escopado por `current_user.students`. Testado inclusive o
+  caso de um professor tentar ver/editar aluno de outro (bloqueado).
+- **Sprint 8-FR** ✅ — Coluna `professional_type` (OPCO/eCPF) em `students`,
+  badge no perfil/lista/dashboard do aluno, atestado de formação imprimível
+  (`teacher_students#attestation`, layout usa `content_for :hide_navbar`).
+  Rastreamento de horas: FR não tinha timestamp de início de atividade (ao
+  contrário do BR) — Daisy escolheu explicitamente **rastrear tempo real dali
+  pra frente** (não estimar, não inventar duração retroativa). Nova coluna
+  `completed_activities.started_at`, capturada via JS na abertura da atividade
+  em `solve.html.erb`; duração capada em 2h/sessão (mesmo critério do BR).
+  Atestado só soma atividades autoradas pelo próprio professor que assina.
 
 Plano detalhado de cada sprint fica em `/home/daisyoli/.claude/plans/` durante
 a implementação (um plano por sessão) — este documento só mantém o roteiro
