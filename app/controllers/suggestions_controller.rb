@@ -1,12 +1,7 @@
 class SuggestionsController < ApplicationController
   before_action :authenticate_user!
   before_action :set_activity
-  before_action :set_suggestion, only: [:edit, :update, :destroy]
-
-  def new
-    @suggestion = @activity.suggestions.new
-    render partial: 'form', locals: { suggestion: @suggestion }
-  end
+  before_action :set_suggestion, only: [:update, :destroy]
 
   def create
     @suggestion = @activity.suggestions.new(suggestion_params)
@@ -29,10 +24,6 @@ class SuggestionsController < ApplicationController
         format.html { redirect_to activity_path(@activity), alert: 'Não foi possível adicionar a sugestão.' }
       end
     end
-  end
-
-  def edit
-    render partial: 'form', locals: { suggestion: @suggestion }
   end
 
   def update

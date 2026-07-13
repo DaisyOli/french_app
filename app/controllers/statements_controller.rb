@@ -1,12 +1,7 @@
 class StatementsController < ApplicationController
   before_action :authenticate_user!
   before_action :set_activity
-  before_action :set_statement, only: [:edit, :update, :destroy]
-
-  def new
-    @statement = @activity.statements.new
-    render partial: 'form', locals: { statement: @statement }
-  end
+  before_action :set_statement, only: [:update, :destroy]
 
   def create
     @statement = @activity.statements.new(statement_params)
@@ -29,10 +24,6 @@ class StatementsController < ApplicationController
         format.html { redirect_to activity_path(@activity), alert: 'Não foi possível adicionar o enunciado.' }
       end
     end
-  end
-
-  def edit
-    render partial: 'form', locals: { statement: @statement }
   end
 
   def update
