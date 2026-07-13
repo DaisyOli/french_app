@@ -1,7 +1,14 @@
 <!DOCTYPE html>
 <html lang="<%= I18n.locale %>" data-theme="practice-fr">
   <head>
-    <title><%= t('common.app_name') %></title>
+    <%# Título padrão só quando a view não define o próprio via
+        content_for :head (achado: as duas tags <title> coexistiam e o
+        navegador sempre usava esta aqui, ignorando o título de cada
+        página — nenhuma das 18 views que já usam content_for :head pra
+        isso estava realmente funcionando). %>
+    <% unless content_for?(:head) %>
+      <title><%= t('common.app_name') %></title>
+    <% end %>
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <%# theme-color é uma das exceções onde hex é permitido (espelha --brand-deep) %>
     <meta name="theme-color" content="#5C1630">
