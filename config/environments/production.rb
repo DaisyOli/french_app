@@ -94,16 +94,23 @@ Rails.application.configure do
   config.action_mailer.perform_caching = false
   
   # Configure Action Mailer for production
+  # Resend (resend.com) — mesmo serviço do practice-br (consistência de
+  # franquia), trocado do SMTP direto do Gmail: Gmail não autentica o
+  # domínio practicefr.com (sem SPF/DKIM próprios), o que fazia o e-mail de
+  # convite cair no spam.
   config.action_mailer.delivery_method = :smtp
   config.action_mailer.default_url_options = { host: ENV.fetch("APP_HOST", "localhost") }
   config.action_mailer.smtp_settings = {
-    address: 'smtp.gmail.com',
+    address: 'smtp.resend.com',
     port: 587,
-    domain: ENV.fetch("APP_HOST", "localhost"),
-    user_name: ENV['GMAIL_USERNAME'],
-    password: ENV['GMAIL_PASSWORD'],
-    authentication: 'plain',
+    user_name: 'resend',
+    password: ENV['RESEND_API_KEY'],
+    authentication: :plain,
     enable_starttls_auto: true
+  }
+  config.action_mailer.default_options = {
+    from: 'Practice-FR <no-reply@practicefr.com>',
+    reply_to: 'no-reply@practicefr.com'
   }
 
   # Raise delivery errors in production to catch email issues
