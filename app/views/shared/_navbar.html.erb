@@ -98,8 +98,8 @@
 
       <%= render "shared/navbar_dropdown",
             role_label: "ÉLÈVE",
-            display_name: current_student.email,
-            avatar_letter: current_student.email.first.upcase,
+            display_name: current_student.name.presence || current_student.email,
+            avatar_letter: (current_student.name.presence || current_student.email).first.upcase,
             avatar_gradient: "var(--info), var(--info-deep)",
             mobile_links: [["Tableau de bord", student_dashboard_path, "var(--brand)"],
                            ["Activités", student_activities_path, "var(--brand)"]],
