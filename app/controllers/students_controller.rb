@@ -2,12 +2,8 @@ class StudentsController < ApplicationController
   before_action :authenticate_student!
 
   def dashboard
-    # Dados de progresso do estudante com otimização
-    @completed_activities = current_student.completed_activities
-                                          .includes(activity: [:activity_ratings, :questions, :fill_blanks,
-                                                                :sentence_orderings, :paragraph_orderings,
-                                                                :column_associations])
-                                          .order(created_at: :desc)
+    # Dados de progresso do estudante
+    @completed_activities = current_student.completed_activities.order(created_at: :desc)
     @completed_count = @completed_activities.count
 
     # Calcular score médio de forma mais robusta
@@ -20,12 +16,6 @@ class StudentsController < ApplicationController
 
     # IDs das atividades já completadas
     @completed_activity_ids = @completed_activities.pluck(:activity_id)
-
-    # Pré-carregar avaliações do estudante atual para evitar N+1 queries
-    activity_ids = @completed_activities.limit(6).map(&:activity_id)
-    @student_ratings = current_student.activity_ratings
-                                     .where(activity_id: activity_ids)
-                                     .index_by(&:activity_id)
 
     # Informações do troféu de assiduidade
     @current_trophy = current_student.current_trophy
@@ -42,7 +32,8 @@ class StudentsController < ApplicationController
                               .sort_by { |a| [level_order.index(a.nível) || 99, a.título] }
                               .first
     @next_activity_is_retry = @next_activity.nil?
-    @next_activity ||= @completed_activities.first&.activity
+    @next_completed_record = @next_activity_is_retry ? @completed_activities.first : nil
+    @next_activity ||= @next_completed_record&.activity
 
     # Progresso por nível CEFR pra grade de níveis (níveis fora do alcance do
     # aluno aparecem marcados como bloqueados, não escondidos)

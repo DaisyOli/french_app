@@ -159,6 +159,13 @@
   gap: 8px;
 }
 
+.level-card-link { text-decoration: none; display: block; }
+.level-card-inner { transition: all .15s ease; }
+.level-card-link:hover .level-card-inner {
+  border-color: var(--brand-bright);
+  transform: translateY(-2px);
+}
+
 @media (max-width: 900px) {
   .dash-mid-grid { grid-template-columns: 1fr; }
 }

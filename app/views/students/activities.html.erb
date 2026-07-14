@@ -139,5 +139,12 @@
         });
       });
     });
+
+    // Vem do card de nível do dashboard? Pré-seleciona o chip correspondente.
+    var levelParam = new URLSearchParams(window.location.search).get('level');
+    if (levelParam) {
+      var target = document.querySelector('[data-role="level-filter"] .level-chip[data-level="' + levelParam + '"]');
+      if (target) target.click();
+    }
   })();
 </script>

@@ -21,6 +21,13 @@
       <%= f.hidden_field :invitation_token %>
 
       <div style="margin-bottom:20px;">
+        <label style="display:block; font-family:'DM Mono',monospace; font-size:0.72rem; font-weight:700; text-transform:uppercase; letter-spacing:0.04em; color:var(--ink-soft); margin-bottom:8px;">Prénom</label>
+        <%= f.input_field :name,
+              placeholder: "Comment souhaitez-vous être appelé(e) ?",
+              style: "width:100%; font-family:'Plus Jakarta Sans',sans-serif; font-size:0.95rem; padding:11px 14px; border:1.5px solid var(--line); border-radius:10px; background:var(--surface); color:var(--ink);" %>
+      </div>
+
+      <div style="margin-bottom:20px;">
         <label style="display:block; font-family:'DM Mono',monospace; font-size:0.72rem; font-weight:700; text-transform:uppercase; letter-spacing:0.04em; color:var(--ink-soft); margin-bottom:8px;">Mot de passe</label>
         <%= f.input_field :password,
               placeholder: "Choisissez un mot de passe sécurisé",
