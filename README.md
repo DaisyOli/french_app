@@ -16,6 +16,10 @@
   <a href="https://practicefr.com"><img src="https://img.shields.io/badge/live-practicefr.com-8A2545" alt="Live demo"></a>
 </p>
 
+<p align="center">
+  🇬🇧 English · <a href="README.fr.md">🇫🇷 Français</a>
+</p>
+
 ---
 
 ## The idea
