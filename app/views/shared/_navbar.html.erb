@@ -106,9 +106,29 @@
             sign_out_path: destroy_student_session_path %>
 
     <% else %>
-      <%# ---- Visitante: entradas de professora e aluno (botões fantasma) ---- %>
-      <%= link_to t('devise.shared.links.sign_in_student'), new_student_session_path, class: "nav-ghost-btn" %>
-      <%= link_to t('devise.shared.links.sign_in_teacher'), new_user_session_path, class: "nav-ghost-btn" %>
+      <%# ---- Visitante: entradas de professora e aluno ----          %>
+      <%# Botões fantasma no desktop; no mobile viram um menu compacto %>
+      <%# pra não estourar a largura fixa de 50% da navbar-end.        %>
+      <div class="hidden sm:flex items-center gap-2 sm:gap-4">
+        <%= link_to t('devise.shared.links.sign_in_student'), new_student_session_path, class: "nav-ghost-btn" %>
+        <%= link_to t('devise.shared.links.sign_in_teacher'), new_user_session_path, class: "nav-ghost-btn" %>
+      </div>
+
+      <div class="dropdown dropdown-end sm:hidden">
+        <label tabindex="0"
+               class="btn btn-ghost btn-circle"
+               style="width:36px; height:36px; min-height:0; padding:0; color:var(--brand-tint-2);">
+          <i class="bi bi-person-circle" style="font-size:1.4rem;"></i>
+        </label>
+        <ul tabindex="0"
+            class="dropdown-content menu menu-sm shadow-lg z-50 mt-2 p-2 rounded-xl"
+            style="background:var(--surface); border:1px solid var(--line); min-width:200px;">
+          <li><%= link_to t('devise.shared.links.sign_in_student'), new_student_session_path,
+                    style: "font-family:'Plus Jakarta Sans',sans-serif; font-size:0.875rem; font-weight:600; color:var(--ink);" %></li>
+          <li><%= link_to t('devise.shared.links.sign_in_teacher'), new_user_session_path,
+                    style: "font-family:'Plus Jakarta Sans',sans-serif; font-size:0.875rem; font-weight:600; color:var(--ink);" %></li>
+        </ul>
+      </div>
     <% end %>
   </div>
 </nav>
