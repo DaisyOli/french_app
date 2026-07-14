@@ -5,6 +5,23 @@
 @import "tokens"; // 🎨 Design tokens da franquia Practice (fonte de verdade)
 @import "components/quiz"; // 🧩 esqueleto do quiz (portado do practice-br)
 
+/* O DaisyUI reserva 50% fixo pra .navbar-start e .navbar-end, sem encolher
+   nem crescer — com o logo de um lado e qualquer coisa mais larga do outro
+   (badges de troféu/streak do aluno com número de 2 dígitos, os botões de
+   login do visitante), os 50% estouram e o logo sai do lugar. Sem
+   navbar-center nesta navbar, o space-between no próprio <nav> resolve:
+   cada lado ocupa só a largura do seu conteúdo, e o espaço entre os dois
+   fica no meio — não estoura enquanto o conteúdo total realmente couber. */
+#main-navbar {
+  justify-content: space-between;
+}
+
+#main-navbar .navbar-start,
+#main-navbar .navbar-end {
+  width: auto;
+  flex: 0 0 auto;
+}
+
 /* Botões fantasma da navbar (estado visitante) — ideia da Daisy:
    contorno rosê bem fraquinho; no hover enchem de rosê com texto vinho */
 .nav-ghost-btn {
@@ -331,21 +348,6 @@ a {
 a:hover {
   color: #764ba2;
   text-decoration: none;
-}
-
-/* Responsividade */
-@media (max-width: 768px) {
-  nav {
-    flex-direction: column;
-  }
-  
-  .nav-links {
-    margin-top: 15px;
-  }
-  
-  .nav-links a {
-    margin: 0 10px;
-  }
 }
 
 /* Estilo para o efeito de papel */
