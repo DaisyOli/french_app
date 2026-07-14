@@ -41,6 +41,19 @@
       </div>
     </div>
 
+    <div style="margin-bottom:20px;">
+      <span style="display:block; font-family:'DM Mono',monospace; font-size:0.72rem; font-weight:700; text-transform:uppercase; letter-spacing:0.04em; color:var(--ink-soft); margin-bottom:8px;">Compétence</span>
+      <div style="display:flex; flex-wrap:wrap; gap:8px;">
+        <% %w[CO CE EE].each do |code| %>
+          <% m = competencia_colors(code) %>
+          <%= form.radio_button :competência, code, id: "activity_competencia_#{code}", class: "level-radio" %>
+          <label for="activity_competencia_<%= code %>" class="level-pill" style="--pill-bg:<%= m[:bg] %>; --pill-text:<%= m[:text] %>; --pill-border:<%= m[:border] %>;">
+            <%= m[:emoji] %> <%= code %>
+          </label>
+        <% end %>
+      </div>
+    </div>
+
     <div style="margin-bottom:28px;">
       <%= form.label :texto, "Description", style: "display:block; font-family:'DM Mono',monospace; font-size:0.72rem; font-weight:700; text-transform:uppercase; letter-spacing:0.04em; color:var(--ink-soft); margin-bottom:8px;" %>
       <%= form.text_area :texto, rows: 5, style: "width:100%; font-family:'Plus Jakarta Sans',sans-serif; font-size:0.9rem; padding:11px 14px; border:1.5px solid var(--line); border-radius:10px; background:var(--surface); color:var(--ink); resize:vertical;" %>

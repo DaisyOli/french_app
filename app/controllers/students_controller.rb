@@ -55,6 +55,25 @@ class StudentsController < ApplicationController
         pct: total.zero? ? 0 : (completed * 100.0 / total).round,
         locked: !accessible_levels.include?(level) }
     end
+
+    # Progresso por compétence (CO/CE/EE) pro card "Votre progression" —
+    # mesmo cálculo do progresso por nível acima, só agrupando por outra
+    # coluna. Atividades sem compétence definida (ainda não classificadas
+    # pela professora) não entram em nenhum dos 3 totais.
+    comp_totals = Activity.group(:competência).count
+    comp_completed = current_student.completed_activities.joins(:activity).group('activities.competência').count
+    @competencia_progress = %w[CO CE EE].map do |code|
+      total = comp_totals[code] || 0
+      completed = comp_completed[code] || 0
+      { competencia: code, total: total, completed: completed,
+        pct: total.zero? ? 0 : (completed * 100.0 / total).round }
+    end
+
+    # Nível pro badge celebratório: o nível atribuído ao aluno; sem isso,
+    # cai pro nível mais alto onde ele já completou alguma atividade.
+    @badge_level = current_student.nível.presence ||
+                   @level_progress.reverse.find { |lp| lp[:completed] > 0 }&.dig(:level) ||
+                   accessible_levels.first
   end
 
   def activities

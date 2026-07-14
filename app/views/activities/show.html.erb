@@ -8,9 +8,21 @@
   <%# En-tête %>
   <div style="display:flex; align-items:center; justify-content:space-between; gap:12px; margin-bottom:24px;">
     <h1 style="font-family:'Raleway',sans-serif; font-size:1.5rem; font-weight:800; color:var(--brand-deep); margin:0;"><%= @activity.título %></h1>
-    <span style="font-family:'DM Mono',monospace; font-size:0.78rem; font-weight:700; background:<%= m[:bg] %>; color:<%= m[:text] %>; border:1.5px solid <%= m[:border] %>; padding:3px 12px; border-radius:20px; flex-shrink:0;">
-      <%= @activity.nível %>
-    </span>
+    <div style="display:flex; align-items:center; gap:6px; flex-shrink:0;">
+      <span style="font-family:'DM Mono',monospace; font-size:0.78rem; font-weight:700; background:<%= m[:bg] %>; color:<%= m[:text] %>; border:1.5px solid <%= m[:border] %>; padding:3px 12px; border-radius:20px;">
+        <%= @activity.nível %>
+      </span>
+      <% if @activity.competência.present? %>
+        <% cm = competencia_colors(@activity.competência) %>
+        <span style="font-family:'DM Mono',monospace; font-size:0.78rem; font-weight:700; background:<%= cm[:bg] %>; color:<%= cm[:text] %>; border:1.5px solid <%= cm[:border] %>; padding:3px 12px; border-radius:20px;">
+          <%= cm[:emoji] %> <%= @activity.competência %>
+        </span>
+      <% else %>
+        <span style="font-family:'DM Mono',monospace; font-size:0.72rem; font-weight:700; color:var(--ink-faint); border:1.5px dashed var(--line); padding:3px 12px; border-radius:20px;">
+          Compétence non définie
+        </span>
+      <% end %>
+    </div>
   </div>
 
   <%# Description %>

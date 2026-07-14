@@ -12,6 +12,10 @@ class Activity < ApplicationRecord
 
   validates :título, presence: true, length: { minimum: 3, maximum: 100 }
   validates :nível, presence: true, inclusion: { in: %w[A1 A2 B1 B2 C1 C2] }
+  # Compétence (CO/CE/EE) — igual ao padrão de nível/professional_type do
+  # Student: allow_blank pra não travar atividades antigas, criadas antes
+  # deste campo existir, até a professora classificar cada uma.
+  validates :competência, inclusion: { in: %w[CO CE EE] }, allow_blank: true
   validates :user, presence: true
   validates :slug, presence: true, uniqueness: true, format: { with: /\A[a-z0-9-]+\z/, message: "deve conter apenas letras minúsculas, números e hífens" }
   

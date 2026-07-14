@@ -304,7 +304,7 @@ class ActivitiesController < ApplicationController
     end
 
     def activity_params
-      params.require(:activity).permit(:título, :nível, :texto, :video_url, :imagem_url, :texte, :video_order, :imagem_order, :texte_order, :slug)
+      params.require(:activity).permit(:título, :nível, :competência, :texto, :video_url, :imagem_url, :texte, :video_order, :imagem_order, :texte_order, :slug)
     end
 
     def completed_activity_params

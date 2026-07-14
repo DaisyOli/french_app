@@ -14,6 +14,19 @@ module ApplicationHelper
     CEFR_COLORS[level] || CEFR_COLORS['A1']
   end
 
+  # Cores das compétences (CO/CE/EE) — mapeamento já documentado em
+  # docs/design_system.html, seção "Habilidades", nunca ligado a nenhuma
+  # tela até agora.
+  COMPETENCIA_COLORS = {
+    'CO' => { bg: 'var(--sky-tint)',     text: 'var(--sky)',         border: 'var(--sky-border)',     bar: 'var(--sky)',     emoji: '🎧', label: 'Compréhension Orale' },
+    'CE' => { bg: 'var(--amber-tint)',   text: 'var(--amber-ink)',   border: 'var(--amber)',          bar: 'var(--amber)',   emoji: '📖', label: 'Compréhension Écrite' },
+    'EE' => { bg: 'var(--success-tint)', text: 'var(--success-deep)', border: 'var(--success-border)', bar: 'var(--success)', emoji: '✍️', label: 'Expression Écrite' },
+  }.freeze
+
+  def competencia_colors(code)
+    COMPETENCIA_COLORS[code]
+  end
+
   # Cores dos badges de percurso professionnel (OPCO/eCPF).
   PROFESSIONAL_COLORS = {
     'OPCO' => { bg: 'var(--info-tint)',   text: 'var(--info-deep)',   border: 'var(--info)' },
