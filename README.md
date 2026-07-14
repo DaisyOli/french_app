@@ -1,287 +1,152 @@
-French App is a next-generation web application for learning French, featuring interactive activities, gamification, and a robust, scalable architecture. Built with Ruby on Rails, it delivers a seamless experience for both students and teachers.
+<p align="center">
+  <img src="branding/fr/practice-fr-logo-horizontal-color.svg" alt="Practice FR" width="360">
+</p>
 
-## � Features
+<p align="center">
+  <strong>A full-stack Rails application for learning French</strong><br>
+  Designed by a former teacher, built by a developer — live in production, with real students.
+</p>
 
-- **Dual Authentication System:** Separate flows for teachers and students, with tailored permissions
-- **Multiple Exercise Types:**
-  - Fill-in-the-blanks
-  - Sentence and paragraph ordering
-  - Column associations
-  - Multiple choice questions
-- **Gamification:** Daily streaks, motivational trophies, and progress tracking
-- **Personalized Dashboards:** Custom interfaces for teachers and students
-- **Invitation System:** Teachers can invite students via email
-- **Production-Ready:**
-  - Activity size limits (max 25 questions) to prevent timeouts
-  - Asynchronous and batch processing for large activities
-  - Email notifications for processing status
-  - Timeout protection and robust error handling
-  - Health checks and structured logging
-
-
-## 🛠️ Tech Stack
-
-- **Backend:** Ruby 3.3.5, Rails 7.1.3
-- **Database:** PostgreSQL
-- **Cache:** Redis
-- **Authentication:** Devise, Devise Invitable
-- **Frontend:** Bootstrap 5.3, Stimulus, Turbo, Importmap
-- **Security:** Rack::Attack, Rack::Timeout, Secure Headers
-- **Background Jobs:** Active Job (async)
-- **Email:** Action Mailer (Gmail SMTP)
-- **Containerization:** Docker, Docker Compose
-- **Testing:** Minitest (comprehensive coverage)
-- **Monitoring:** Health checks, structured logging
-
-## 🚀 Installation and Setup
-
-### Prerequisites
-
-- Ruby 3.3.5
-- PostgreSQL
-- Node.js and Yarn
-- Git
-
-### 1. Clone the repository
-
-```bash
-git clone <repository-url>
-cd french_app
-```
-
-### 2. Install dependencies
-
-```bash
-bundle install
-yarn install
-```
-
-### 3. Configure environment variables
-
-Create a `.env` file in the project root:
-
-```bash
-# Database Configuration
-FRENCH_APP_DATABASE_PASSWORD=your_secure_password
-
-# Rails Configuration (Generate with: bundle exec rails secret)
-SECRET_KEY_BASE=generate_with_rails_secret_command
-DEVISE_SECRET_KEY=generate_with_rails_secret_command
-
-# Email Configuration
-GMAIL_USERNAME=your_email@gmail.com
-GMAIL_PASSWORD=your_gmail_app_password
-
-# Application Settings
-RAILS_ENV=development
-RAILS_LOG_LEVEL=info
-
-# Performance Settings (Optional - based on Portuguese app experience)
-ACTIVITY_QUESTION_LIMIT=25
-BATCH_PROCESSING_SIZE=5
-```
-
-### 4. Generate security keys
-
-```bash
-# Generate secret keys (NEVER commit these to version control)
-bundle exec rails secret  # Use output for SECRET_KEY_BASE
-bundle exec rails secret  # Use output for DEVISE_SECRET_KEY
-```
-
-### 5. Setup the database
-
-```bash
-rails db:create
-rails db:migrate
-rails db:seed
-```
-
-### 6. Run the application
-
-```bash
-rails server
-```
-
-The application will be available at `http://localhost:3000`
-
-## 🐳 Docker
-
-### Development with Docker Compose (Recommended)
-
-```bash
-# Start all services (PostgreSQL, Redis, Rails)
-docker-compose up
-
-# Run in background
-docker-compose up -d
-
-# View logs
-docker-compose logs -f web
-
-# Stop services
-docker-compose down
-```
-
-### Production Docker Build
-
-```bash
-docker build -t french-app:production .
-docker run -p 3000:3000 --env-file .env.production french-app:production
-```
-
-## 📚 How to Use
-
-### For Teachers
-
-1. Go to `/users/sign_up` to create an account
-2. Login at `/users/sign_in`
-3. Create activities in the dashboard
-4. Invite students through the invitation system
-
-### For Students
-
-1. Receive an email invitation from the teacher
-2. Accept the invitation and set your password
-3. Login at `/students/sign_in`
-4. Complete available activities
-
-## ⚡ Performance & Production Optimizations
-
-This application includes several production-ready optimizations based on real-world experience:
-
-### Activity Size Management
-- **Automatic validation**: Activities are limited to 25 questions maximum to prevent timeout issues
-- **Smart counting**: Counts all question types (multiple choice, fill-blanks, orderings, associations)
-- **User-friendly errors**: Clear French error messages when limits are exceeded
-
-### Asynchronous Processing
-- **Background jobs**: Large activities are processed asynchronously using Active Job
-- **Batch processing**: Questions are processed in batches of 5 to optimize performance
-- **Email notifications**: Users receive emails when processing completes or fails
-
-### Timeout Protection
-- **Rack::Timeout**: Configured with appropriate timeouts for production
-- **Custom middleware**: Detects activity-related requests and applies extended timeouts
-- **Graceful handling**: Proper error handling and user feedback
-
-### Email System
-- **Professional templates**: HTML email templates for processing notifications
-- **Error reporting**: Detailed error messages with troubleshooting steps
-- **Success confirmations**: Activity completion notifications with direct links
-
-### Code Example - Activity Validation
-```ruby
-# Prevents timeout issues in production
-validate :total_questions_limit
-
-private
-
-def total_questions_limit
-  total_questions = questions.count + 
-                   fill_blanks.sum { |fb| fb.blanks.count } +
-                   sentence_orderings.count +
-                   paragraph_orderings.sum { |po| po.paragraph_sentences.count } +
-                   column_associations.sum { |ca| ca.association_pairs.count }
-  
-  if total_questions > 25
-    errors.add(:base, "Une activité ne peut pas avoir plus de 25 questions pour éviter les problèmes de performance")
-  end
-end
-```
-
-## 🧪 Testing
-
-```bash
-# Run all tests
-rails test
-
-# Run specific tests
-rails test test/models/
-rails test test/controllers/
-
-# Run performance-related tests
-rails test test/models/activity_test.rb
-```
-
-## 🔒 Security Considerations
-
-### Environment Variables
-- **NEVER** commit `.env` files to version control
-- Use different secret keys for development and production
-- Generate new keys with: `bundle exec rails secret`
-- Use strong, unique passwords for database and email
-
-### Production Security
-- Enable SSL/HTTPS in production
-- Use environment-specific configurations
-- Regularly rotate secret keys
-- Monitor application logs for security issues
-
-
-## 👩‍💻 About the Author
-
-Developed by **Daisy Oli** — passionate about education, technology, and building impactful web applications. Always striving for code quality, user experience, and real-world results.
-
-- [LinkedIn](https://www.linkedin.com/in/daisy-oliani-487a6379/)
-- [GitHub](https://github.com/DaisyOli)
+<p align="center">
+  <a href="https://github.com/DaisyOli/practice-fr/actions/workflows/ci.yml"><img src="https://github.com/DaisyOli/practice-fr/actions/workflows/ci.yml/badge.svg" alt="CI"></a>
+  <img src="https://img.shields.io/badge/Ruby-3.3.5-CC342D?logo=ruby&logoColor=white" alt="Ruby 3.3.5">
+  <img src="https://img.shields.io/badge/Rails-7.1-CC0000?logo=rubyonrails&logoColor=white" alt="Rails 7.1">
+  <img src="https://img.shields.io/badge/PostgreSQL-15-4169E1?logo=postgresql&logoColor=white" alt="PostgreSQL">
+  <img src="https://img.shields.io/badge/DaisyUI-4-1AD1A5?logo=tailwindcss&logoColor=white" alt="DaisyUI 4">
+  <a href="https://practicefr.com"><img src="https://img.shields.io/badge/live-practicefr.com-8A2545" alt="Live demo"></a>
+</p>
 
 ---
 
-## 📦 Deployment
+## The idea
 
-### Environment Variables for Production
+**Practice FR** is a platform where French teachers build interactive activities (multiple choice, fill-in-the-blank, sentence/paragraph ordering, column matching) and track their students' progress — streaks, CEFR levels, training attestations included.
 
-```bash
-# Core Rails Configuration
-RAILS_ENV=production
-SECRET_KEY_BASE=production_secret_key
-RAILS_LOG_LEVEL=info
+This isn't a portfolio toy: it's a **live production app** (Heroku, [practicefr.com](https://practicefr.com)) serving real teachers and real students, with everything that implies — timeout limits, async processing, rate limiting, health checks, admin audit logging.
 
-# Database
-FRENCH_APP_DATABASE_PASSWORD=production_db_password
+## What makes this project interesting
 
-# Authentication
-DEVISE_SECRET_KEY=production_devise_key
+### 🎮 Gamification with an actual concept, not just a progress bar
+Every consecutive day of practice moves a student closer to a French-themed trophy — implemented as a real business rule in `Student#current_trophy`, not a generic gem:
 
-# Email Configuration
-GMAIL_USERNAME=production_email
-GMAIL_PASSWORD=production_password
+`🎯 Beginner → 🥐 Croissant (3d) → 🥖 Baguette (7d) → 🧀 Fromage (14d) → 🍷 Wine (30d) → 🗼 Eiffel Tower (60d+)`
 
-# Application Settings
-APP_HOST=yourdomain.com
+### 🏗️ A "franchise" architecture — one design system, two brands
+This repo shares a **design contract** with its sibling app in Portuguese (Practice BR): identical CSS token names (`--brand`, `--ink`, `--paper`…), identical component anatomy, only the palette values differ. The golden rule — *never a raw hex in a view, always `var(--token)`* — is documented and enforced across the codebase (`docs/DESIGN_SYSTEM.md`). The payoff: a view written for one app runs on the other with zero structural changes.
 
-# Cache and Performance
-REDIS_URL=redis://localhost:6379/1
+### 📚 Exercise types are first-class models, not generic JSON blobs
+Multiple choice, fill-in-the-blank, sentence/paragraph ordering, and column matching are each their own ActiveRecord model (`fill_blank.rb`, `sentence_ordering.rb`, `column_association.rb`…), with their own validations, display order, and nested controllers — not a catch-all `type` column.
 
-# Security (Optional)
-RACK_ATTACK_ENABLED=true
+### 🛡️ Built for production, not just "works on my machine"
+- 25-question limit per activity plus **asynchronous batch processing** for large activities, with email notification on completion
+- `Rack::Timeout` with dedicated middleware for heavy activity-related requests
+- `Rack::Attack` for rate limiting
+- A `/health` endpoint that actually checks PostgreSQL **and** Redis, not just a bare `200 OK`
+- An admin panel with a real **audit log** (`AdminAuditLog`) for every sensitive action (account deletion, level changes…)
 
-# Performance Optimizations
-ACTIVITY_QUESTION_LIMIT=25
-BATCH_PROCESSING_SIZE=5
-TIMEOUT_PROTECTION_ENABLED=true
+## Features
+
+| | |
+|---|---|
+| 🔑 **Dual authentication** | Devise for teachers, Devise for students (`Student`), separate sessions and permissions |
+| ✉️ **Email invitations** | `devise_invitable` — teachers invite, students accept and set their own password |
+| 📈 **CEFR levels (A1 → C2)** | Cumulative access: a B1 student sees A1, A2 and B1 content |
+| 🔥 **Streaks & trophies** | Daily tracking, best streak on record, motivational message in French |
+| 📊 **Teacher dashboard** | Student roster, average score, last activity, training time |
+| 📜 **Training attestations** | Auto-generated hours summary per student, built with OPCO / eCPF funding requirements in mind |
+| ⭐ **Activity ratings** | Students rate the activities they complete |
+| 🛠️ **Admin panel** | Cross-teacher overview plus a full action audit log |
+
+## Architecture
+
+```mermaid
+flowchart LR
+    subgraph Auth["Authentication (Devise)"]
+        U[User · teacher]
+        S[Student · learner]
+    end
+
+    subgraph Content["Learning content"]
+        A[Activity]
+        Q[Question / Alternative]
+        FB[FillBlank / Blank]
+        SO[SentenceOrdering]
+        PO[ParagraphOrdering]
+        CA[ColumnAssociation]
+    end
+
+    subgraph Progress["Progress tracking"]
+        CO[CompletedActivity]
+        AR[ActivityRating]
+        TR[Trophy & streak]
+    end
+
+    U -- creates --> A
+    A --> Q & FB & SO & PO & CA
+    U -- invites --> S
+    S -- completes --> CO
+    CO --> A
+    CO -- recalculates --> TR
+    S -- rates --> AR
+    AR --> A
 ```
 
-### Deploy with Docker
+## Tech stack
+
+**Backend** — Ruby 3.3.5 · Rails 7.1 · PostgreSQL · Redis · Puma
+**Frontend** — Tailwind CSS + DaisyUI 4 · Stimulus · Turbo · Importmap (progressive migration away from Bootstrap, no heavy JS framework)
+**Auth** — Devise + Devise Invitable (two distinct authentication models)
+**Resilience** — Rack::Attack · Rack::Timeout · Active Job (batch processing)
+**Quality** — Minitest (models, controllers, integration, system), GitHub Actions CI (Postgres + Redis as services)
+**Infra** — Docker / Docker Compose, deployed on Heroku
+
+## Getting started
 
 ```bash
-docker build -t french-app:production .
-docker run -d -p 80:3000 --env-file .env.production french-app:production
+git clone git@github.com:DaisyOli/practice-fr.git
+cd practice-fr
+bundle install && yarn install
+
+touch .env             # fill in the keys below
+bin/rails db:create db:migrate db:seed
+bin/dev                # runs Rails + the Tailwind build
 ```
 
-## 🤝 Contributing
+Open `http://localhost:3000`.
 
-1. Fork the project
-2. Create a feature branch (`git checkout -b feature/AmazingFeature`)
-3. Commit your changes (`git commit -m 'Add some AmazingFeature'`)
-4. Push to the branch (`git push origin feature/AmazingFeature`)
-5. Open a Pull Request
+<details>
+<summary>Required environment variables (.env)</summary>
 
-## 📄 License
+```bash
+FRENCH_APP_DATABASE_PASSWORD=
+SECRET_KEY_BASE=       # bundle exec rails secret
+DEVISE_SECRET_KEY=     # bundle exec rails secret
+GMAIL_USERNAME=
+GMAIL_PASSWORD=
+```
+</details>
 
-This project is licensed under the MIT License. See the `LICENSE` file for details.
+<details>
+<summary>With Docker</summary>
 
-## 📞 Support
+```bash
+docker-compose up
+```
+</details>
 
-For support, contact us at: practicefrsite@gmail.com
+### Tests
+
+```bash
+bin/rails test              # full suite
+bin/rails test test/models  # a specific folder
+```
+
+## The design system
+
+`docs/DESIGN_SYSTEM.md` and `docs/design_system.html` document the full visual contract — typography, radii, button hierarchy, text scale — shared with the Portuguese sibling app. Practice FR's palette (*Bordeaux crème*) lives in a single file, `app/assets/stylesheets/_tokens.scss`: rebranding means changing that one file.
+
+## About
+
+Built by **Daisy Oliani** — former teacher turned developer, building the tools she wished she'd had in the classroom.
+
+[LinkedIn](https://www.linkedin.com/in/daisy-oliani-487a6379/) · [GitHub](https://github.com/DaisyOli) · practicefrsite@gmail.com
