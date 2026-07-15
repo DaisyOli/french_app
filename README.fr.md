@@ -25,7 +25,7 @@
 
 ## L'idée
 
-**Practice FR** est une plateforme où des professeurs de français créent des activités interactives (QCM, textes à trous, ordre de phrases, associations) et suivent la progression de leurs élèves — streaks, niveaux CECR, attestations de formation incluses.
+**Practice FR** est une plateforme où des professeurs de français créent des activités interactives (QCM, textes à trous, ordre de phrases, associations) et suivent la progression de leurs élèves — streaks, niveaux CECR, et attestations de formation prêtes pour les dossiers de financement OPCO / CPF.
 
 Ce n'est pas un projet-vitrine : c'est une application **en production** (Heroku, [practicefr.com](https://practicefr.com)) qui sert de vrais professeurs et de vrais élèves, avec tout ce que ça implique — limites anti-timeout, traitement asynchrone, rate limiting, health checks, audit log admin.
 
@@ -35,6 +35,9 @@ Ce n'est pas un projet-vitrine : c'est une application **en production** (Heroku
 Chaque jour consécutif d'entraînement rapproche l'élève d'un trophée à thème français — codé comme une vraie règle métier dans `Student#current_trophy`, pas un plugin générique :
 
 `🎯 Débutant → 🥐 Croissant (3j) → 🥖 Baguette (7j) → 🧀 Fromage (14j) → 🍷 Vin (30j) → 🗼 Tour Eiffel (60j+)`
+
+### 📜 Attestations de formation pensées pour les financements OPCO / CPF
+Un élève financé par l'OPCO de son employeur ou via son CPF doit justifier ses heures de formation. Practice FR gère ça de bout en bout : le professeur marque le parcours de financement (OPCO / eCPF) dès l'invitation, un badge dédié suit l'élève dans toute l'application, et un clic génère une **attestation de formation imprimable** dont les heures sont calculées à partir du temps de pratique réellement mesuré (de l'ouverture à la fin de l'activité, plafonné par tentative) — pas déclarées à la main. C'est ce document qui permet au professeur d'accueillir des élèves financés.
 
 ### 🏗️ Architecture "franchise" — un design system, deux marques
 Ce dépôt partage un **contrat de design** avec son application sœur en portugais (Practice BR) : mêmes noms de tokens CSS (`--brand`, `--ink`, `--paper`…), même anatomie de composants, seules les valeurs de palette changent. La règle d'or — *jamais un hex brut dans une vue, toujours `var(--token)`* — est documentée et appliquée dans tout le code (`docs/DESIGN_SYSTEM.md`). Résultat : une vue écrite pour un des deux apps fonctionne dans l'autre sans modification structurelle.
@@ -58,7 +61,7 @@ QCM, texte à trous, ordre de phrases/paragraphes et association de colonnes son
 | 📈 **Niveaux CECR (A1 → C2)** | Accès cumulatif : un élève de niveau B1 voit A1, A2 et B1 |
 | 🔥 **Streaks & trophées** | Suivi quotidien, meilleur streak, message motivant en français |
 | 📊 **Tableau de bord professeur** | Liste des élèves, score moyen, dernière activité, temps d'entraînement |
-| 📜 **Attestations de formation** | Génération d'un récapitulatif d'heures par élève, pensé pour les financements OPCO / eCPF |
+| 📜 **Attestations de formation** | Badge OPCO / eCPF par élève + attestation imprimable, heures calculées sur le temps de pratique mesuré — le justificatif attendu par les financeurs |
 | ⭐ **Notation des activités** | Les élèves évaluent les activités qu'ils complètent |
 | 🛠️ **Panneau admin** | Vue d'ensemble multi-professeurs + journal d'audit des actions |
 

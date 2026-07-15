@@ -25,7 +25,7 @@
 
 ## The idea
 
-**Practice FR** is a platform where French teachers build interactive activities (multiple choice, fill-in-the-blank, sentence/paragraph ordering, column matching) and track their students' progress — streaks, CEFR levels, training attestations included.
+**Practice FR** is a platform where French teachers build interactive activities (multiple choice, fill-in-the-blank, sentence/paragraph ordering, column matching) and track their students' progress — streaks, CEFR levels, and training attestations ready for OPCO / CPF funding files.
 
 Practice FR is a production application deployed on Heroku and used by real teachers and students. This requires handling real operational concerns, including timeout limits, asynchronous processing, rate limiting, health checks and administrative audit logging. (Heroku, [practicefr.com](https://practicefr.com))
 
@@ -35,6 +35,9 @@ Practice FR is a production application deployed on Heroku and used by real teac
 Every consecutive day of practice moves a student closer to a French-themed trophy — implemented as a real business rule in `Student#current_trophy`, not a generic gem:
 
 `🎯 Beginner → 🥐 Croissant (3d) → 🥖 Baguette (7d) → 🧀 Fromage (14d) → 🍷 Wine (30d) → 🗼 Eiffel Tower (60d+)`
+
+### 📜 Training attestations built for the French professional-training market
+In France, a large share of adult language training is paid for by professional-training funds — the employer's **OPCO** or the learner's personal **CPF** training account — and funders require proof that the training hours actually happened. Practice FR handles this end to end: the teacher tags a student's funding track (OPCO / eCPF) right on the invitation, a dedicated badge follows the student across the app, and one click generates a **printable training attestation** whose hours come from measured practice time (activity start → completion, capped per attempt) rather than self-reporting. That one document is what lets a teacher take on funded students at all.
 
 ### 🏗️ A "franchise" architecture — one design system, two brands
 This repo shares a **design contract** with its sibling app in Portuguese (Practice BR): identical CSS token names (`--brand`, `--ink`, `--paper`…), identical component anatomy, only the palette values differ. The golden rule — *never a raw hex in a view, always `var(--token)`* — is documented and enforced across the codebase (`docs/DESIGN_SYSTEM.md`). The payoff: a view written for one app runs on the other with zero structural changes.
@@ -58,7 +61,7 @@ Multiple choice, fill-in-the-blank, sentence/paragraph ordering, and column matc
 | 📈 **CEFR levels (A1 → C2)** | Cumulative access: a B1 student sees A1, A2 and B1 content |
 | 🔥 **Streaks & trophies** | Daily tracking, best streak on record, motivational message in French |
 | 📊 **Teacher dashboard** | Student roster, average score, last activity, training time |
-| 📜 **Training attestations** | Auto-generated hours summary per student, built with OPCO / eCPF funding requirements in mind |
+| 📜 **Training attestations** | OPCO / eCPF badge per student + printable attestation, with hours computed from measured practice time — the proof French funding bodies require |
 | ⭐ **Activity ratings** | Students rate the activities they complete |
 | 🛠️ **Admin panel** | Cross-teacher overview plus a full action audit log |
 
