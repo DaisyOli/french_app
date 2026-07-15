@@ -5,7 +5,7 @@
 <p align="center">
   <strong>A full-stack Rails application for learning French</strong><br>
   Designed by a former teacher, built by a developer — live in production, with real students.
-  [Practice BR](https://github.com/DaisyOli/Practice-BR)
+ ### [Practice FR](https://github.com/DaisyOli/Practice-FR)
 </p>
 
 <p align="center">
