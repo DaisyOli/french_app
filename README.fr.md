@@ -5,6 +5,7 @@
 <p align="center">
   <strong>Une application Rails complète pour apprendre le français</strong><br>
   Créée par une professeure, construite par une développeuse — en production, avec de vrais élèves.
+  ### [Practice FR](https://github.com/DaisyOli/Practice-FR)
 </p>
 
 <p align="center">
