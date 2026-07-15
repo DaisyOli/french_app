@@ -26,7 +26,7 @@
 
 **Practice FR** is a platform where French teachers build interactive activities (multiple choice, fill-in-the-blank, sentence/paragraph ordering, column matching) and track their students' progress — streaks, CEFR levels, training attestations included.
 
-This isn't a portfolio toy: it's a **live production app** (Heroku, [practicefr.com](https://practicefr.com)) serving real teachers and real students, with everything that implies — timeout limits, async processing, rate limiting, health checks, admin audit logging.
+Practice FR is a production application deployed on Heroku and used by real teachers and students. This requires handling real operational concerns, including timeout limits, asynchronous processing, rate limiting, health checks and administrative audit logging. (Heroku, [practicefr.com](https://practicefr.com))
 
 ## What makes this project interesting
 
