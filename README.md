@@ -5,8 +5,9 @@
 <p align="center">
   <strong>A full-stack Rails application for learning French</strong><br>
   Designed by a former teacher, built by a developer — live in production, with real students.
- ### [Practice FR](https://github.com/DaisyOli/Practice-FR)
 </p>
+
+<h3 align="center"><a href="https://github.com/DaisyOli/Practice-FR">Practice FR</a></h3>
 
 <p align="center">
   <a href="https://github.com/DaisyOli/practice-fr/actions/workflows/ci.yml"><img src="https://github.com/DaisyOli/practice-fr/actions/workflows/ci.yml/badge.svg" alt="CI"></a>
@@ -27,7 +28,7 @@
 
 **Practice FR** is a platform where French teachers build interactive activities (multiple choice, fill-in-the-blank, sentence/paragraph ordering, column matching) and track their students' progress — streaks, CEFR levels, and training attestations ready for OPCO / CPF funding files.
 
-Practice FR is a production application deployed on Heroku and used by real teachers and students. This requires handling real operational concerns, including timeout limits, asynchronous processing, rate limiting, health checks and administrative audit logging. (Heroku, [practicefr.com](https://practicefr.com))
+This isn't a portfolio toy: it's a **live production app** (Heroku, [practicefr.com](https://practicefr.com)) serving real teachers and real students, with everything that implies — timeout limits, async processing, rate limiting, health checks, admin audit logging.
 
 ## What makes this project interesting
 
